@@ -1,22 +1,22 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
     firstname: {
         type: String,
-        required: [true, 'Please add a First Name']
+        required: [true, "Please add a First Name"]
     },
     lastname: {
         type: String,
-        required: [true, 'Please add a Last Name']
+        required: [true, "Please add a Last Name"]
     },
     email: {
         type: String,
-        required: [true, 'Please add an Email'],
+        required: [true, "Please add an Email"],
         unique: true
     },    
     password: {
         type: String,
-        required: [true, 'Please add a Password']
+        required: [true, "Please add a Password"]
     },
     majors: {
         type: Array,
@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
     },
     degree: {
         type: String,
-        required: [true, 'Please add a Degree']
+        required: [true, "Please add a Degree"]
     },
     courses: {
         type: Array,
@@ -53,6 +53,6 @@ const userSchema = mongoose.Schema({
     {
         timeStamps: true
     }   
-)
+);
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);
