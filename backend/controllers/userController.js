@@ -7,9 +7,9 @@ const User = require("../models/userModel");
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-    const {firstname, lastname, email, password, degree} = req.body;
+    const {firstname, lastname, email, password} = req.body;
 
-    if (!firstname || !lastname || !email || !password || !degree) {
+    if (!firstname || !lastname || !email || !password) {
         res.status(400);
         throw new Error("Please add all fields");
     };
@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
         lastname,
         email,
         password: hashedPassword,
-        degree,
+        degree: null,
         majors: null,
         minors: null,
         courses: null,
@@ -48,7 +48,6 @@ const registerUser = asyncHandler(async (req, res) => {
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
-            degree: user.degree,
             token: generateToken(user._id)
         });
     } else {

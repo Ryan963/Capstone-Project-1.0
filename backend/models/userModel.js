@@ -19,19 +19,19 @@ const userSchema = mongoose.Schema({
         required: [true, "Please add a Password"]
     },
     degree: {
-        type: String,
-        required: [true, "Please add a Degree"]
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
     },
     majors: {
-        type: Array,
+        type: [mongoose.Schema.Types.ObjectId],
         required: false
     },
     minors: {
-        type: Array,
+        type: [mongoose.Schema.Types.ObjectId],
         required: false
     },
     courses: {
-        type: Array,
+        type: [{CourseID: String, status: String}],
         required: false
     },
     currentyear: {
