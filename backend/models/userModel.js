@@ -18,6 +18,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Please add a Password"]
     },
+    degree: {
+        type: String,
+        required: [true, "Please add a Degree"]
+    },
     majors: {
         type: Array,
         required: false
@@ -25,10 +29,6 @@ const userSchema = mongoose.Schema({
     minors: {
         type: Array,
         required: false
-    },
-    degree: {
-        type: String,
-        required: [true, "Please add a Degree"]
     },
     courses: {
         type: Array,
