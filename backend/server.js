@@ -12,7 +12,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
 app.use("/api/user", require("./routes/userRoutes"));
 app.use(errorHandler);
+
+app.use("/api/admin", require("./routes/adminRoutes"));
+
 app.listen(port, () => console.log(`server on port ${port}`));
 // hello
