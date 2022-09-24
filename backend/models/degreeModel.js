@@ -8,9 +8,8 @@ const degreeSchema = mongoose.Schema({
     },
     requirements: {
         type: [{
-            type: String, 
-            number: Number, 
-            courses_to_choose: [{course_id: mongoose.Schema.Types.ObjectId, course_name: String}]
+            type: Object,
+            strict: false, 
         }],
         required: [true, "Please add a requirements"]
     }}, 
