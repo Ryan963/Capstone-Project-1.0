@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
+const Degree = require("../models/degreeModel");
+const mongoose = require("mongoose")
 
 // @desc Register new User
 // @route POST /api/users
@@ -9,7 +11,7 @@ const User = require("../models/userModel");
 const registerUser = asyncHandler(async (req, res) => {
     const {firstname, lastname, email, password, degree} = req.body;
 
-    if (!firstname || !lastname || !email || !password) {
+    if (!firstname || !lastname || !email || !password || !degree) {
         res.status(400);
         throw new Error("Please add all fields");
     };
@@ -21,6 +23,15 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error("Email already in use");
     };
 
+    // Check if degree exists and store degree objectId
+    const degreeExists = await Degree.findOne({name: degree});
+    if (!degreeExists) {
+        res.status(400);
+        throw new Error("Degree not found"); 
+    } else {
+        var degreeId = degreeExists._id;
+    }
+
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -31,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
         lastname,
         email,
         password: hashedPassword,
-        degree: null,
+        degree: degreeId,
         majors: [],
         minors: [],
         courses: [],
@@ -48,6 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
+            degree: user.degree,
             token: generateToken(user._id)
         });
     } else {
@@ -83,13 +95,14 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-    const {_id, firstname, lastname, email} = await User.findById(req.user.id);
+    const {_id, firstname, lastname, email, degree} = await User.findById(req.user.id);
 
     res.status(200).json({
         id: _id,
         firstname,
         lastname,
-        email
+        email,
+        degree
     });
 });
 
