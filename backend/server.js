@@ -12,5 +12,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/degree", require("./routes/degreeRoutes"));
 app.listen(port, () => console.log(`server on port ${port}`));
+
 // hello
+// hi
