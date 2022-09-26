@@ -2,7 +2,7 @@ const Major = require("../models/majorModel")
 
 // @desc Get majors
 // @route GET /api/majors
-// @access public
+// @access private
 const getMajors = async (req, res) => {
   const majors = await Major.find()
   res.status(200).json(majors)
@@ -10,7 +10,7 @@ const getMajors = async (req, res) => {
 
 // @desc add major
 // @route POST /api/majors
-// @access public
+// @access private
 const addMajor = async (req, res) => {
   try {
     const { name, requirements } = req.body;
@@ -44,7 +44,7 @@ const addMajor = async (req, res) => {
 
 // @desc update major
 // @route PUT /api/majors/:id
-// @access public
+// @access private
 const updateMajor = async (req, res) => {
   const major = await Major.findById(req.params.id)
 
@@ -60,7 +60,7 @@ const updateMajor = async (req, res) => {
 
 // @desc Delete major
 // @route DELETE /api/majors/:id
-// @access public
+// @access private
 const deleteMajor = async (req, res) => {
   const major = await Major.findById(req.params.id)
 
