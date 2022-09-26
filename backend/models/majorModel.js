@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-
 const majorSchema = mongoose.Schema(
     {
         name: {
@@ -17,8 +16,13 @@ const majorSchema = mongoose.Schema(
         streams: [
             {
                 streamName: String,
-                credits: Number,
-                courses: [String]
+                streamRequirements: [
+                    {
+                        credits: Number,
+                        courses: [String]
+                    }
+                ]
+                
             }
         ],
     },
