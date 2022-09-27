@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 
-const degreeSchema = mongoose.Schema(
-  {
+const degreeSchema = mongoose.Schema({
     name: {
-      type: String,
-      required: [true, "Please add a name for the degree"],
+        type: String,
+        required: [true, "Please add a degree name"],
+        unique: true
     },
-    requirement: {
-      type: String,
-      required: [true, "Please add requirement"],
-    },
-  },
-  {
-    timeStamps: true,
-  }
-);
+    requirements: {
+        type: [{
+            type: Object,
+            strict: false, 
+        }],
+        required: [true, "Please add a requirements"]
+    }}, 
+    {
+    timeStamps: true
+});
 
 module.exports = mongoose.model("Degree", degreeSchema);
+
