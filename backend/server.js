@@ -18,5 +18,10 @@ app.use(errorHandler);
 
 app.use("/api/admin", require("./routes/adminRoutes"));
 
+
+app.use("/api/majors", require("./routes/majorRoutes"));
+
+app.use("/api/minors", require("./routes/minorRoutes"));
+
 app.listen(port, () => console.log(`server on port ${port}`));
 // hello
