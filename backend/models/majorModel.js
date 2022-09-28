@@ -7,20 +7,23 @@ const majorSchema = mongoose.Schema(
             required: [true, "Please add name of major"],
             unique: true
         },
-        requirements: [
-            {
-                credits: Number,
-                courses: [String]
-            }
-        ],
+        requirements: {
+            type: [{
+                type: Object,
+                strict: false, 
+            }],
+            required: [true, "Please add a requirements"]
+        }, 
         streams: [
             {
-                streamName: String,
-                streamRequirements: [
+                name: String,
+                requirements: [
                     {
-                        credits: Number,
-                        courses: [String]
-                    }
+                        type: [{
+                            type: Object,
+                            strict: false, 
+                        }],
+                    }          
                 ]
                 
             }

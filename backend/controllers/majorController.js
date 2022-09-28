@@ -47,7 +47,7 @@ const updateMajor = async (req, res) => {
   const major = await Major.findById(req.params.id)
   if (!major) {
     res.status(400)
-    throw new Error('Goal not found')
+    throw new Error('Major not found')
   }
 
   const updatedMajor = await Major.findByIdAndUpdate(req.params.id, req.body, {new: true,})
