@@ -106,6 +106,23 @@ const getMe = asyncHandler(async (req, res) => {
     });
 });
 
+
+// @desc  update User Data
+// @route PUT /api/users/
+// @access Private
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+    
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true,})
+    res.status(200).json(updatedUser);
+});
+
+
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({id}, process.env.JWT_USER_SECRET, {
@@ -114,5 +131,5 @@ const generateToken = (id) => {
 };
 
 module.exports = {
-    registerUser, loginUser, getMe
+    registerUser, loginUser, getMe, updateUser
 };
