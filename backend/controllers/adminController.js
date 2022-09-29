@@ -7,7 +7,7 @@ const Admin = require("../models/adminModel");
 const asyncHandler = require('express-async-handler');
 
 //@desc Update admin
-//@route POST /api/admin/id
+//@route PUT /api/admin/id
 //@access private = requires password/token to update admin info
 /** Dev notes: An admin can only update their own info */
 const updateAdmin = asyncHandler(async(req,res)=>{
@@ -17,9 +17,6 @@ const updateAdmin = asyncHandler(async(req,res)=>{
     if (!email || !firstname || !lastname || !password) {
       res.status(400).json({ message: "Please add all required fields" });
     }
-
-    
-
 
     //Find logged in admin or throw error if not fouund
     const adminLoggedIn = await Admin.findById(req.params.id)
@@ -33,7 +30,12 @@ const updateAdmin = asyncHandler(async(req,res)=>{
      * that is part of design
      * Maybe change endpoint to login?/
     */
-    
+    //const adminToUpdate = await Admin.find({email : email.toString()})
+    //console.log(adminToUpdate.email.toString())
+    if(adminLoggedIn.email.toString() !== email.toString()){
+            res.status(401)
+            throw new Error('You can only update your account')
+    }
 
     // hash password
     const salt = await bcrypt.genSalt(10);
@@ -47,6 +49,7 @@ const updateAdmin = asyncHandler(async(req,res)=>{
         password: hashedPassword,
       },{new:true})                                                          
     res.status(200).json(updatedAdmin)
+
   } catch (error) {
     console.log(error);
     res.status(200).json({ success: false, message: error.message });
@@ -63,7 +66,7 @@ const updateAdmin = asyncHandler(async(req,res)=>{
  /**
   * Test Profile
   * id: 6331e4376160a018bd4058f5
-  * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzFlNDM3NjE2MGEwMThiZDQwNThmNSIsImlhdCI6MTY2NDIxNDA3MSwiZXhwIjoxNjY0MjM1NjcxfQ.k9XFd73jfLG3q8lJcIplYdbvKgeaJRjBKD3uDc5Lx30
+  * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzFlNDM3NjE2MGEwMThiZDQwNThmNSIsImlhdCI6MTY2NDQxMjg5OSwiZXhwIjoxNjY0NDM0NDk5fQ.vV7V1jyOMF3oD85bxEy1ROeBxWPM-w_6iB7wLz29x6g
   * 
   */
 

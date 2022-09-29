@@ -63,7 +63,6 @@ const createDegree = asyncHandler (async (req,res) => {
 
 })
 
-
 //@desc Update Degree
 //@route POST /api/degree/id
 //@access public - Should this be public?

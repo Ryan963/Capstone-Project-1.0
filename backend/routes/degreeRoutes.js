@@ -7,19 +7,13 @@ const {
   getAllDegree
 } = require("../controllers/degreeController");
 const router = express.Router();
-
-/**
- * Dev notes: Protect not needed since no authentication needed
- * Will we need middleware to verify the user related to the degree?
- */
-//const { protect } = require("../middleware/...");
-
+const { protect } = require("../middleware/adminAuthMiddleware");
 
 /**
  * CRUD Endpoints
  * To update or delete degree, id is needed
  * Dev notes: Protect taken out for now - will authentication be needed
  */
-router.route('/').get(getAllDegree).post(createDegree)
-router.route('/:id').put(updateDegree).delete(deleteDegree).get(getDegree)
+router.route('/').get(protect, getAllDegree).post(protect, createDegree)
+router.route('/:id').put(protect, updateDegree).delete(protect, deleteDegree).get(protect, getDegree)
 module.exports = router;
