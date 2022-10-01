@@ -22,7 +22,11 @@ app.use("/api/degree", require("./routes/degreeRoutes"));
 
 app.use("/api/majors", require("./routes/majorRoutes"));
 
+
+app.use("/api/majors", require("./routes/majorRoutes"));
+
+app.use("/api/minors", require("./routes/minorRoutes"));
+
 app.listen(port, () => console.log(`server on port ${port}`));
 
-// hello
-// hi
+
