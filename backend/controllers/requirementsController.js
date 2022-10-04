@@ -19,15 +19,13 @@ const addRequirement = async (req, res) => {
         if (!degree) {
           throw new Error("Degree was not found!");
         }
-        const newDegreeReqs = [...degree.requirements].push(
-          databaseRequirement
-        );
+        const newDegreeReqs = degree.requirements;
+        console.log(newDegreeReqs);
+        newDegreeReqs.push(databaseRequirement);
         await Degree.findOneAndUpdate(
           { name },
           {
-            $set: {
-              requirements: newDegreeReqs,
-            },
+            requirements: newDegreeReqs,
           }
         );
         break;
@@ -40,9 +38,7 @@ const addRequirement = async (req, res) => {
         await Major.findOneAndUpdate(
           { name },
           {
-            $set: {
-              requirements: newMajorReqs,
-            },
+            requirements: newMajorReqs,
           }
         );
         break;
@@ -55,9 +51,7 @@ const addRequirement = async (req, res) => {
         await Minor.findOneAndUpdate(
           { name },
           {
-            $set: {
-              requirements: newMinorReqs,
-            },
+            requirements: newMinorReqs,
           }
         );
         break;
@@ -71,7 +65,7 @@ const addRequirement = async (req, res) => {
 };
 
 const deleteRequirement = async (req, res) => {
-  const { collection, name, requirement } = req.body;
+  var { collection, name, requirement } = req.body;
   try {
     if (!collection || !requirement) {
       throw new Error("some fields are missing!");
@@ -102,22 +96,33 @@ const deleteRequirement = async (req, res) => {
       }
       const reqKeys = getRequirmentKeys(req.type);
       for (let key of reqKeys) {
+        console.log(req[key], requirement[key]);
         if (req[key] !== requirement[key]) {
-          return true;
+          if (Array.isArray(req[key])) {
+            if (req[key].length !== requirement[key].length) {
+              return true;
+            }
+            if (
+              req[key].sort((a, b) => a - b).join("") !==
+              requirement[key].sort((a, b) => a - b).join("")
+            ) {
+              return true;
+            }
+          } else {
+            return true;
+          }
         }
       }
       return false;
     });
 
     if (newModelReqs.length === model.requirements.length) {
-      throw new Error("Requirment was not found");
+      throw new Error("Requirement was not found");
     }
     await Model.findOneAndUpdate(
       { name },
       {
-        $set: {
-          requirements: newModelReqs,
-        },
+        requirements: newModelReqs,
       }
     );
     res.status(200).json({ success: true });

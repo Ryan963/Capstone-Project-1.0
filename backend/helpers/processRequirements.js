@@ -3,7 +3,7 @@
 // object key is the requirement type
 // the value is an array of the keys of a requirement object of that type
 REQUIREMENT_TYPES = {
-  credits_of_group: ["type", "numberOfCredits", "courses", "excluded"],
+  credits_of_group: ["type", "credits", "courses", "description"],
 };
 
 /**
@@ -25,7 +25,7 @@ function processRequirements(requirement) {
         }
       });
 
-      if (requirement.numberOfCredits > requirement.courses.length * 3) {
+      if (requirement.credits > requirement.courses.length * 3) {
         throw new Error(
           "Courses to choose from or less than courses required!"
         );
@@ -33,12 +33,12 @@ function processRequirements(requirement) {
       return requirement;
 
     default:
-      break;
+      throw new Error("type does not exist");
   }
 }
 
 function getRequirmentKeys(type) {
-  return REQUIREMENT_TYPES[type];
+  return REQUIREMENT_TYPES[type.toLowerCase()];
 }
 module.exports = {
   processRequirements,
