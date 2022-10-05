@@ -27,6 +27,8 @@ app.use("/api/majors", require("./routes/majorRoutes"));
 
 app.use("/api/minors", require("./routes/minorRoutes"));
 
+app.use("/api/courses", require("./routes/courseRoutes"));
+
 app.listen(port, () => console.log(`server on port ${port}`));
 
 
