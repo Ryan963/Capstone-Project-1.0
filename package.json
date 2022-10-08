@@ -18,7 +18,8 @@
     "express-async-handler": "^1.2.0",
     "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.6.0"
+    "mongoose": "^6.6.0",
+    "react-icons": "^4.4.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

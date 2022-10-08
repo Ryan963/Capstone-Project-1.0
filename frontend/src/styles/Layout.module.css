@@ -1,0 +1,43 @@
+:root {
+  --primary-color: darkred;
+  --dark-color: #112549;
+  --dark-color-2: #1b3768;
+  --light-color: #f4f4f4;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  border-bottom: solid 1px var(--dark-color);
+  opacity: 0.9;
+  background-color: var(--primary-color);
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  padding-right: 5%;
+}
+
+.navbar a {
+  color: #fff;
+  padding: 0.45rem;
+  margin: 0 0.25rem;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: var(--dark-color-2);
+}
+
+.navbar .welcome span {
+  margin-right: 0.6rem;
+}

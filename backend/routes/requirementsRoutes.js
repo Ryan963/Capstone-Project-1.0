@@ -5,7 +5,10 @@ const {
 } = require("../controllers/requirementsController");
 
 const router = express.Router();
-
-router.route("/").post(addRequirement).delete(deleteRequirement);
+const { protect } = require("../middleware/adminAuthMiddleware");
+router
+  .route("/")
+  .post(protect, addRequirement)
+  .delete(protect, deleteRequirement);
 
 module.exports = router;
