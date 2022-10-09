@@ -17,15 +17,14 @@ const majorSchema = mongoose.Schema(
         streams: [
             {
                 name: String,
-                requirements: [
+                requirements: 
                     {
                         type: [{
                             type: Object,
                             strict: false, 
                         }],
                     }          
-                ]
-                
+    
             }
         ],
     },

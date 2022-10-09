@@ -13,7 +13,6 @@ const recommendCourses = asyncHandler (async (req, res) => {
     const minor = await Minor.findById(user.minors);
 
     // find stream
-    console.log(major.streams[0].requirements);
     var stream_name = user.majors[0].stream;
     var stream = null;
     for (var i=0; i<major.streams.length; i++) {
@@ -36,11 +35,10 @@ const recommendCourses = asyncHandler (async (req, res) => {
         buildRequirements(requirements, stream.requirements);
     }
 
-    //console.log(requirements);
-
     if (minor != null) { //add minor requirements
         buildRequirements(requirements, minor.requirements);
     };    
+    
     // Initialize recommendations array
     var recommendations = [];
 
