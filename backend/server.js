@@ -36,5 +36,6 @@ app.use("/api/courses", require("./routes/courseRoutes"));
 
 app.use("/api/requirements", require("./routes/requirementsRoutes"));
 
+app.use("/api/recommendations", require("./routes/recommendationsRoutes"));
 
 app.listen(port, () => console.log(`server on port ${port}`));
