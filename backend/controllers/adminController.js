@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 
 const Admin = require("../models/adminModel");
 
+const User = require("../models/userModel");
+
 const asyncHandler = require('express-async-handler');
 
 //@desc Update admin
@@ -59,16 +61,10 @@ const updateAdmin = asyncHandler(async(req,res)=>{
 /**
  * Francis O
  * 632c9a96ee9e48a55aeb56f7
- * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMmM5YTk2ZWU5ZTQ4YTU1YWViNTZmNyIsImlhdCI6MTY2Mzg4ODQ1MywiZXhwIjoxNjYzOTEwMDUzfQ.6PRYDyNNzGy-hXHzp_qF8pyCKE0GW1RKj4teQpWOO30
- *
+ * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMmM5YTk2ZWU5ZTQ4YTU1YWViNTZmNyIsImlhdCI6MTY2NTUzMzY4NywiZXhwIjoxNjY1NTU1Mjg3fQ.XUprK1oB0YqE2ce-6z8UD4vZGXHlAby24qER9F4Vqco
+ * *
  */
 
- /**
-  * Test Profile
-  * id: 6331e4376160a018bd4058f5
-  * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzFlNDM3NjE2MGEwMThiZDQwNThmNSIsImlhdCI6MTY2NDQxMjg5OSwiZXhwIjoxNjY0NDM0NDk5fQ.vV7V1jyOMF3oD85bxEy1ROeBxWPM-w_6iB7wLz29x6g
-  * 
-  */
 
 // @desc register  admin
 // @route POST /api/admin
@@ -141,6 +137,52 @@ const getMe = async (req, res) => {
   res.status(200).json({ success: true, admin: admin });
 };
 
+// @desc get user info
+// @route GET /api/admin/getUser
+// @access private
+const getUserInfo = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({email});
+    // check if admin exists nad compare passwords
+    if (user) {
+      res.status(200).json({
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        degree: user.degree
+    });
+      /*res
+        .status(200)
+        .json({success: true, user: user});*/
+    } else {
+      res.status(400).json({ message: "User Not Found" });
+    }
+  } catch (error) {
+    res.status(200).json({ success: false, message: error.message });
+  }
+};
+
+// @desc get user info
+// @route GET /api/admin/getUserInfo/courses
+// @access private
+const getUserCourses = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({email});
+    // check if admin exists nad compare passwords
+    if (user) {
+      res.status(200).json({
+        course: user.courses,
+    });
+    } else {
+      res.status(400).json({ message: "User Not Found" });
+    }
+  } catch (error) {
+    res.status(200).json({ success: false, message: error.message });
+  }
+};
+
 // helper function to generates token on register or login
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_ADMIN_SECRET, {
@@ -153,4 +195,6 @@ module.exports = {
   loginAdmin,
   getMe,
   updateAdmin,
+  getUserInfo,
+  getUserCourses,
 };
