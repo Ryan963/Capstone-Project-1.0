@@ -130,6 +130,47 @@ const generateToken = (id) => {
     });
 };
 
+
+/**
+ * @description add courses to a user (User.courses field)
+ * @param {array} newCourses array of courses to add
+ * @param  id id of user to add courses to
+ */
+ const addCourses = async (id, newCourses) => {
+    const user = await User.findById(id)
+    const courses = user.courses
+
+    // check if user has already completed any of the new courses
+    // return false if any overlap detected
+    if (newCourses.some( r => courses.includes(r))) {
+        return false
+    }
+    const updatedCourses = [...courses, ...newCourses]
+    const update = {courses: updatedCourses}
+    await User.findByIdAndUpdate(id, update);
+    return 
+}
+
+/**
+ * @description remove courses from a user (User.courses field)
+ * @param {array} coursesToRemove array of courses to be deleted
+ * @param  id id of user to add courses to
+ */
+const removeCourses = async (id, coursesToRemove) => {
+    const user = await User.findById(id)
+    const courses = user.courses
+    const updatedCourses = courses.filter( ( el ) => !coursesToRemove.includes( el ) )
+    const update = {courses: updatedCourses}
+    await User.findByIdAndUpdate(id, update);
+    return 
+}
+
+const getCourses = async (id) => {
+    const user = await User.findById(id)
+    return user.courses
+}
+
+
 module.exports = {
     registerUser, loginUser, getMe, updateUser
 };
