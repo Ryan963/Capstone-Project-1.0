@@ -41,9 +41,11 @@ function compileCourses(recsArr, courseArr) {
         for (var j=0; j<courseArr.length; j++) {
             if (recsArr[i] === courseArr[j].name) {
                
-                compiledArr.push(new Object({name: courseArr[j].name, description: courseArr[j].description}));
+                compiledArr.push(new Object({course: courseArr[j], importance: 5-courseArr[j].level}));
                 
                 break;
+            } else if (j === courseArr.length-1) {
+                compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
             }
         }
     }

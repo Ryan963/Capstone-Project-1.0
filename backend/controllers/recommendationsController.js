@@ -68,12 +68,12 @@ const recommendCourses = asyncHandler (async (req, res) => {
 
     // Sort recommendations
     recommendations.sort((a,b) => Number(a.slice(a.length - 3) - Number(b.slice(b.length - 3))));
-
+    
     if (recommendations.length > 10) { // Recommend top 10 courses
         recommendations.splice(10,recommendations.length-10);
     };
 
-    recommendations = compileCourses(recommendations, courses); // Add descriptions
+    recommendations = compileCourses(recommendations, courses); // Pull courses from course table and add importance
 
     res.status(200).json({recommendations});  
 });
