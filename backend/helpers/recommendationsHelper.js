@@ -52,6 +52,13 @@ function compileCourses(recsArr, courseArr) {
     return compiledArr;
 }
 
+/**
+ * Checks a course array to see if its prerequisites are completed
+ * by the user.
+ * @param {Array} courseArr Array of courses
+ * @param {Array} completedArr Array of user's completed courses
+ * @returns new array with only the courses whose prereqs are satisfied
+ */
 function prereqCheck(courseArr, completedArr) {
     var reducedArr = []
     for(var course in courseArr) {
@@ -72,13 +79,18 @@ function prereqCheck(courseArr, completedArr) {
     return reducedArr;
 }
 
+/**
+ * Increments importance of course
+ * based on the number of times it appears in other requirements prerequisites
+ * @param {*} courseArr 
+ * @param {*} requirements 
+ * @returns 
+ */
 function prereqImportance(courseArr, requirements) {
     for (var course in courseArr) {
-        
         for (var req in requirements) {
-            //console.log(requirements[req])
+            
             if (requirements[req].courses.includes(courseArr[course].course.name)) {
-                
                 courseArr[course].importance = courseArr[course].importance + 1 ;
             }
         }

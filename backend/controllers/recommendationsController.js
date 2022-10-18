@@ -70,13 +70,12 @@ const recommendCourses = asyncHandler (async (req, res) => {
     // Compile courses from course database, and remove any courses that have incomplete prerequisites
     recommendations = prereqCheck(compileCourses(recommendations, courses), coursesTaken);
 
+    // Calculate importance level of courses, by comparing to prerequisites
     recommendations = prereqImportance(recommendations, requirements);
 
     // Sort recommendations
     recommendations.sort((a,b) => b.importance - a.importance);
 
-    
-    
     if (recommendations.length > 10) { // Recommend top 10 courses
         recommendations.splice(10,recommendations.length-10);
     };
