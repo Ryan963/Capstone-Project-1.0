@@ -41,7 +41,7 @@ function compileCourses(recsArr, courseArr) {
         for (var j=0; j<courseArr.length; j++) {
             if (recsArr[i] === courseArr[j].name) {
                
-                compiledArr.push(new Object({course: courseArr[j], importance: 5-courseArr[j].level}));
+                compiledArr.push(new Object({course: courseArr[j], importance: 4-courseArr[j].level}));
                 
                 break;
             } else if (j === courseArr.length-1) {
@@ -52,4 +52,40 @@ function compileCourses(recsArr, courseArr) {
     return compiledArr;
 }
 
-module.exports = { buildRequirements, getStream, compileCourses };
+function prereqCheck(courseArr, completedArr) {
+    var reducedArr = []
+    for(var course in courseArr) {
+        var complete = true;
+        var prereqArr = courseArr[course].course.prerequisites
+        for (var prereq in prereqArr) {
+            if (!completedArr.includes(prereqArr[prereq])) {
+                complete = false;
+                break;
+            }
+        }
+
+        if (complete === true) {
+            reducedArr.push(courseArr[course])
+        }
+    }
+
+    return reducedArr;
+}
+
+function prereqImportance(courseArr, requirements) {
+    for (var course in courseArr) {
+        
+        for (var req in requirements) {
+            //console.log(requirements[req])
+            if (requirements[req].courses.includes(courseArr[course].course.name)) {
+                
+                courseArr[course].importance = courseArr[course].importance + 1 ;
+            }
+        }
+        
+    }
+
+    return courseArr;
+}
+
+module.exports = { buildRequirements, getStream, compileCourses, prereqCheck, prereqImportance };
