@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const { buildRequirements, getStream, compileCourses } = require("../helpers/recommendationsHelper");
+const { buildRequirements, getStream, compileCourses, prereqCheck, prereqImportance } = require("../helpers/recommendationsHelper");
 const Course = require("../models/courseModel");
 const User = require("../models/userModel");
 const Major = require("../models/majorModel");
@@ -47,6 +47,7 @@ const recommendCourses = asyncHandler (async (req, res) => {
 
         // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
         for (var j=0; j < req.courses.length; j++) {
+            // Check if course is incomplete and all prerequisites are complete
             if (!coursesTaken.includes(req.courses[j])) {
                 incomplete_courses.push(req.courses[j]);
             } else {
@@ -65,15 +66,19 @@ const recommendCourses = asyncHandler (async (req, res) => {
     };
 
     recommendations = [...new Set(recommendations)]; // Make entries unique (removes duplicates)
+   
+    // Compile courses from course database, and remove any courses that have incomplete prerequisites
+    recommendations = prereqCheck(compileCourses(recommendations, courses), coursesTaken);
+
+    // Calculate importance level of courses, by comparing to prerequisites
+    recommendations = prereqImportance(recommendations, requirements);
 
     // Sort recommendations
-    recommendations.sort((a,b) => Number(a.slice(a.length - 3) - Number(b.slice(b.length - 3))));
+    recommendations.sort((a,b) => b.importance - a.importance);
 
     if (recommendations.length > 10) { // Recommend top 10 courses
         recommendations.splice(10,recommendations.length-10);
     };
-
-    recommendations = compileCourses(recommendations, courses); // Add descriptions
 
     res.status(200).json({recommendations});  
 });

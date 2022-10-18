@@ -24,6 +24,10 @@ const courseSchema = mongoose.Schema({
     discipline: {
         type: String,
         required: [true, "Please add discipline"]
+    },
+    level: {
+        type: Number,
+        required: [true, "Please add level"]
     }
     },
     {
