@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminSidebar from "../components/admin/AdminSideBar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,7 +17,11 @@ const Dashboard = () => {
       navigate("/adminLogin");
     }
   }, [navigate]);
-  return <div>Dashboard</div>;
+  return (
+    <>
+      <AdminSidebar route={"degrees"} />
+    </>
+  );
 };
 
 export default Dashboard;
