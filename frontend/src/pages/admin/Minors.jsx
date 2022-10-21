@@ -62,7 +62,7 @@ const Minors = () => {
               className={`flex mt-1 p-3 items-center rounded-3xl border bg-lightgrey text-grey`}
             >
               <div className="font-semibold ml-12">
-                <span>Degree ID</span>
+                <span>Minor ID</span>
               </div>
               <div className="font-semibold ml-40">
                 <span>Name</span>
