@@ -5,9 +5,14 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
+import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
+import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 
 const Minors = () => {
   const [minors, setMinors] = useState([]);
+  const [currentMinor, setCurrentMinor] = useState({});
+  const [showRequirementsModal, setShowRequirementsModal] = useState(false);
+  const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -15,17 +20,36 @@ const Minors = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-    try {
-      axios
-        .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
-        .then((res) => {
-          setMinors(res.data);
-        });
-    } catch (error) {
-      toast.error(error.message);
-      console.log(error);
-    }
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
+      .then((res) => {
+        setMinors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
   }, []);
+
+  const addRequirementToMinor = (minorName, requirement) => {
+    const minorsCopy = [...minors];
+    // find index of this degree
+    let idx = 0;
+    for (let i = 0; i < minorsCopy.length; i++) {
+      if (minorsCopy[i].name === minorName) {
+        idx = i;
+        break;
+      }
+    }
+    // copy nested objects and lists
+    const minor = {
+      ...minorsCopy[idx],
+      requirements: [...minorsCopy[idx].requirements, requirement],
+    };
+    minorsCopy[idx] = minor;
+    setMinors(minorsCopy);
+  };
+
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -78,7 +102,12 @@ const Minors = () => {
                           <Dropdown.Item onClick={() => {}}>
                             Update
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setShowRequirementsModal(true);
+                              setCurrentMinor(minor);
+                            }}
+                          >
                             View Requirements
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
@@ -98,6 +127,24 @@ const Minors = () => {
           </div>
         )}
       </div>
+      <RequirementsViewModal
+        show={showRequirementsModal}
+        close={() => setShowRequirementsModal(false)}
+        collection={"minor"}
+        name={currentMinor.name}
+        requirements={currentMinor.requirements}
+        showAddRequirementsModal={() => {
+          setShowRequirementsModal(false);
+          setShowAddRequirementModal(true);
+        }}
+      />
+      <AddRequirementModal
+        show={showAddRequirementModal}
+        close={() => setShowAddRequirementModal(false)}
+        addRequirementToCollection={addRequirementToMinor}
+        collection={"minor"}
+        name={currentMinor.name}
+      />
     </div>
   );
 };

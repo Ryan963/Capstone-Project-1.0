@@ -6,6 +6,36 @@ const Major = require("../models/majorModel");
 const Minor = require("../models/minorModel");
 const Degree = require("../models/degreeModel");
 
+const checkIfRequirementExist = (requirement, requirements) => {
+  const requirementExist = requirements.filter((req) => {
+    if (req.type !== requirement.type) {
+      return false;
+    }
+    const reqKeys = getRequirmentKeys(req.type);
+    for (let key of reqKeys) {
+      console.log(req[key], requirement[key]);
+      if (req[key] !== requirement[key]) {
+        if (Array.isArray(req[key])) {
+          if (req[key].length !== requirement[key].length) {
+            return false;
+          }
+          if (
+            req[key].sort((a, b) => a - b).join("") !==
+            requirement[key].sort((a, b) => a - b).join("")
+          ) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+
+  return requirementExist.length > 0 ? true : false;
+};
+
 const addRequirement = async (req, res) => {
   const { collection, name, requirement } = req.body;
   try {
@@ -20,6 +50,9 @@ const addRequirement = async (req, res) => {
           throw new Error("Degree was not found!");
         }
         const newDegreeReqs = degree.requirements;
+        if (checkIfRequirementExist(requirement, newDegreeReqs)) {
+          throw new Error("Requirement already exists");
+        }
         console.log(newDegreeReqs);
         newDegreeReqs.push(databaseRequirement);
         await Degree.findOneAndUpdate(
@@ -34,7 +67,11 @@ const addRequirement = async (req, res) => {
         if (!major) {
           throw new Error("Major was not found!");
         }
-        const newMajorReqs = [...major.requirements].push(databaseRequirement);
+        const newMajorReqs = [...major.requirements];
+        if (checkIfRequirementExist(requirement, newMajorReqs)) {
+          throw new Error("Requirement already exists");
+        }
+        newMajorReqs.push(databaseRequirement);
         await Major.findOneAndUpdate(
           { name },
           {
@@ -47,7 +84,11 @@ const addRequirement = async (req, res) => {
         if (!minor) {
           throw new Error("minor was not found!");
         }
-        const newMinorReqs = [...minor.requirements].push(databaseRequirement);
+        const newMinorReqs = [...minor.requirements];
+        if (checkIfRequirementExist(requirement, newMinorReqs)) {
+          throw new Error("Requirement already exists");
+        }
+        newMinorReqs.push(databaseRequirement);
         await Minor.findOneAndUpdate(
           { name },
           {
@@ -57,6 +98,7 @@ const addRequirement = async (req, res) => {
         break;
       default:
         res.status(400).json();
+        break;
     }
     res.status(200).json({ success: true });
   } catch (error) {

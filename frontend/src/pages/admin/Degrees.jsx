@@ -7,9 +7,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import Loader from "../../components/UI/Loader";
+import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
+import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
+  const [currentDegree, setCurrentDegree] = useState({});
+  const [showRequirementsModal, setShowRequirementsModal] = useState(false);
+  const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -17,17 +22,35 @@ const Degrees = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-    try {
-      axios
-        .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
-        .then((res) => {
-          setDegrees(res.data);
-        });
-    } catch (error) {
-      toast.error(error.message);
-      console.log(error);
-    }
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
+      .then((res) => {
+        setDegrees(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
   }, []);
+
+  const addRequirementToDegree = (degreeName, requirement) => {
+    const degreesCopy = [...degrees];
+    // find index of this degree
+    let idx = 0;
+    for (let i = 0; i < degreesCopy.length; i++) {
+      if (degreesCopy[i].name === degreeName) {
+        idx = i;
+        break;
+      }
+    }
+    // copy nested objects and lists
+    const degree = {
+      ...degreesCopy[idx],
+      requirements: [...degreesCopy[idx].requirements, requirement],
+    };
+    degreesCopy[idx] = degree;
+    setDegrees(degreesCopy);
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -80,7 +103,12 @@ const Degrees = () => {
                           <Dropdown.Item onClick={() => {}}>
                             Update
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentDegree(degree);
+                              setShowRequirementsModal(true);
+                            }}
+                          >
                             View Requirements
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
@@ -100,6 +128,24 @@ const Degrees = () => {
           </div>
         )}
       </div>
+      <RequirementsViewModal
+        show={showRequirementsModal}
+        close={() => setShowRequirementsModal(false)}
+        collection={"degree"}
+        name={currentDegree.name}
+        requirements={currentDegree.requirements}
+        showAddRequirementsModal={() => {
+          setShowRequirementsModal(false);
+          setShowAddRequirementModal(true);
+        }}
+      />
+      <AddRequirementModal
+        show={showAddRequirementModal}
+        close={() => setShowAddRequirementModal(false)}
+        addRequirementToCollection={addRequirementToDegree}
+        collection={"degree"}
+        name={currentDegree.name}
+      />
     </div>
   );
 };

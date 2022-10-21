@@ -5,9 +5,14 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
+import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
+import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 
 const Majors = () => {
   const [majors, setMajors] = useState([]);
+  const [currentMajor, setCurrentMajor] = useState({});
+  const [showRequirementsModal, setShowRequirementsModal] = useState(false);
+  const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -15,18 +20,37 @@ const Majors = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-    try {
-      axios
-        .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
-        .then((res) => {
-          console.log(res.data);
-          setMajors(res.data);
-        });
-    } catch (error) {
-      toast.error(error.message);
-      console.log(error);
-    }
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
+      .then((res) => {
+        console.log(res.data);
+        setMajors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
   }, []);
+
+  const addRequirementToMajor = (majorName, requirement) => {
+    const majorsCopy = [...majors];
+    // find index of this degree
+    let idx = 0;
+    for (let i = 0; i < majorsCopy.length; i++) {
+      if (majorsCopy[i].name === majorName) {
+        idx = i;
+        break;
+      }
+    }
+    // copy nested objects and lists
+    const major = {
+      ...majorsCopy[idx],
+      requirements: [...majorsCopy[idx].requirements, requirement],
+    };
+    majorsCopy[idx] = major;
+    setMajors(majorsCopy);
+  };
+
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -126,7 +150,12 @@ const Majors = () => {
                           <Dropdown.Item onClick={() => {}}>
                             Update
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentMajor(major);
+                              setShowRequirementsModal(true);
+                            }}
+                          >
                             View Requirements
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
@@ -146,6 +175,24 @@ const Majors = () => {
           </div>
         )}
       </div>
+      <RequirementsViewModal
+        show={showRequirementsModal}
+        close={() => setShowRequirementsModal(false)}
+        collection={"major"}
+        name={currentMajor.name}
+        requirements={currentMajor.requirements}
+        showAddRequirementsModal={() => {
+          setShowRequirementsModal(false);
+          setShowAddRequirementModal(true);
+        }}
+      />
+      <AddRequirementModal
+        show={showAddRequirementModal}
+        close={() => setShowAddRequirementModal(false)}
+        addRequirementToCollection={addRequirementToMajor}
+        collection={"major"}
+        name={currentMajor.name}
+      />
     </div>
   );
 };

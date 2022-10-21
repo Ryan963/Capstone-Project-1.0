@@ -15,16 +15,15 @@ const Courses = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-    try {
-      axios
-        .get(`${process.env.REACT_APP_SERVER_API}/courses`, config)
-        .then((res) => {
-          setCourses(res.data);
-        });
-    } catch (error) {
-      toast.error(error.message);
-      console.log(error);
-    }
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/courses`, config)
+      .then((res) => {
+        setCourses(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
   }, []);
   return (
     <div className="flex flex-row w-full">
@@ -104,7 +103,7 @@ const Courses = () => {
                             Update
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
-                            View Requirements
+                            View Course info
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
                             Delete Course

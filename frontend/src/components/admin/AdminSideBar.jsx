@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaCalendar,
@@ -8,7 +8,24 @@ import {
   FaUserGraduate,
 } from "react-icons/fa";
 
+function getWindowWidth() {
+  return window.innerWidth;
+}
+
 function SideBarItem({ link, route, Icon, text, selectedRoute }) {
+  const [windowWidth, setWindowWidth] = useState(getWindowWidth());
+
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowWidth(getWindowWidth());
+    }
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
   const activeStyle = "text-lightblue bg-lightblue2";
   return (
     <div>
@@ -19,7 +36,7 @@ function SideBarItem({ link, route, Icon, text, selectedRoute }) {
           } hover:bg-lightblue2 hover:text-lightblue`}
         >
           <Icon />
-          <h5 className="pl-3">{text}</h5>
+          {windowWidth > 850 && <h5 className="pl-3">{text}</h5>}
         </div>
       </Link>
     </div>
