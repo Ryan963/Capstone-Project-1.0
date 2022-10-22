@@ -41,13 +41,63 @@ function compileCourses(recsArr, courseArr) {
         for (var j=0; j<courseArr.length; j++) {
             if (recsArr[i] === courseArr[j].name) {
                
-                compiledArr.push(new Object({name: courseArr[j].name, description: courseArr[j].description}));
+                compiledArr.push(new Object({course: courseArr[j], importance: 4-courseArr[j].level}));
                 
                 break;
+            } else if (j === courseArr.length-1) {
+                compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
             }
         }
     }
     return compiledArr;
 }
 
-module.exports = { buildRequirements, getStream, compileCourses };
+/**
+ * Checks a course array to see if its prerequisites are completed
+ * by the user.
+ * @param {Array} courseArr Array of courses
+ * @param {Array} completedArr Array of user's completed courses
+ * @returns new array with only the courses whose prereqs are satisfied
+ */
+function prereqCheck(courseArr, completedArr) {
+    var reducedArr = []
+    for(var course in courseArr) {
+        var complete = true;
+        var prereqArr = courseArr[course].course.prerequisites
+        for (var prereq in prereqArr) {
+            if (!completedArr.includes(prereqArr[prereq])) {
+                complete = false;
+                break;
+            }
+        }
+
+        if (complete === true) {
+            reducedArr.push(courseArr[course])
+        }
+    }
+
+    return reducedArr;
+}
+
+/**
+ * Increments importance of course
+ * based on the number of times it appears in other requirements prerequisites
+ * @param {*} courseArr 
+ * @param {*} requirements 
+ * @returns 
+ */
+function prereqImportance(courseArr, requirements) {
+    for (var course in courseArr) {
+        for (var req in requirements) {
+            
+            if (requirements[req].courses.includes(courseArr[course].course.name)) {
+                courseArr[course].importance = courseArr[course].importance + 1 ;
+            }
+        }
+        
+    }
+
+    return courseArr;
+}
+
+module.exports = { buildRequirements, getStream, compileCourses, prereqCheck, prereqImportance };
