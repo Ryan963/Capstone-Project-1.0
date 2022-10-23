@@ -3,153 +3,160 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Degree = require("../models/degreeModel");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 // @desc Register new User
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-    const {firstname, lastname, email, password, degree} = req.body;
+  const { firstname, lastname, email, password, degree } = req.body;
 
-    if (!firstname || !lastname || !email || !password || !degree) {
-        res.status(400);
-        throw new Error("Please add all fields");
-    };
+  if (!firstname || !lastname || !email || !password || !degree) {
+    res.status(400);
+    throw new Error("Please add all fields");
+  }
 
-    // Check if user email exists
-    const userExists = await User.findOne({email});
-    if(userExists) {
-        res.status(400);
-        throw new Error("Email already in use");
-    };
+  // Check if user email exists
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    res.status(400);
+    throw new Error("Email already in use");
+  }
 
-    // Check if degree exists and store degree objectId
-    const degreeExists = await Degree.findOne({name: degree});
-    if (!degreeExists) {
-        res.status(400);
-        throw new Error("Degree not found"); 
-    } else {
-        var degreeId = degreeExists._id;
-    }
+  // Check if degree exists and store degree objectId
+  const degreeExists = await Degree.findOne({ name: degree });
+  if (!degreeExists) {
+    res.status(400);
+    throw new Error("Degree not found");
+  } else {
+    var degreeId = degreeExists._id;
+  }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Register User
-    const user = await User.create({
-        firstname,
-        lastname,
-        email,
-        password: hashedPassword,
-        degree: degreeId,
-        majors: [],
-        minors: [],
-        courses: [],
-        currentyear: null,
-        currentsemester: null,
-        graduated: false,
-        gpa: null
+  // Register User
+  const user = await User.create({
+    firstname,
+    lastname,
+    email,
+    password: hashedPassword,
+    degree: degreeId,
+    majors: [],
+    minors: [],
+    courses: [],
+    currentyear: null,
+    currentsemester: null,
+    graduated: false,
+    gpa: null,
+  });
+
+  // Check user created without issue
+  if (user) {
+    res.status(201).json({
+      _id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      degree: user.degree,
+      token: generateToken(user._id),
     });
-
-    // Check user created without issue
-    if (user) {
-        res.status(201).json({
-            _id: user.id,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            degree: user.degree,
-            token: generateToken(user._id)
-        });
-    } else {
-        res.status(400);
-        throw new Error("Invalid user data");
-    };
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
+  }
 });
 
 // @desc  Login User
 // @route POST /api/users/login
 // @access Public
 const loginUser = asyncHandler(async (req, res) => {
-    const{email, password} = req.body;
+  const { email, password } = req.body;
 
-    // Check user email exists and evaluate password
-    const user = await User.findOne({email});
-    if(user && (await bcrypt.compare(password, user.password))) {
-        res.status(200).json({
-            _id: user.id,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            degree: user.degree,
-            token: generateToken(user._id)
-        });
-    } else {
-        res.status(400);
-        throw new Error("Invalid credentials");
-    };
+  // Check user email exists and evaluate password
+  const user = await User.findOne({ email });
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.status(200).json({
+      _id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      degree: user.degree,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid credentials");
+  }
 });
 
 // @desc  Get User Data
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-    const {_id, firstname, lastname, email, degree} = await User.findById(req.user.id);
+  const { _id, firstname, lastname, email, degree } = await User.findById(
+    req.user.id
+  );
 
-    res.status(200).json({
-        id: _id,
-        firstname,
-        lastname,
-        email,
-        degree
-    });
+  res.status(200).json({
+    id: _id,
+    firstname,
+    lastname,
+    email,
+    degree,
+  });
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+  res.status(200).json({
+    users,
+  });
+});
 
 // @desc  update User Data
 // @route PUT /api/users/
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-        res.status(401)
-        throw new Error('User not found')
-    }
-    
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true,})
-    res.status(200).json(updatedUser);
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.status(200).json(updatedUser);
 });
-
-
 
 // Generate JWT
 const generateToken = (id) => {
-    return jwt.sign({id}, process.env.JWT_USER_SECRET, {
-        expiresIn: "6h"
-    });
+  return jwt.sign({ id }, process.env.JWT_USER_SECRET, {
+    expiresIn: "6h",
+  });
 };
-
 
 /**
  * @description add courses to a user (User.courses field)
  * @param {array} newCourses array of courses to add
  * @param  id id of user to add courses to
  */
- const addCourses = async (id, newCourses) => {
-    const user = await User.findById(id)
-    const courses = user.courses
+const addCourses = async (id, newCourses) => {
+  const user = await User.findById(id);
+  const courses = user.courses;
 
-    // check if user has already completed any of the new courses
-    // return false if any overlap detected
-    if (newCourses.some( r => courses.includes(r))) {
-        return false
-    }
-    const updatedCourses = [...courses, ...newCourses]
-    const update = {courses: updatedCourses}
-    await User.findByIdAndUpdate(id, update);
-    return 
-}
+  // check if user has already completed any of the new courses
+  // return false if any overlap detected
+  if (newCourses.some((r) => courses.includes(r))) {
+    return false;
+  }
+  const updatedCourses = [...courses, ...newCourses];
+  const update = { courses: updatedCourses };
+  await User.findByIdAndUpdate(id, update);
+  return;
+};
 
 /**
  * @description remove courses from a user (User.courses field)
@@ -157,20 +164,23 @@ const generateToken = (id) => {
  * @param  id id of user to add courses to
  */
 const removeCourses = async (id, coursesToRemove) => {
-    const user = await User.findById(id)
-    const courses = user.courses
-    const updatedCourses = courses.filter( ( el ) => !coursesToRemove.includes( el ) )
-    const update = {courses: updatedCourses}
-    await User.findByIdAndUpdate(id, update);
-    return 
-}
+  const user = await User.findById(id);
+  const courses = user.courses;
+  const updatedCourses = courses.filter((el) => !coursesToRemove.includes(el));
+  const update = { courses: updatedCourses };
+  await User.findByIdAndUpdate(id, update);
+  return;
+};
 
 const getCourses = async (id) => {
-    const user = await User.findById(id)
-    return user.courses
-}
-
+  const user = await User.findById(id);
+  return user.courses;
+};
 
 module.exports = {
-    registerUser, loginUser, getMe, updateUser
+  registerUser,
+  loginUser,
+  getMe,
+  updateUser,
+  getAllUsers,
 };

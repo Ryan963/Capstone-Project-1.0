@@ -35,7 +35,7 @@ const AdminLogin = () => {
           toast.success("Login Successful");
 
           // change the route to the admin page
-          navigate("/admin");
+          navigate("/admin/degrees");
         } else {
           console.log(res.data.message);
           toast.error(res.data.message);

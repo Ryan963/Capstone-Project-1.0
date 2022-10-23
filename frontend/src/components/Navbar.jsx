@@ -22,9 +22,9 @@ const Navbar = () => {
   const authLinks = (
     <ul>
       <li>
-        <a href="#!" onClick={logout}>
+        <Link to="/admin/login" onClick={logout}>
           <FaSignOutAlt /> <span className="hide-sm">Logout</span>
-        </a>
+        </Link>
       </li>
     </ul>
   );
@@ -45,12 +45,10 @@ const Navbar = () => {
   );
   return (
     <nav className={styles.navbar}>
-      <h1>
-        <Link to="/dashboard">
-          <i className="fas fa-code"></i>{" "}
-          <p className="text-lg font-bold">DegreePlanner</p>
-        </Link>
-      </h1>
+      <Link to="/dashboard">
+        <p className="text-xl font-bold">DegreePlanner</p>
+      </Link>
+
       {userEmail && userType ? authLinks : guessLinks}
     </nav>
   );

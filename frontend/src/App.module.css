@@ -39,7 +39,6 @@
 
 .container {
   overflow: hidden;
-  padding: 0 2rem;
+  padding: 0 0;
   margin-top: 7rem;
-  margin-bottom: 3rem;
 }
