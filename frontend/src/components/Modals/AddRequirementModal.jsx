@@ -124,7 +124,7 @@ const AddRequirementModal = ({
         }
         if (
           requirement.credits <= 0 ||
-          !Number.isInteger(coursesTotalCredits / requirement.credits)
+          !Number.isInteger(requirement.credits / 3)
         ) {
           toast.error(
             `Credits should be a positive number that is a multiple of 3`
