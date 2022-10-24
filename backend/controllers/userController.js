@@ -177,6 +177,30 @@ const getCourses = async (id) => {
   return user.courses;
 };
 
+
+ //@description pulling all requirements of a user then checking requirement match 
+ //@param id   user id for finding user's courses
+ // notMatchCourses array for collecting courses dont match requirements
+ // requirements array for all major and minor courses
+ const checkUserReuirements = async (id) => {
+  const user = await User.findById(id);
+  const userCourses = user.courses;
+  const majors = major.requirements.courses;
+  const minors = minor.requirements.courses;
+  const requirements = majors.concat(minors);
+  const notMatchCourses = [];
+
+  for(let i = 0; i < requirements.length; i++){
+    if( !requirements.includes(userCourses[i]) ){
+      throw new Error("Course " + userCourses[i] + " don't match user's degree requirement");
+      notMatchCourses.push(userCourses[i]);
+    } else{
+      return true;
+    }
+  }
+ };
+
+
 module.exports = {
   registerUser,
   loginUser,
