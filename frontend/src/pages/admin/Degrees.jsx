@@ -138,6 +138,8 @@ const Degrees = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
+        
+         
       />
       <AddRequirementModal
         show={showAddRequirementModal}
