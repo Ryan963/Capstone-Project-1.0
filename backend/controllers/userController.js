@@ -182,16 +182,47 @@ const getCourses = async (id) => {
  //@param id   user id for finding user's courses
  // notMatchCourses array for collecting courses dont match requirements
  // requirements array for all major and minor courses
- const checkUserReuirements = async (id) => {
+ const checkUserRequirements = async (id) => {
   const user = await User.findById(id);
   const userCourses = user.courses;
-  const majors = major.requirements.courses;
-  const minors = minor.requirements.courses;
-  const requirements = majors.concat(minors);
+  const userMajor = user.majors;
+  const userMinor = user.minors;
+  const userDegree = user.degree;
+  const majorReqCourses = [];
+  const minorReqCourses = [];
+  const degreeRequire = [];
+  const requireCourses = [];
   const notMatchCourses = [];
-
-  for(let i = 0; i < requirements.length; i++){
-    if( !requirements.includes(userCourses[i]) ){
+  //Confirm the user's Major and find the course required by the corresponding Major Req Courses
+  if (userMajor == "Computer Science" ){
+    majorReqCourses = majors.requirements.find(courses);
+  } else if (userMajor == "English"){
+    majorReqCourses = majors.requirements.find(courses);
+  } else {
+    throw new Error("No such major exists in the database.");
+  }
+  //Confirm the user's Minor and find the course required by the corresponding Minor Req Courses
+  if (userMinor == "Mathematics" ){
+    minorReqCourses = minors.requirements.find(courses);
+  } else if (userMinor == "Political Science"){
+    minorReqCourses = minors.requirements.find(courses);
+  } else {
+    throw new Error("No such minor exists in the database.");
+  }
+  //Confirm the user's Degree id and find the course required by the corresponding Degree Req Courses
+  if (userDegree == "632ce70d7f9a8c15c65aea56" ){
+    degreeRequire = degree.requirements.find(courses);
+  } else if (userDegree == "632ce71d7f9a8c15c65aea59"){
+    degreeRequire = degree.requirements.find(courses);
+  } else {
+    throw new Error("No such degree exists in the database.");
+  }
+  //Combine the corresponding courses found
+  requireCourses = majorReqCourses.concat(minorReqCourses)
+  requireCourses = requireCourses.concat(degreeRequire)
+  
+  for(let i = 0; i < requireCourses.length; i++){
+    if( !requireCourses.includes(userCourses[i]) ){
       throw new Error("Course " + userCourses[i] + " don't match user's degree requirement");
       notMatchCourses.push(userCourses[i]);
     } else{
