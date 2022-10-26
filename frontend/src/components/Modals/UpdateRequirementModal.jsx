@@ -141,12 +141,13 @@ const UpdateRequirementModal = ({
           },
         };
         axios
-          .post(
+          .put(
             `${process.env.REACT_APP_SERVER_API}/requirements`,
             {
               name,
               collection,
-              requirement,
+              oldRequirement,
+              newRequirement: requirement,
             },
             config
           )

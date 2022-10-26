@@ -1,6 +1,6 @@
 const {
   processRequirements,
-  getRequirmentKeys,
+  getRequirementKeys,
 } = require("../helpers/processRequirements");
 const Major = require("../models/majorModel");
 const Minor = require("../models/minorModel");
@@ -11,9 +11,9 @@ const checkIfRequirementExist = (requirement, requirements) => {
     if (req.type !== requirement.type) {
       return false;
     }
-    const reqKeys = getRequirmentKeys(req.type);
+    const reqKeys = getRequirementKeys(req.type);
     for (let key of reqKeys) {
-      console.log(req[key], requirement[key]);
+      //console.log(req[key], requirement[key]);
       if (req[key] !== requirement[key]) {
         if (Array.isArray(req[key])) {
           if (req[key].length !== requirement[key].length) {
@@ -136,7 +136,7 @@ const deleteRequirement = async (req, res) => {
       if (req.type !== requirement.type) {
         return true;
       }
-      const reqKeys = getRequirmentKeys(req.type);
+      const reqKeys = getRequirementKeys(req.type);
       for (let key of reqKeys) {
         console.log(req[key], requirement[key]);
         if (req[key] !== requirement[key]) {
@@ -173,7 +173,109 @@ const deleteRequirement = async (req, res) => {
   }
 };
 
+const updateRequirement = async (req, res) => {
+  const { collection, name, oldRequirement, newRequirement } = req.body;
+  try {
+    if (!collection || !oldRequirement || !newRequirement) {
+      throw new Error("some fields are missing!");
+    }
+    const databaseRequirement = processRequirements(newRequirement);
+    
+    switch (collection.toLowerCase()) {
+      case "degree":
+        const degree = await Degree.findOne({ name });
+        if (!degree) {
+          throw new Error("Degree was not found!");
+        }
+        const newDegreeReqs = degree.requirements;
+        if (checkIfRequirementExist(newRequirement, newDegreeReqs)) {
+          throw new Error("Requirement unchanged");
+        }
+        
+        // Loop to find old requirement index and update
+        for (let req in newDegreeReqs) {
+          let reqArr = [];
+          reqArr.push(newDegreeReqs[req]);
+          if (checkIfRequirementExist(oldRequirement, reqArr)) {
+            newDegreeReqs[req] = databaseRequirement;
+            
+            break;
+          }
+        }
+        
+        await Degree.findOneAndUpdate(
+          { name },
+          {
+            requirements: newDegreeReqs,
+          }
+        );
+        break;
+      case "major":
+        const major = await Major.findOne({ name });
+        if (!major) {
+          throw new Error("Major was not found!");
+        }
+        const newMajorReqs = [...major.requirements];
+        if (checkIfRequirementExist(newRequirement, newMajorReqs)) {
+          throw new Error("Requirement unchanged");
+        }
+        
+        // Loop to find old requirement index and update
+        for (let req in newMajorReqs) {
+          let reqArr = [];
+          reqArr.push(newMajorReqs[req]);
+          if (checkIfRequirementExist(oldRequirement, reqArr)) {
+            newMajorReqs[req] = databaseRequirement;
+            break;
+          }
+        }
+
+        await Major.findOneAndUpdate(
+          { name },
+          {
+            requirements: newMajorReqs,
+          }
+        );
+        break;
+      case "minor":
+        const minor = await Minor.findOne({ name });
+        if (!minor) {
+          throw new Error("minor was not found!");
+        }
+        const newMinorReqs = [...minor.requirements];
+        if (checkIfRequirementExist(newRequirement, newMinorReqs)) {
+          throw new Error("Requirement unchanged");
+        }
+        
+        // Loop to find old requirement index and update
+        for (let req in newMinorReqs) {
+          let reqArr = [];
+          reqArr.push(newMinorReqs[req]);
+          if (checkIfRequirementExist(oldRequirement, reqArr)) {
+            newMinorReqs[req] = databaseRequirement;
+            break;
+          }
+        }
+
+        await Minor.findOneAndUpdate(
+          { name },
+          {
+            requirements: newMinorReqs,
+          }
+        );
+        break;
+      default:
+        res.status(400).json();
+        break;
+    }
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(200).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   addRequirement,
   deleteRequirement,
+  updateRequirement,
 };
