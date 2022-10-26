@@ -15,6 +15,7 @@ const UpdateRequirementModal = ({
   oldRequirement,
   collection,
   name,
+  updateRequirementInCollection,
 }) => {
   
   const [requirement, setRequirement] = useState({});
@@ -147,15 +148,15 @@ const UpdateRequirementModal = ({
               name,
               collection,
               oldRequirement,
-              newRequirement: requirement,
+              newRequirement: { ...requirement },
             },
             config
           )
           .then((res) => {
             if (res.data.success) {
+              updateRequirementInCollection(name, oldRequirement, { ...requirement });
               toast.success("Requirement updated successfully!");
             } else {
-              
               toast.error(res.data.message);
             }
           })
@@ -164,7 +165,7 @@ const UpdateRequirementModal = ({
             console.log(error);
           });
         
-        //close();
+        close();
         break;
       default:
         toast.error("requirement type is not selected");
@@ -179,7 +180,7 @@ const UpdateRequirementModal = ({
         scrollable={true}
         onHide={() => {
           close();
-          //setRequirement({ type: "" });
+          setRequirement({ type: "" });
         }}
         onShow={() => {
           setRequirement({
@@ -293,7 +294,7 @@ const UpdateRequirementModal = ({
               handleSubmit();
             }}
           >
-            Add
+            Update
           </Button>
         </Modal.Footer>
       </Modal>

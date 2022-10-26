@@ -41,7 +41,7 @@ const Degrees = () => {
       });
   }, []);
 
-  const addRequirementToDegree = (degreeName, requirement) => {
+  const addRequirementToDegree = (degreeName, requirement) => {   
     const degreesCopy = [...degrees];
     // find index of this degree
     let idx = 0;
@@ -57,6 +57,32 @@ const Degrees = () => {
       requirements: [...degreesCopy[idx].requirements, requirement],
     };
     degreesCopy[idx] = degree;
+    setDegrees(degreesCopy);
+  };
+  const updateRequirementInDegree = (degreeName, oldRequirement, newRequirement) => {
+    const degreesCopy = [...degrees];
+    // find index of this degree
+    let idx = 0;
+    for (let i = 0; i < degreesCopy.length; i++) {
+      if (degreesCopy[i].name === degreeName) {
+        idx = i;
+        break;
+      }
+    }
+
+    // update requirement in degreesCopy
+    for (let req in degreesCopy[idx].requirements) {
+      if (
+        oldRequirement.type === degreesCopy[idx].requirements[req].type &&
+        oldRequirement.credits === degreesCopy[idx].requirements[req].credits &&
+        oldRequirement.courses === degreesCopy[idx].requirements[req].courses &&
+        oldRequirement.description === degreesCopy[idx].requirements[req].description
+      ) {
+        degreesCopy[idx].requirements[req] = newRequirement;
+        break;
+      }
+    }
+
     setDegrees(degreesCopy);
   };
   return (
@@ -148,9 +174,7 @@ const Degrees = () => {
         }}
         showUpdateRequirementsModal= {(requirement) => {
           //setShowRequirementsModal(false);
-          
           setCurrentRequirement(requirement);
-          //console.log(currentRequirement);
           setShowUpdateRequirementModal(true);
         }}  
       />
@@ -165,7 +189,7 @@ const Degrees = () => {
         show={showUpdateRequirementModal}
         close={() => setShowUpdateRequirementModal(false)}
         oldRequirement={currentRequirement}
-        //addRequirementToCollection={addRequirementToDegree}
+        updateRequirementInCollection={updateRequirementInDegree}
         collection={"degree"}
         name={currentDegree.name}
       />
