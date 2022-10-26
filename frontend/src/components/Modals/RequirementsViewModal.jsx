@@ -5,7 +5,7 @@ import UpdateRequirementModal from "../../components/Modals/UpdateRequirementMod
 
 
 const RequirementCard = ({ requirement }) => {
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  //const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
   /* TO DO
   const updateRequirement = (requirement) => {
     const requirementCopy = [...requirement]
@@ -14,8 +14,7 @@ const RequirementCard = ({ requirement }) => {
   return (
     <div 
       style={{ cursor: "pointer" }} 
-      onClick={() => {
-        setShowUpdateRequirementModal(true)}}
+      
     >
       <div
         style={{
@@ -48,11 +47,7 @@ const RequirementCard = ({ requirement }) => {
           </>
         )}
       </div>
-      <UpdateRequirementModal 
-        show={showUpdateRequirementModal}
-        close={() => {setShowUpdateRequirementModal(false)}}
-        oldRequirement={requirement} 
-      />
+      
     </div>
     
   );
@@ -65,6 +60,7 @@ const RequirementsViewModal = ({
   show,
   close,
   showAddRequirementsModal,
+  showUpdateRequirementsModal,
   
 }) => {
   
@@ -99,7 +95,13 @@ const RequirementsViewModal = ({
               }}
             >
               {requirements.map((req, idx) => (
-                <div key={idx} >
+                <div 
+                  key={idx} 
+                  onClick={() => {
+                    //console.log(req);
+                    showUpdateRequirementsModal(req);
+                  }}
+                >
                   <RequirementCard 
                     requirement={req}
                     

@@ -9,12 +9,20 @@ import { Button } from "react-bootstrap";
 import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
+import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
   const [currentDegree, setCurrentDegree] = useState({});
+  const [currentRequirement, setCurrentRequirement] = useState({
+    type: "",
+    credits: 0,
+    course: [],
+    description: "",
+  });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -138,13 +146,26 @@ const Degrees = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
-        
-         
+        showUpdateRequirementsModal= {(requirement) => {
+          //setShowRequirementsModal(false);
+          
+          setCurrentRequirement(requirement);
+          //console.log(currentRequirement);
+          setShowUpdateRequirementModal(true);
+        }}  
       />
       <AddRequirementModal
         show={showAddRequirementModal}
         close={() => setShowAddRequirementModal(false)}
         addRequirementToCollection={addRequirementToDegree}
+        collection={"degree"}
+        name={currentDegree.name}
+      />
+      <UpdateRequirementModal
+        show={showUpdateRequirementModal}
+        close={() => setShowUpdateRequirementModal(false)}
+        oldRequirement={currentRequirement}
+        //addRequirementToCollection={addRequirementToDegree}
         collection={"degree"}
         name={currentDegree.name}
       />

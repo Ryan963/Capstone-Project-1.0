@@ -12,17 +12,12 @@ import { AiOutlineClose } from "react-icons/ai";
 const UpdateRequirementModal = ({
   show,
   close,
-  collection,
   oldRequirement,
+  collection,
+  name,
 }) => {
   
-  const [requirement, setRequirement] = useState({
-    type: oldRequirement.type,
-    description: oldRequirement.description,
-    courses: oldRequirement.courses,
-    credits: oldRequirement.credits,
-
-  });
+  const [requirement, setRequirement] = useState({});
   const [allCourses, setAllCourses] = useState([]);
   const token = localStorage.getItem("token");
   const handleChange = (e) => {
@@ -117,12 +112,15 @@ const UpdateRequirementModal = ({
         const courses = allCourses.filter((course) =>
           requirement.courses.includes(course.name)
         );
+        
         for (let course of courses) {
+          
           coursesTotalCredits += course.credits;
         }
+        
         if (coursesTotalCredits < credits) {
           toast.error(
-            `Credits should be less than the total credits in choosen courses`
+            `Credits should be less than the total credits in chosen courses`
           );
           return;
         }
@@ -142,12 +140,11 @@ const UpdateRequirementModal = ({
             Authorization: `Bearer ${token}`,
           },
         };
-        /*
-          TO DO
         axios
           .post(
             `${process.env.REACT_APP_SERVER_API}/requirements`,
             {
+              name,
               collection,
               requirement,
             },
@@ -155,17 +152,17 @@ const UpdateRequirementModal = ({
           )
           .then((res) => {
             if (res.data.success) {
-              
               toast.success("Requirement updated successfully!");
             } else {
+              
               toast.error(res.data.message);
             }
           })
           .catch((error) => {
             toast.error(error.message);
             console.log(error);
-          });*/
-          toast.success("Requirement updated succesfully");
+          });
+        
         //close();
         break;
       default:
@@ -181,7 +178,15 @@ const UpdateRequirementModal = ({
         scrollable={true}
         onHide={() => {
           close();
-          setRequirement({ type: "" });
+          //setRequirement({ type: "" });
+        }}
+        onShow={() => {
+          setRequirement({
+            type: oldRequirement.type,
+            credits: oldRequirement.credits,
+            courses: oldRequirement.courses,
+            description: oldRequirement.description,
+          });
         }}
       >
         <Modal.Header>
@@ -209,6 +214,7 @@ const UpdateRequirementModal = ({
                   <option value={type}>{type}</option>
                 ))}
               </select>
+              
               {requirement.type === "credits_of_group" && (
                 <div className="mt-3">
                   <Input
@@ -273,6 +279,7 @@ const UpdateRequirementModal = ({
             variant="danger"
             onClick={() => {
               setRequirement({ type: "" });
+              
               close();
             }}
           >
