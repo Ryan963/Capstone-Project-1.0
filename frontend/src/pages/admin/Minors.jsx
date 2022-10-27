@@ -7,12 +7,20 @@ import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
+import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const Minors = () => {
   const [minors, setMinors] = useState([]);
   const [currentMinor, setCurrentMinor] = useState({});
+  const [currentRequirement, setCurrentRequirement] = useState({
+    type: "",
+    credits: 0,
+    course: [],
+    description: "",
+  });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -33,7 +41,7 @@ const Minors = () => {
 
   const addRequirementToMinor = (minorName, requirement) => {
     const minorsCopy = [...minors];
-    // find index of this degree
+    // find index of this minor
     let idx = 0;
     for (let i = 0; i < minorsCopy.length; i++) {
       if (minorsCopy[i].name === minorName) {
@@ -47,6 +55,33 @@ const Minors = () => {
       requirements: [...minorsCopy[idx].requirements, requirement],
     };
     minorsCopy[idx] = minor;
+    setMinors(minorsCopy);
+  };
+
+  const updateRequirementInMinor = (minorName, oldRequirement, newRequirement) => {
+    const minorsCopy = [...minors];
+    // find index of this minor
+    let idx = 0;
+    for (let i = 0; i < minorsCopy.length; i++) {
+      if (minorsCopy[i].name === minorName) {
+        idx = i;
+        break;
+      }
+    }
+     
+    // update requirement in minorsCopy
+    for (let req in minorsCopy[idx].requirements) {
+      if (
+        oldRequirement.type === minorsCopy[idx].requirements[req].type &&
+        oldRequirement.credits === minorsCopy[idx].requirements[req].credits &&
+        oldRequirement.courses === minorsCopy[idx].requirements[req].courses &&
+        oldRequirement.description === minorsCopy[idx].requirements[req].description
+      ) {
+        minorsCopy[idx].requirements[req] = newRequirement;
+        break;
+      }
+    }
+
     setMinors(minorsCopy);
   };
 
@@ -137,11 +172,23 @@ const Minors = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
+        showUpdateRequirementsModal= {(requirement) => {
+          setCurrentRequirement(requirement);
+          setShowUpdateRequirementModal(true);
+        }}  
       />
       <AddRequirementModal
         show={showAddRequirementModal}
         close={() => setShowAddRequirementModal(false)}
         addRequirementToCollection={addRequirementToMinor}
+        collection={"minor"}
+        name={currentMinor.name}
+      />
+      <UpdateRequirementModal
+        show={showUpdateRequirementModal}
+        close={() => setShowUpdateRequirementModal(false)}
+        oldRequirement={currentRequirement}
+        updateRequirementInCollection={updateRequirementInMinor}
         collection={"minor"}
         name={currentMinor.name}
       />

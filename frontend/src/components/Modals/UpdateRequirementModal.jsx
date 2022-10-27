@@ -156,6 +156,7 @@ const UpdateRequirementModal = ({
             if (res.data.success) {
               updateRequirementInCollection(name, oldRequirement, { ...requirement });
               toast.success("Requirement updated successfully!");
+              close();
             } else {
               toast.error(res.data.message);
             }
@@ -164,8 +165,7 @@ const UpdateRequirementModal = ({
             toast.error(error.message);
             console.log(error);
           });
-        
-        close();
+  
         break;
       default:
         toast.error("requirement type is not selected");
