@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
+import CourseSelections from "../CourseSelections";
 
 const AddRequirementModal = ({
   close,
@@ -71,8 +72,10 @@ const AddRequirementModal = ({
   };
 
   const removeCourse = (course) => {
-    const newCourses = [...requirement.courses].filter((c) => c !== course);
     setRequirement((prevRequirement) => {
+      const newCourses = [...prevRequirement.courses].filter(
+        (c) => c !== course
+      );
       return {
         ...prevRequirement,
         courses: newCourses,
@@ -90,7 +93,7 @@ const AddRequirementModal = ({
     setRequirement((prevRequirement) => {
       return {
         ...prevRequirement,
-        courses: [...requirement.courses, course.name],
+        courses: [...prevRequirement.courses, course.name],
       };
     });
   };
@@ -214,35 +217,12 @@ const AddRequirementModal = ({
                   <label className="font-semibold">
                     Enter the Courses that the user can choose from:
                   </label>
-                  <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
-                    {requirement?.courses.map((course, idx) => (
-                      <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
-                        <div className="flex items-center justify-center">
-                          <span>{course}</span>
-                          <AiOutlineClose
-                            onClick={() => removeCourse(course)}
-                            className="text-danger cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-full max-h-64 overflow-scroll">
-                    <ListGroup>
-                      {allCourses.map((course) => {
-                        return (
-                          <ListGroup.Item
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              addCourseToCourses(course);
-                            }}
-                          >
-                            {course.name}
-                          </ListGroup.Item>
-                        );
-                      })}
-                    </ListGroup>
-                  </div>
+                  <CourseSelections
+                    courses={allCourses}
+                    addedCourses={requirement?.courses}
+                    addCourse={addCourseToCourses}
+                    removeCourse={removeCourse}
+                  />
                   <label className="font-semibold mt-3">
                     Enter Requirement Description:
                   </label>
