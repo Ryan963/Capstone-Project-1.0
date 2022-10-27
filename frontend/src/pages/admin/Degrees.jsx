@@ -173,7 +173,6 @@ const Degrees = () => {
           setShowAddRequirementModal(true);
         }}
         showUpdateRequirementsModal= {(requirement) => {
-          //setShowRequirementsModal(false);
           setCurrentRequirement(requirement);
           setShowUpdateRequirementModal(true);
         }}  
