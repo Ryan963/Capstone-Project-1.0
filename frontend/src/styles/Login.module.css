@@ -49,6 +49,15 @@
   border: 1px solid var(--primary-color);
   font-weight: 500;
 }
+.input2 {
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.7rem;
+  border-radius: 10px;
+  outline: none;
+  border: 1px solid var(--primary-color);
+  font-weight: 500;
+}
 
 .input:focus {
   border: 2px solid var(--primary-color);
