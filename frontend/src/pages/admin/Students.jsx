@@ -5,9 +5,15 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
+import AddStudentModal from "../../components/Modals/AddStudentModal";
+import StudentViewModal from "../../components/Modals/StudentViewModel";
 
 const Students = () => {
+  const [addStudentModal, setAddStudentModel] = useState(false);
+  const [studentViewModal, setStudentViewModel] = useState(false);
+
   const [students, setStudents] = useState([]);
+  const [currentStudents, setCurrentStudents] = useState({});
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -26,6 +32,7 @@ const Students = () => {
       console.log(error);
     }
   }, []);
+  
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -44,7 +51,9 @@ const Students = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success">New Student</Button>
+                <Button onClick={() => {
+                  setAddStudentModel(true); //open the page for adding new user
+                }}variant="success">New Student</Button>
               </div>
             </div>
             <div>
@@ -82,7 +91,10 @@ const Students = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentStudents(student);
+                            setStudentViewModel(true);
+                          }}>
                             View Student info
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
@@ -102,6 +114,27 @@ const Students = () => {
           </div>
         )}
       </div>
+      <AddStudentModal
+        show={addStudentModal}
+        close={() => setAddStudentModel(false)}
+      />
+      <StudentViewModal
+        show={studentViewModal}
+        close={() => setStudentViewModel(false)}
+        collection={"student"}
+        id = {currentStudents._id}
+        firstname = {currentStudents.firstname}
+        lastname = {currentStudents.lastname}
+        email = {currentStudents.email}
+        password = {currentStudents.password}
+        degree = {currentStudents.degree}
+        majors = {currentStudents.majors}
+        minors = {currentStudents.minors}
+        courses = {currentStudents.courses}
+        currentyear = {currentStudents.currentyear}
+        currentsemester = {currentStudents.currentsemester}
+        graduated = {currentStudents.graduated}
+      />
     </div>
   );
 };
