@@ -18,7 +18,6 @@ const getAllDegree = asyncHandler( async(req,res) => {
 //@access public - Should this be public?
 /**Dev note: Make sure degree has id connected to it somewhere in front end */
 const getDegree = asyncHandler( async (req,res) => {
-    //const degreeName = req.body
     const searchOneDegree = await Degree.findById(req.params.id)
     res.status(200).json(searchOneDegree)
 })
