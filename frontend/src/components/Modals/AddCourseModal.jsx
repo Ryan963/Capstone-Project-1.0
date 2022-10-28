@@ -121,8 +121,10 @@ function AddCourseModal({
   /*
     Checks TODO (when updating and adding course):
       check if course name exsists
+      check name format
       check if level and course name are consistent
       make sure no overlap b/w prereqs and coreqs
+      ...
   */
   const handleSubmit = () => {
     if (course.name === "") {

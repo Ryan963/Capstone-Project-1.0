@@ -41,14 +41,17 @@ const Courses = () => {
   };
 
   const deleteCourse = (course) => {
-    const UpdatedCourses = courses.filter((c) => c !== course )
-    setCourses(UpdatedCourses)
+    const updatedCourses = [...courses]
+    setCourses(updatedCourses)
   }
 
-  const updateCourse = async (updatedCourse) => {
-    const UpdatedCourses = courses.filter((c) => c._id !== updatedCourse._id )
-    UpdatedCourses.push(updatedCourse)
-    setCourses(UpdatedCourses)
+  const updateCourseInList =  (updatedCourse) => {
+    const updatedCourses = [...courses]
+    const idx = courses.findIndex(c => {
+      return c._id === updatedCourse._id
+    })
+    Object.assign(updatedCourses[idx], updatedCourse)
+    setCourses(updatedCourses)
   }
 
   return (
@@ -181,7 +184,7 @@ const Courses = () => {
         close={() => {
           setShowUpdateCourseModal(false)
         }}
-        UpdateCourse={updateCourse}
+        updateCourse={updateCourseInList}
         oldCourse={currentCourse}
       />
     </div>

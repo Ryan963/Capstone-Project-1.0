@@ -60,7 +60,7 @@ const updateCourse = asyncHandler (async (req, res) => {
         throw new Error('Course not found');
         };
     
-        // const updatedCourse = await Course.findByIdAndUpdate(req.params.id, req.body.course, {new: true});
+        await Course.findByIdAndUpdate(req.params.id, req.body.course, {new: true});
         res.status(200).json({success: true});
     } catch (error) {
         console.log(error);

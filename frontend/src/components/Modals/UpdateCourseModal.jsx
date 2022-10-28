@@ -11,7 +11,7 @@ import styles from "../../styles/Login.module.css";
 function UpdateCourseModal({
   show,
   close,
-  UpdateCourse,
+  updateCourse,
   oldCourse }) {
     
   const {_id, name, description, prerequisites, corequisites, credits, discipline, level } = oldCourse
@@ -135,7 +135,7 @@ function UpdateCourseModal({
       )
       .then((res) => {
         if (res.data.success) {
-          UpdateCourse( course );
+          updateCourse( course );
           toast.success("Course updated successfully!"); 
         } else {
           //* error message undefined
