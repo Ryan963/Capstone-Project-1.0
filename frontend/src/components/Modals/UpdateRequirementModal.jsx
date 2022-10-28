@@ -10,16 +10,15 @@ import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
 import CourseSelections from "../CourseSelections";
 
-const AddRequirementModal = ({
-  close,
+const UpdateRequirementModal = ({
   show,
+  close,
+  oldRequirement,
   collection,
   name,
-  addRequirementToCollection,
+  updateRequirementInCollection,
 }) => {
-  const [requirement, setRequirement] = useState({
-    type: "",
-  });
+  const [requirement, setRequirement] = useState({});
   const [allCourses, setAllCourses] = useState([]);
   const token = localStorage.getItem("token");
   const handleChange = (e) => {
@@ -116,12 +115,14 @@ const AddRequirementModal = ({
         const courses = allCourses.filter((course) =>
           requirement.courses.includes(course.name)
         );
+
         for (let course of courses) {
           coursesTotalCredits += course.credits;
         }
+
         if (coursesTotalCredits < credits) {
           toast.error(
-            `Credits should be less than the total credits in choosen courses`
+            `Credits should be less than the total credits in chosen courses`
           );
           return;
         }
@@ -142,19 +143,23 @@ const AddRequirementModal = ({
           },
         };
         axios
-          .post(
+          .put(
             `${process.env.REACT_APP_SERVER_API}/requirements`,
             {
               name,
               collection,
-              requirement,
+              oldRequirement,
+              newRequirement: { ...requirement },
             },
             config
           )
           .then((res) => {
             if (res.data.success) {
-              addRequirementToCollection(name, { ...requirement });
-              toast.success("Requirement added successfully!");
+              updateRequirementInCollection(name, oldRequirement, {
+                ...requirement,
+              });
+              toast.success("Requirement updated successfully!");
+              close();
             } else {
               toast.error(res.data.message);
             }
@@ -163,7 +168,6 @@ const AddRequirementModal = ({
             toast.error(error.message);
             console.log(error);
           });
-        //close();
         break;
       default:
         toast.error("requirement type is not selected");
@@ -180,9 +184,17 @@ const AddRequirementModal = ({
           close();
           setRequirement({ type: "" });
         }}
+        onShow={() => {
+          setRequirement({
+            type: oldRequirement.type,
+            credits: oldRequirement.credits,
+            courses: oldRequirement.courses,
+            description: oldRequirement.description,
+          });
+        }}
       >
         <Modal.Header>
-          <Modal.Title>Add A Requirement to {name}</Modal.Title>
+          <Modal.Title>Update Requirement</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div
@@ -198,7 +210,7 @@ const AddRequirementModal = ({
                 className="w-50 m-2 pt-2 border rounded-md self-center border-primary"
                 name="type"
                 id="type"
-                defaultValue=""
+                defaultValue={oldRequirement.type}
                 onChange={handleTypeChange}
               >
                 <option></option>
@@ -206,6 +218,7 @@ const AddRequirementModal = ({
                   <option value={type}>{type}</option>
                 ))}
               </select>
+
               {requirement.type === "credits_of_group" && (
                 <div className="mt-3">
                   <Input
@@ -217,11 +230,12 @@ const AddRequirementModal = ({
                   <label className="font-semibold">
                     Enter the Courses that the user can choose from:
                   </label>
+
                   <CourseSelections
-                    courses={allCourses}
-                    addedCourses={requirement?.courses}
-                    addCourse={addCourseToCourses}
                     removeCourse={removeCourse}
+                    addedCourses={requirement.courses}
+                    courses={allCourses}
+                    addCourse={addCourseToCourses}
                   />
                   <label className="font-semibold mt-3">
                     Enter Requirement Description:
@@ -247,6 +261,7 @@ const AddRequirementModal = ({
             variant="danger"
             onClick={() => {
               setRequirement({ type: "" });
+
               close();
             }}
           >
@@ -259,7 +274,7 @@ const AddRequirementModal = ({
               handleSubmit();
             }}
           >
-            Add
+            Update
           </Button>
         </Modal.Footer>
       </Modal>
@@ -267,4 +282,4 @@ const AddRequirementModal = ({
   );
 };
 
-export default AddRequirementModal;
+export default UpdateRequirementModal;

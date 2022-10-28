@@ -27,7 +27,7 @@ function processRequirements(requirement) {
 
       if (requirement.credits > requirement.courses.length * 3) {
         throw new Error(
-          "Courses to choose from or less than courses required!"
+          "Courses to choose from are less than courses required!"
         );
       }
       return requirement;
@@ -37,10 +37,10 @@ function processRequirements(requirement) {
   }
 }
 
-function getRequirmentKeys(type) {
+function getRequirementKeys(type) {
   return REQUIREMENT_TYPES[type.toLowerCase()];
 }
 module.exports = {
   processRequirements,
-  getRequirmentKeys,
+  getRequirementKeys,
 };

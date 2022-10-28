@@ -9,12 +9,20 @@ import { Button } from "react-bootstrap";
 import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
+import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
   const [currentDegree, setCurrentDegree] = useState({});
+  const [currentRequirement, setCurrentRequirement] = useState({
+    type: "",
+    credits: 0,
+    course: [],
+    description: "",
+  });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -33,7 +41,7 @@ const Degrees = () => {
       });
   }, []);
 
-  const addRequirementToDegree = (degreeName, requirement) => {
+  const addRequirementToDegree = (degreeName, requirement) => {   
     const degreesCopy = [...degrees];
     // find index of this degree
     let idx = 0;
@@ -49,6 +57,32 @@ const Degrees = () => {
       requirements: [...degreesCopy[idx].requirements, requirement],
     };
     degreesCopy[idx] = degree;
+    setDegrees(degreesCopy);
+  };
+  const updateRequirementInDegree = (degreeName, oldRequirement, newRequirement) => {
+    const degreesCopy = [...degrees];
+    // find index of this degree
+    let idx = 0;
+    for (let i = 0; i < degreesCopy.length; i++) {
+      if (degreesCopy[i].name === degreeName) {
+        idx = i;
+        break;
+      }
+    }
+
+    // update requirement in degreesCopy
+    for (let req in degreesCopy[idx].requirements) {
+      if (
+        oldRequirement.type === degreesCopy[idx].requirements[req].type &&
+        oldRequirement.credits === degreesCopy[idx].requirements[req].credits &&
+        oldRequirement.courses === degreesCopy[idx].requirements[req].courses &&
+        oldRequirement.description === degreesCopy[idx].requirements[req].description
+      ) {
+        degreesCopy[idx].requirements[req] = newRequirement;
+        break;
+      }
+    }
+
     setDegrees(degreesCopy);
   };
   return (
@@ -138,11 +172,23 @@ const Degrees = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
+        showUpdateRequirementsModal= {(requirement) => {
+          setCurrentRequirement(requirement);
+          setShowUpdateRequirementModal(true);
+        }}  
       />
       <AddRequirementModal
         show={showAddRequirementModal}
         close={() => setShowAddRequirementModal(false)}
         addRequirementToCollection={addRequirementToDegree}
+        collection={"degree"}
+        name={currentDegree.name}
+      />
+      <UpdateRequirementModal
+        show={showUpdateRequirementModal}
+        close={() => setShowUpdateRequirementModal(false)}
+        oldRequirement={currentRequirement}
+        updateRequirementInCollection={updateRequirementInDegree}
         collection={"degree"}
         name={currentDegree.name}
       />
