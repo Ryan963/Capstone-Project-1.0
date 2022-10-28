@@ -15,6 +15,9 @@ function processRequirements(requirement) {
   if (!requirement.type) {
     throw new Error("Requirement type is not provided");
   }
+  /**
+   * Dev notes: The check xpects courses to always be 3 credits long
+   */
   switch (requirement.type.toUpperCase()) {
     case "CREDITS_OF_GROUP":
       const keys = REQUIREMENT_TYPES.credits_of_group;
@@ -31,7 +34,8 @@ function processRequirements(requirement) {
         );
       }
       return requirement;
-
+    
+    //Add new requiremens here by using case "REQUIREMENT_TYPE"
     default:
       throw new Error("type does not exist");
   }

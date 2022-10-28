@@ -15,22 +15,21 @@ const getAllDegree = asyncHandler( async(req,res) => {
 
 //@desc Gets ONE Degree based on id
 //@route GET /api/degree
-//@access public - Should this be public?
+//@access private
 /**Dev note: Make sure degree has id connected to it somewhere in front end */
 const getDegree = asyncHandler( async (req,res) => {
-    //const degreeName = req.body
     const searchOneDegree = await Degree.findById(req.params.id)
     res.status(200).json(searchOneDegree)
 })
 
 //@desc Create Degree. Creates a new degree entry in
 //@route POST /api/degree
-//@access public - Should this be public?
+//@access private
 const createDegree = asyncHandler (async (req,res) => {
     const {name,requirement} = req.body
     //Checks to make sure no fields are empty
     if(!name || !requirement) {
-        res.status(400) /**Dev notes: add error handler middleware */
+        res.status(400) 
         throw new Error('Please add fields')
     }
 

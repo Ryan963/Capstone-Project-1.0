@@ -8,6 +8,7 @@ import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
+import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
 
 const Majors = () => {
   const [majors, setMajors] = useState([]);
@@ -20,9 +21,17 @@ const Majors = () => {
   });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const token = localStorage.getItem("token");
+
   useEffect(() => {
+    //Moved to separate function so I can call function in modal and update main page
+    getMajors();
+    
+  }, []);
+
+  const getMajors = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -38,7 +47,7 @@ const Majors = () => {
         toast.error(error.message);
         console.log(error);
       });
-  }, []);
+  }
 
   const addRequirementToMajor = (majorName, requirement) => {
     const majorsCopy = [...majors];
@@ -100,7 +109,13 @@ const Majors = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success">New Major</Button>
+                <Button variant="success" onClick={() =>setShowAddMajorMinorModal(true)}>New Major</Button>
+                <AddMajorMinorModal 
+                  minorOrMajor = "Major"
+                  show = {showAddMajorMinorModal}
+                  close={() => setShowAddMajorMinorModal(false)}
+                  getMajorMinorInModal = {getMajors}
+                />
               </div>
             </div>
             <div>

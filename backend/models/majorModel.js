@@ -13,7 +13,7 @@ const majorSchema = mongoose.Schema(
                 strict: false, 
             }],
             required: [true, "Please add a requirements"]
-        }, 
+        },
         streams: [
             {
                 name: String,
