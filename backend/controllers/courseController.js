@@ -13,7 +13,7 @@ const getCourses = asyncHandler (async(req,res) => {
 /// @route POST /api/courses
 /// @access private
 const createCourse = asyncHandler (async(req,res) => {
-    const { name, prerequisites, corequisites, description, credits, discipline } = req.body;
+    const { name, prerequisites, corequisites, description, credits, discipline, level } = req.body.course;
 
     if (!name || !description || !credits || !discipline) {
         res.status(400);
@@ -33,15 +33,16 @@ const createCourse = asyncHandler (async(req,res) => {
         corequisites,
         description,
         credits,
-        discipline
+        discipline,
+        level
     });
-
-
 
     // Check course created without issue
     if (course) {
         res.status(201).json({
-            name: course.name
+            success: true,
+            name: course.name,
+            course: course
         });
     } else {
         res.status(400);
@@ -53,14 +54,20 @@ const createCourse = asyncHandler (async(req,res) => {
 // @route PUT /api/courses/:id
 // @access private
 const updateCourse = asyncHandler (async (req, res) => {
-    const course = await Course.findById(req.params.id);
-    if (!course) {
-      res.status(400);
-      throw new Error('Course not found');
-    };
-  
-    const updatedCourse = await Course.findByIdAndUpdate(req.params.id, req.body, {new: true});
-    res.status(200).json(updatedCourse);
+    try {
+        const course = await Course.findById(req.params.id);
+        if (!course) {
+        res.status(400);
+        throw new Error('Course not found');
+        };
+    
+        await Course.findByIdAndUpdate(req.params.id, req.body.course, {new: true});
+        res.status(200).json({success: true});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+    
 });
 
 // @desc Delete specified course
@@ -77,7 +84,7 @@ const deleteCourse = asyncHandler( async (req,res) => {
     const courseName = course.name;
     await course.remove();
 
-    res.status(200).json({message: `Course: ${courseName} deleted`});
+    res.status(200).json({success: true, message: `Course: ${courseName} deleted`});
 });
 
 module.exports = {
