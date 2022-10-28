@@ -41,7 +41,8 @@ const createCourse = asyncHandler (async(req,res) => {
     if (course) {
         res.status(201).json({
             success: true,
-            name: course.name
+            name: course.name,
+            course: course
         });
     } else {
         res.status(400);

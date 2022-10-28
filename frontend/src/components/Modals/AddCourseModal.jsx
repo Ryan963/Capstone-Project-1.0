@@ -23,7 +23,6 @@ function AddCourseModal({
     discipline:"",
     description:"",
     level:0
-
   })
   const [allCourses, setAllCourses] = useState([]);
 
@@ -167,7 +166,7 @@ function AddCourseModal({
       )
       .then((res) => {
         if (res.data.success) {
-          addCourseToCollection( course );
+          addCourseToCollection(res.data.course);
           toast.success("Course added successfully!");
         } else {
           toast.error("Error: " + res.data.message);
