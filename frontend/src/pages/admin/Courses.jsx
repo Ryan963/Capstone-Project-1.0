@@ -41,7 +41,7 @@ const Courses = () => {
   };
 
   const deleteCourse = (course) => {
-    const updatedCourses = [...courses]
+    const updatedCourses = courses.filter((c) => c !== course )
     setCourses(updatedCourses)
   }
 
