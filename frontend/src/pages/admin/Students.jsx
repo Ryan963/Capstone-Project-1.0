@@ -32,7 +32,7 @@ const Students = () => {
       console.log(error);
     }
   }, []);
-  
+
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -51,9 +51,14 @@ const Students = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button onClick={() => {
-                  setAddStudentModel(true); //open the page for adding new user
-                }}variant="success">New Student</Button>
+                <Button
+                  onClick={() => {
+                    setAddStudentModel(true); //open the page for adding new user
+                  }}
+                  variant="success"
+                >
+                  New Student
+                </Button>
               </div>
             </div>
             <div>
@@ -91,10 +96,12 @@ const Students = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentStudents(student);
-                            setStudentViewModel(true);
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentStudents(student);
+                              setStudentViewModel(true);
+                            }}
+                          >
                             View Student info
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {}}>
@@ -117,23 +124,25 @@ const Students = () => {
       <AddStudentModal
         show={addStudentModal}
         close={() => setAddStudentModel(false)}
+        students={students}
+        setStudents={setStudents}
       />
       <StudentViewModal
         show={studentViewModal}
         close={() => setStudentViewModel(false)}
         collection={"student"}
-        id = {currentStudents._id}
-        firstname = {currentStudents.firstname}
-        lastname = {currentStudents.lastname}
-        email = {currentStudents.email}
-        password = {currentStudents.password}
-        degree = {currentStudents.degree}
-        majors = {currentStudents.majors}
-        minors = {currentStudents.minors}
-        courses = {currentStudents.courses}
-        currentyear = {currentStudents.currentyear}
-        currentsemester = {currentStudents.currentsemester}
-        graduated = {currentStudents.graduated}
+        id={currentStudents._id}
+        firstname={currentStudents.firstname}
+        lastname={currentStudents.lastname}
+        email={currentStudents.email}
+        password={currentStudents.password}
+        degree={currentStudents.degree}
+        majors={currentStudents.majors}
+        minors={currentStudents.minors}
+        courses={currentStudents.courses}
+        currentyear={currentStudents.currentyear}
+        currentsemester={currentStudents.currentsemester}
+        graduated={currentStudents.graduated}
       />
     </div>
   );

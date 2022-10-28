@@ -280,35 +280,7 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
               <label className="font-semibold">
                 Enter the Course Prerequisites
               </label>
-              {/* <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
-                {course?.prerequisites.map((prerequisite, idx) => (
-                  <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
-                    <div className="flex items-center justify-center">
-                      <span>{prerequisite}</span>
-                      <AiOutlineClose
-                        onClick={() => removePrerequisite(prerequisite)}
-                        className="text-danger cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="w-full max-h-64 overflow-scroll">
-                <ListGroup>
-                  {allCourses.map((course) => {
-                    return (
-                      <ListGroup.Item
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          addCourseToPrerequisites(course);
-                        }}
-                      >
-                        {course.name}
-                      </ListGroup.Item>
-                    );
-                  })}
-                </ListGroup>
-              </div> */}
+
               <CourseSelections
                 addCourse={addCourseToPrerequisites}
                 courses={allCourses}
