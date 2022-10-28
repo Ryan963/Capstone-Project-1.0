@@ -20,14 +20,14 @@ const CourseSelections = ({
   addCourse,
   addedCourses,
 }) => {
-  const [filterBySubject, setFilterBySubject] = useState("");
+  const [filterByDiscipline, setFilterByDiscipline] = useState("");
   const [filterByLevel, setFilterByLevel] = useState("");
   const subjects = getSubjects(courses);
 
   const addAllfilteredCourses = () => {
     const coursesToAdd = courses.filter((course) => {
-      if (filterBySubject.length > 0) {
-        if (course.name.slice(0, 4) !== filterBySubject) {
+      if (filterByDiscipline.length > 0) {
+        if (course.name.slice(0, 4) !== filterByDiscipline) {
           return false;
         }
       }
@@ -78,13 +78,13 @@ const CourseSelections = ({
       </div>
       <div className="flex justify-between">
         <div>
-          <label>filter by Subject: </label>
+          <label>filter by Discipline: </label>
           <select
             className="w-40 m-2 border rounded-md border-primary "
-            name="filterBySubject"
-            id="filterBySubject"
-            onChange={(e) => setFilterBySubject(e.target.value)}
-            value={filterBySubject}
+            name="filterByDiscipline"
+            id="filterByDiscipline"
+            onChange={(e) => setFilterByDiscipline(e.target.value)}
+            value={filterByDiscipline}
           >
             <option value={""}></option>
             {subjects.map((subject, idx) => (
@@ -115,8 +115,8 @@ const CourseSelections = ({
         <ListGroup>
           {courses
             .filter((course) => {
-              if (filterBySubject.length > 0) {
-                if (course.name.slice(0, 4) !== filterBySubject) {
+              if (filterByDiscipline.length > 0) {
+                if (course.name.slice(0, 4) !== filterByDiscipline) {
                   return false;
                 }
               }
