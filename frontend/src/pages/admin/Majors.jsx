@@ -7,12 +7,20 @@ import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
+import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const Majors = () => {
   const [majors, setMajors] = useState([]);
   const [currentMajor, setCurrentMajor] = useState({});
+  const [currentRequirement, setCurrentRequirement] = useState({
+    type: "",
+    credits: 0,
+    course: [],
+    description: "",
+  });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -34,7 +42,7 @@ const Majors = () => {
 
   const addRequirementToMajor = (majorName, requirement) => {
     const majorsCopy = [...majors];
-    // find index of this degree
+    // find index of this major
     let idx = 0;
     for (let i = 0; i < majorsCopy.length; i++) {
       if (majorsCopy[i].name === majorName) {
@@ -50,7 +58,30 @@ const Majors = () => {
     majorsCopy[idx] = major;
     setMajors(majorsCopy);
   };
-
+  const updateRequirementInMajor = (majorName, oldRequirement, newRequirement) => {
+    const majorsCopy = [...majors];
+    // find index of this major
+    let idx = 0;
+    for (let i = 0; i < majorsCopy.length; i++) {
+      if (majorsCopy[i].name === majorName) {
+        idx = i;
+        break;
+      }
+    }
+    // update requirement in majorsCopy
+    for (let req in majorsCopy[idx].requirements) {
+      if (
+        oldRequirement.type === majorsCopy[idx].requirements[req].type &&
+        oldRequirement.credits === majorsCopy[idx].requirements[req].credits &&
+        oldRequirement.courses === majorsCopy[idx].requirements[req].courses &&
+        oldRequirement.description === majorsCopy[idx].requirements[req].description
+      ) {
+        majorsCopy[idx].requirements[req] = newRequirement;
+        break;
+      }
+    }
+    setMajors(majorsCopy);
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -185,11 +216,23 @@ const Majors = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
+        showUpdateRequirementsModal= {(requirement) => {
+          setCurrentRequirement(requirement);
+          setShowUpdateRequirementModal(true);
+        }}
       />
       <AddRequirementModal
         show={showAddRequirementModal}
         close={() => setShowAddRequirementModal(false)}
         addRequirementToCollection={addRequirementToMajor}
+        collection={"major"}
+        name={currentMajor.name}
+      />
+      <UpdateRequirementModal
+        show={showUpdateRequirementModal}
+        close={() => setShowUpdateRequirementModal(false)}
+        oldRequirement={currentRequirement}
+        updateRequirementInCollection={updateRequirementInMajor}
         collection={"major"}
         name={currentMajor.name}
       />

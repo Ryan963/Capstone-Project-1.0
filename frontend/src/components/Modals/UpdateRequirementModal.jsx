@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
+import CourseSelections from "../CourseSelections";
 
 const UpdateRequirementModal = ({
   show,
@@ -17,7 +18,6 @@ const UpdateRequirementModal = ({
   name,
   updateRequirementInCollection,
 }) => {
-  
   const [requirement, setRequirement] = useState({});
   const [allCourses, setAllCourses] = useState([]);
   const token = localStorage.getItem("token");
@@ -71,8 +71,10 @@ const UpdateRequirementModal = ({
   };
 
   const removeCourse = (course) => {
-    const newCourses = [...requirement.courses].filter((c) => c !== course);
     setRequirement((prevRequirement) => {
+      const newCourses = [...prevRequirement.courses].filter(
+        (c) => c !== course
+      );
       return {
         ...prevRequirement,
         courses: newCourses,
@@ -90,7 +92,7 @@ const UpdateRequirementModal = ({
     setRequirement((prevRequirement) => {
       return {
         ...prevRequirement,
-        courses: [...requirement.courses, course.name],
+        courses: [...prevRequirement.courses, course.name],
       };
     });
   };
@@ -113,12 +115,11 @@ const UpdateRequirementModal = ({
         const courses = allCourses.filter((course) =>
           requirement.courses.includes(course.name)
         );
-        
+
         for (let course of courses) {
-          
           coursesTotalCredits += course.credits;
         }
-        
+
         if (coursesTotalCredits < credits) {
           toast.error(
             `Credits should be less than the total credits in chosen courses`
@@ -154,8 +155,11 @@ const UpdateRequirementModal = ({
           )
           .then((res) => {
             if (res.data.success) {
-              updateRequirementInCollection(name, oldRequirement, { ...requirement });
+              updateRequirementInCollection(name, oldRequirement, {
+                ...requirement,
+              });
               toast.success("Requirement updated successfully!");
+              close();
             } else {
               toast.error(res.data.message);
             }
@@ -164,8 +168,6 @@ const UpdateRequirementModal = ({
             toast.error(error.message);
             console.log(error);
           });
-        
-        close();
         break;
       default:
         toast.error("requirement type is not selected");
@@ -216,7 +218,7 @@ const UpdateRequirementModal = ({
                   <option value={type}>{type}</option>
                 ))}
               </select>
-              
+
               {requirement.type === "credits_of_group" && (
                 <div className="mt-3">
                   <Input
@@ -228,35 +230,13 @@ const UpdateRequirementModal = ({
                   <label className="font-semibold">
                     Enter the Courses that the user can choose from:
                   </label>
-                  <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
-                    {requirement?.courses.map((course, idx) => (
-                      <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
-                        <div className="flex items-center justify-center">
-                          <span>{course}</span>
-                          <AiOutlineClose
-                            onClick={() => removeCourse(course)}
-                            className="text-danger cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="w-full max-h-64 overflow-scroll">
-                    <ListGroup>
-                      {allCourses.map((course) => {
-                        return (
-                          <ListGroup.Item
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              addCourseToCourses(course);
-                            }}
-                          >
-                            {course.name}
-                          </ListGroup.Item>
-                        );
-                      })}
-                    </ListGroup>
-                  </div>
+
+                  <CourseSelections
+                    removeCourse={removeCourse}
+                    addedCourses={requirement.courses}
+                    courses={allCourses}
+                    addCourse={addCourseToCourses}
+                  />
                   <label className="font-semibold mt-3">
                     Enter Requirement Description:
                   </label>
@@ -281,7 +261,7 @@ const UpdateRequirementModal = ({
             variant="danger"
             onClick={() => {
               setRequirement({ type: "" });
-              
+
               close();
             }}
           >
