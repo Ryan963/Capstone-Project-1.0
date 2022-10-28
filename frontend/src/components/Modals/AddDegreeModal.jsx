@@ -7,9 +7,9 @@ import axios from "axios";
 import {useRef} from 'react';
 
 const AddDegreeModal = ({
-  close,
-  show,
-  getDegreesInModal //This hook updates the main page info
+    close,
+    show,
+    getDegreesInModal //This hook updates the main page info
 }) => {
     let degreeName = '';
 
@@ -29,7 +29,7 @@ const AddDegreeModal = ({
 
     useEffect(() => {
       const retrieveDegrees = async () => {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
         const config = {
             headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,6 @@ const AddDegreeModal = ({
         //If a duplicate is found show alert
         let degreeDuplicate = false;
         for (let i in allDegrees) {
-          console.log("degreeName: " + degreeName + " allDegrees " + JSON.stringify(allDegrees[i].name));
             if(degreeName === allDegrees[i].name){
               alert("Degree exists");
               degreeDuplicate = true;
@@ -73,11 +72,10 @@ const AddDegreeModal = ({
         axios
           .post(
             `${process.env.REACT_APP_SERVER_API}/degree`,
-            {"name":degreeName, "requirement": emptyRequirement}, config
+            {"name":degreeName, "requirement": []}, config
           )
           .then((res) => {
-            let status = parseInt(JSON.stringify(res.status));
-            if((status >= 200) && (status < 300)){
+            if(JSON.stringify(res.status) === '201'){
               toast.success("Degree added successfully!");
             } else {
               toast.error(JSON.stringify(res.data.message));

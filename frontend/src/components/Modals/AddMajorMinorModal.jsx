@@ -1,0 +1,213 @@
+import React, { useEffect } from "react";
+import { useState } from "react";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import { toast } from "react-toastify";
+import axios from "axios";
+import {useRef} from 'react';
+
+const AddMajorMinorModal = ({
+  minorOrMajor,//Same modal for both
+  close,
+  show,
+  getMajorMinorInModal //This hook updates the main page info
+}) => {
+    let majorName = '';
+    let minorName = '';
+    const minorMajorInput = useRef(null);
+
+    const [allMajors, setAllMajors] = useState([]);
+    const [allMinors, setAllMinors] = useState([]);
+
+    //Get all the degrees - will be used for the loop to check if a degree already exists
+    
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        if(minorOrMajor === "Major"){
+            const retrieveMajors = async () => {
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            await axios
+            .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
+            .then((res) => {
+                setAllMajors(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.err(err.message);
+            });
+            };
+            retrieveMajors();
+        }
+        else{
+            const retrieveMinors = async () => {
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            };
+            await axios
+            .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
+            .then((res) => {
+                setAllMinors(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.err(err.message);
+            });
+            };
+            retrieveMinors();
+        }
+        
+    }, []);
+
+
+    const handleSubmit = (e) => {
+        if(minorOrMajor === "Major"){
+            majorName = minorMajorInput.current.value;
+            //Check Majors for duplicates
+            //If a duplicate is found show alert
+            let majorDuplicate = false;
+            for (let i in allMajors) {
+                if(majorName === allMajors[i].name){
+                alert("Major exists");
+                majorDuplicate = true;
+                break;
+                }
+            }
+            
+            //If no duplicate then add to database
+            if(majorDuplicate === false){
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            };
+            axios
+            .post(
+                `${process.env.REACT_APP_SERVER_API}/majors`,
+                {"name":majorName, "requirements": [], "streams": []}, config
+            )
+            .then((res) => {
+                if(JSON.stringify(res.status) === '200'){
+                toast.success("Major added successfully!");
+                } else {
+                toast.error(JSON.stringify(res.data.message));
+                }
+            })
+            .catch((error) => {
+                toast.error(error.message);
+                console.log(error);
+            });
+            
+            }
+        } else {
+            minorName = minorMajorInput.current.value;
+            //Check Majors for duplicates
+            //If a duplicate is found show alert
+            let minorDuplicate = false;
+            for (let i in allMinors) {
+            console.log("minorName: " + minorName + " allMinors " + JSON.stringify(allMinors[i].name));
+                if(minorName === allMinors[i].name){
+                alert("Major exists");
+                minorDuplicate = true;
+                break;
+                }
+            }
+            
+            //If no duplicate then add to database
+            if(minorDuplicate === false){
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            };
+            axios
+            .post(
+                `${process.env.REACT_APP_SERVER_API}/minors`,
+                {"name":minorName , "requirements": [], "streams": []}, config
+            )
+            .then((res) => {
+                console.log(JSON.stringify(res))
+                if(JSON.stringify(res.status) === '200'){
+                toast.success("Minor added successfully!");
+                } else {
+                toast.error(JSON.stringify(res.data.message));
+                }
+            })
+            .catch((error) => {
+                toast.error(error.message);
+                console.log(error);
+            });
+            
+            }
+        }
+    }
+
+    return (
+    <>
+    <div className="container">
+      <Modal
+        show={show}
+        size="lg"
+        scrollable={true}
+        //Locks background
+        data-backdrop="static"
+        data-keyboard="false"
+      >
+        <Modal.Header>
+          <Modal.Title>Add A {minorOrMajor}</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+        <div style={{minHeight: 300,}}>
+            <label className="font-semibold text-lg">
+                Enter the {minorOrMajor} Name:
+            </label>
+            <div>
+                <input
+                    ref={minorMajorInput}
+                    type="text"
+                    name="majorOrMinorName"
+                    placeholder="Major or Minor Name"
+                />
+            </div>
+        </div>
+        </Modal.Body> 
+
+        <Modal.Footer>
+          <Button
+            className="btn"
+            variant="danger"
+            onClick={() => {
+              close();
+              //Uses the function passed in to update main page once the close button is clicked
+              getMajorMinorInModal();
+            }}
+          >
+            Close
+          </Button>
+          <Button
+            className="btn"
+            variant="info"
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            Add
+          </Button>
+        </Modal.Footer>
+
+      </Modal>
+    </div>
+    </>
+  );
+};
+
+export default AddMajorMinorModal;

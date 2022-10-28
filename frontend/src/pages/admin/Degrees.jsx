@@ -28,22 +28,8 @@ const Degrees = () => {
   const token = localStorage.getItem("token");
   //console.log("Token is:\n " + token);
   useEffect(() => {
+    //Moved to separate function so I can call function in modal and update main page
     getDegrees();
-    /*
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
-      .then((res) => {
-        setDegrees(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });*/
   }, []);
 
   const getDegrees = () => {
@@ -201,6 +187,7 @@ const Degrees = () => {
           setShowAddRequirementModal(true);
         }}
         showUpdateRequirementsModal= {(requirement) => {
+          //setShowRequirementsModal(false);
           setCurrentRequirement(requirement);
           setShowUpdateRequirementModal(true);
         }}  

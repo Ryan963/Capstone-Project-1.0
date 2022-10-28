@@ -8,6 +8,7 @@ import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
+import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
 
 const Minors = () => {
   const [minors, setMinors] = useState([]);
@@ -20,9 +21,15 @@ const Minors = () => {
   });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
+    getMinors();
+    
+  }, []);
+
+  const getMinors = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -37,8 +44,7 @@ const Minors = () => {
         toast.error(error.message);
         console.log(error);
       });
-  }, []);
-
+  }
   const addRequirementToMinor = (minorName, requirement) => {
     const minorsCopy = [...minors];
     // find index of this minor
@@ -103,7 +109,13 @@ const Minors = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success">New Minor</Button>
+                <Button variant="success" onClick={() =>setShowAddMajorMinorModal(true)}>New Minor</Button>
+                <AddMajorMinorModal 
+                  minorOrMajor = "Minor"
+                  show = {showAddMajorMinorModal}
+                  close={() => setShowAddMajorMinorModal(false)}
+                  getMajorMinorInModal = {getMinors}
+                />
               </div>
             </div>
             <div>
