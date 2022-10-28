@@ -163,7 +163,7 @@ const AddRequirementModal = ({
             toast.error(error.message);
             console.log(error);
           });
-        //close();
+        close();
         break;
       default:
         toast.error("requirement type is not selected");

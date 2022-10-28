@@ -7,24 +7,32 @@ import { toast } from "react-toastify";
 import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
+import CourseSelections from "../CourseSelections";
 
+function getDisciplines(courses) {
+  const disciplines = [];
+  for (let course of courses) {
+    if (!disciplines.includes(course.discipline)) {
+      disciplines.push(course.discipline);
+    }
+  }
+  return disciplines;
+}
 
-function AddCourseModal({
-  show,
-  close,
-  addCourseToCollection}) {
-
+function AddCourseModal({ show, close, addCourseToCollection }) {
   const token = localStorage.getItem("token");
   const [course, setCourse] = useState({
     name: "",
     prerequisites: [],
     corequisites: [],
-    credits:0,
-    discipline:"",
-    description:"",
-    level:0
-  })
+    credits: 0,
+    discipline: "",
+    description: "",
+    level: 0,
+  });
   const [allCourses, setAllCourses] = useState([]);
+
+  const disciplines = getDisciplines(allCourses);
 
   const retrieveCourses = () => {
     const config = {
@@ -42,7 +50,7 @@ function AddCourseModal({
         toast.err(err.message);
       });
   };
-  
+
   useEffect(() => {
     retrieveCourses();
   }, []);
@@ -51,18 +59,16 @@ function AddCourseModal({
     setCourse((prevCourse) => {
       return {
         ...prevCourse,
-        [e.target.name]: e.target.value
-        
+        [e.target.name]: e.target.value,
       };
     });
-  }
+  };
 
   const handleNumberChange = (e) => {
     setCourse((prevCourse) => {
       return {
         ...prevCourse,
-        [e.target.name]: Number(e.target.value)
-        
+        [e.target.name]: Number(e.target.value),
       };
     });
   };
@@ -74,10 +80,10 @@ function AddCourseModal({
         return;
       }
     }
-    setCourse((prevPrerequisite) => {
+    setCourse((prevCourse) => {
       return {
-        ...prevPrerequisite,
-        prerequisites: [...course.prerequisites, prerequisite.name],
+        ...prevCourse,
+        prerequisites: [...prevCourse.prerequisites, prerequisite.name],
       };
     });
   };
@@ -89,33 +95,37 @@ function AddCourseModal({
         return;
       }
     }
-    setCourse((prevCorequisite) => {
+    setCourse((prevCourse) => {
       return {
-        ...prevCorequisite,
-        corequisites: [...course.corequisites, corequisite.name],
+        ...prevCourse,
+        corequisites: [...prevCourse.corequisites, corequisite.name],
       };
     });
   };
 
   const removePrerequisite = (prerequisite) => {
-    const newPrerequsites = [...course.prerequisites].filter((p) => p !== prerequisite);
-    setCourse((prevPrerequisite) => {
+    setCourse((prevCourse) => {
+      const newPrerequsites = [...prevCourse.prerequisites].filter(
+        (p) => p !== prerequisite
+      );
       return {
-        ...prevPrerequisite,
+        ...prevCourse,
         prerequisites: newPrerequsites,
       };
     });
-  }
+  };
 
   const removeCorequisite = (corequisite) => {
-    const newCorequsites = [...course.corequisites].filter((c) => c !== corequisite);
-    setCourse((prevCorequisite) => {
+    setCourse((prevCourse) => {
+      const newCorequsites = [...prevCourse.corequisites].filter(
+        (c) => c !== corequisite
+      );
       return {
-        ...prevCorequisite,
+        ...prevCourse,
         corequisites: newCorequsites,
       };
     });
-  }
+  };
 
   /*
     Checks TODO (when updating and adding course):
@@ -136,10 +146,7 @@ function AddCourseModal({
     }
     // check if credits is positive and a multiple of 3
     // *Note can there be non 3 credit courses?
-    if (
-      course.credits <= 0 ||
-      !Number.isInteger(course.credits / 3)
-    ) {
+    if (course.credits <= 0 || !Number.isInteger(course.credits / 3)) {
       toast.error(
         `Credits should be a positive number that is a multiple of 3`
       );
@@ -149,7 +156,7 @@ function AddCourseModal({
       toast.error("Please enter course discipline");
       return;
     }
-    
+
     const token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -160,7 +167,7 @@ function AddCourseModal({
       .post(
         `${process.env.REACT_APP_SERVER_API}/courses`,
         {
-          course
+          course,
         },
         config
       )
@@ -181,11 +188,7 @@ function AddCourseModal({
 
   return (
     <>
-    <Modal
-        show={show}
-        size="lg"
-        scrollable={true}
-      >
+      <Modal show={show} size="lg" scrollable={true}>
         <Modal.Header>
           <Modal.Title>Add A Course </Modal.Title>
         </Modal.Header>
@@ -199,10 +202,10 @@ function AddCourseModal({
               <label className="font-semibold text-lg">
                 Enter the Course Name:
               </label>
-              <input 
+              <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                id="grid-first-name" 
-                type="text" 
+                id="grid-first-name"
+                type="text"
                 placeholder="ex: 'ENGL102'"
                 name="name"
                 value={course.name}
@@ -212,15 +215,15 @@ function AddCourseModal({
                 Enter Course Descritpion:
               </label>
               <div>
-                <textarea 
-                id="message" 
-                rows="4" 
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                placeholder="Course Description..."
-                name="description"
-                value={course.description}
-                onChange={handleChange}
-              />
+                <textarea
+                  id="message"
+                  rows="4"
+                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Course Description..."
+                  name="description"
+                  value={course.description}
+                  onChange={handleChange}
+                />
               </div>
               <Input
                 handleChange={handleNumberChange}
@@ -230,69 +233,54 @@ function AddCourseModal({
               />
               <div>
                 <label className="font-semibold text-lg">
-                Course Discipline:
+                  Course Discipline:
                 </label>
-                <input 
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                id="grid-first-name" 
-                type="text" 
-                name="discipline"
-                placeholder="ex. English"
-                onChange={handleChange}
-              />
+
+                <select
+                  className="w-40 m-2 border rounded-md border-primary "
+                  id="grid-first-name"
+                  type="text"
+                  name="discipline"
+                  placeholder="ex. English"
+                  onChange={handleChange}
+                  value={course.discipline}
+                >
+                  <option value={""}></option>
+                  {disciplines.map((discipline, idx) => (
+                    <option key={idx} value={discipline}>
+                      {discipline}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label className="font-semibold text-lg">
-                Course Level:
-                </label>
-                <select 
-                  className= "w-50 m-2 pt-2 border rounded-md self-center border-primaryt"
+                <label className="font-semibold text-lg">Course Level:</label>
+                <select
+                  className="w-50 m-2 pt-2 border rounded-md self-center border-primaryt"
                   onChange={handleNumberChange}
                   value={course.level}
                   name="level"
                 >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
+                  <option value="1">100</option>
+                  <option value="2">200</option>
+                  <option value="3">300</option>
+                  <option value="4">400</option>
                 </select>
               </div>
               <label className="font-semibold text-lg">
                 Course Corequisites:
               </label>
-              <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
-                    {course?.corequisites.map((corequisite, idx) => (
-                      <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
-                        <div className="flex items-center justify-center">
-                          <span>{corequisite}</span>
-                          <AiOutlineClose
-                            onClick={() => removeCorequisite(corequisite)}
-                            className="text-danger cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-              <div className="w-full max-h-64 overflow-scroll">
-                    <ListGroup>
-                      {allCourses.map((course) => {
-                        return (
-                          <ListGroup.Item
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              addCourseToCorequisites(course);
-                            }}
-                          >
-                            {course.name}
-                          </ListGroup.Item>
-                        );
-                      })}
-                    </ListGroup>
-              </div>
+
+              <CourseSelections
+                addCourse={addCourseToCorequisites}
+                courses={allCourses}
+                addedCourses={course.corequisites}
+                removeCourse={removeCorequisite}
+              />
               <label className="font-semibold">
                 Enter the Course Prerequisites
               </label>
-              <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
+              {/* <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
                 {course?.prerequisites.map((prerequisite, idx) => (
                   <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
                     <div className="flex items-center justify-center">
@@ -306,21 +294,27 @@ function AddCourseModal({
                 ))}
               </div>
               <div className="w-full max-h-64 overflow-scroll">
-                    <ListGroup>
-                      {allCourses.map((course) => {
-                        return (
-                          <ListGroup.Item
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              addCourseToPrerequisites(course);
-                            }}
-                          >
-                            {course.name}
-                          </ListGroup.Item>
-                        );
-                      })}
-                    </ListGroup>
-              </div>
+                <ListGroup>
+                  {allCourses.map((course) => {
+                    return (
+                      <ListGroup.Item
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          addCourseToPrerequisites(course);
+                        }}
+                      >
+                        {course.name}
+                      </ListGroup.Item>
+                    );
+                  })}
+                </ListGroup>
+              </div> */}
+              <CourseSelections
+                addCourse={addCourseToPrerequisites}
+                courses={allCourses}
+                addedCourses={course.prerequisites}
+                removeCourse={removePrerequisite}
+              />
             </form>
           </div>
         </Modal.Body>
@@ -334,17 +328,13 @@ function AddCourseModal({
           >
             Cancel
           </Button>
-          <Button
-            className="btn"
-            variant="success"
-            onClick={handleSubmit}
-          >
+          <Button className="btn" variant="success" onClick={handleSubmit}>
             Submit
           </Button>
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }
 
-export default AddCourseModal
+export default AddCourseModal;
