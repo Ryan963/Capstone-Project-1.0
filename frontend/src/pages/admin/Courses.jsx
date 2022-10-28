@@ -5,9 +5,18 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
+import ViewCourseModal from "../../components/Modals/ViewCourseModal";
+import UpdateCourseModal from "../../components/Modals/UpdateCourseModal";
+import AddCourseModal from "../../components/Modals/AddCourseModal";
+import DeletCourseModal from "../../components/Modals/DeletCourseModal";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
+  const [currentCourse, setCurrentCourse] = useState({});
+  const [showCourseModal, setShowCourseModal] = useState(false);
+  const [showAddCourseModal, setShowAddCourseModal] = useState(false);
+  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false);
+  const [showUpdateCourseModal, setShowUpdateCourseModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
     const config = {
@@ -25,6 +34,23 @@ const Courses = () => {
         console.log(error);
       });
   }, []);
+
+  const addCourse = (course) => {
+    const newCourseList = [...courses, course]
+    setCourses(newCourseList)
+  };
+
+  const deleteCourse = (course) => {
+    const UpdatedCourses = courses.filter((c) => c !== course )
+    setCourses(UpdatedCourses)
+  }
+
+  const updateCourse = async (updatedCourse) => {
+    const UpdatedCourses = courses.filter((c) => c._id !== updatedCourse._id )
+    UpdatedCourses.push(updatedCourse)
+    setCourses(UpdatedCourses)
+  }
+
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -49,7 +75,10 @@ const Courses = () => {
                 <span>Level</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success">New Course</Button>
+                <Button variant="success" onClick={() => {
+                  setShowAddCourseModal(true)}}>
+                  New Course
+                </Button>
               </div>
             </div>
             <div>
@@ -99,13 +128,22 @@ const Courses = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentCourse(course)
+                            setShowUpdateCourseModal(true)
+                          }}>
                             Update
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentCourse(course)
+                            setShowCourseModal(true)
+                          }}>
                             View Course info
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentCourse(course)
+                            setShowDeleteCourseModal(true)
+                          }}>
                             Delete Course
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -122,6 +160,30 @@ const Courses = () => {
           </div>
         )}
       </div>
+      <AddCourseModal
+        show={showAddCourseModal}
+        close={() => setShowAddCourseModal(false)}
+        addCourseToCollection={addCourse}
+      />
+      <DeletCourseModal
+        show={showDeleteCourseModal}
+        close={() => setShowDeleteCourseModal(false)}
+        course={currentCourse}
+        deleteCourseFromCollection={deleteCourse}
+      />
+      <ViewCourseModal
+        show={showCourseModal}
+        close={() => setShowCourseModal(false)}
+        course={currentCourse}
+      />
+      <UpdateCourseModal
+        show={showUpdateCourseModal}
+        close={() => {
+          setShowUpdateCourseModal(false)
+        }}
+        UpdateCourse={updateCourse}
+        oldCourse={currentCourse}
+      />
     </div>
   );
 };
