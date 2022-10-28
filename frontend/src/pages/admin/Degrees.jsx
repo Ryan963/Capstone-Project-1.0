@@ -10,6 +10,7 @@ import Loader from "../../components/UI/Loader";
 import RequirementsViewModal from "../../components/Modals/RequirementsViewModal";
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
+import AddDegreeModal from "../../components/Modals/AddDegreeModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
@@ -22,9 +23,30 @@ const Degrees = () => {
   });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false)
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  const [showAddDegreeModal, setShowAddDegreeModal] = useState(false);
   const token = localStorage.getItem("token");
+  //console.log("Token is:\n " + token);
   useEffect(() => {
+    getDegrees();
+    /*
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
+      .then((res) => {
+        setDegrees(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });*/
+  }, []);
+
+  const getDegrees = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,8 +61,7 @@ const Degrees = () => {
         toast.error(error.message);
         console.log(error);
       });
-  }, []);
-
+  }
   const addRequirementToDegree = (degreeName, requirement) => {   
     const degreesCopy = [...degrees];
     // find index of this degree
@@ -103,7 +124,14 @@ const Degrees = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success">New Degree</Button>
+                <Button variant="success" onClick={() =>setShowAddDegreeModal(true) }>New Degree</Button>
+              
+                <AddDegreeModal 
+                  show = {showAddDegreeModal}
+                  close={() => setShowAddDegreeModal(false)}
+                  getDegreesInModal = {getDegrees}
+                  //addDegreeToCollection={addRequirementToDegree}
+                />
               </div>
             </div>
             <div>
