@@ -155,9 +155,7 @@ const Degrees = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
-                            Update
-                          </Dropdown.Item>
+                          
                           <Dropdown.Item
                             onClick={() => {
                               setCurrentDegree(degree);

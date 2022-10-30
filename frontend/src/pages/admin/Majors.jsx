@@ -200,9 +200,7 @@ const Majors = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
-                            Update
-                          </Dropdown.Item>
+                          
                           <Dropdown.Item
                             onClick={() => {
                               setCurrentMajor(major);

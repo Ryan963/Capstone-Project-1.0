@@ -155,7 +155,7 @@ const AddMajorMinorModal = ({
     <div className="container">
       <Modal
         show={show}
-        size="lg"
+        size="md"
         scrollable={true}
         //Locks background
         data-backdrop="static"
@@ -166,12 +166,13 @@ const AddMajorMinorModal = ({
         </Modal.Header>
 
         <Modal.Body>
-        <div style={{minHeight: 300,}}>
+        <div style={{minHeight: 40,}}>
             <label className="font-semibold text-lg">
                 Enter the {minorOrMajor} Name:
             </label>
             <div>
                 <input
+                    className="border-2 rounded-md border-black"
                     ref={minorMajorInput}
                     type="text"
                     name="majorOrMinorName"

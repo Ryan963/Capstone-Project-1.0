@@ -94,7 +94,7 @@ const AddDegreeModal = ({
     <div className="container">
       <Modal
         show={show}
-        size="lg"
+        size="md"
         scrollable={true}
         //Locks background
         data-backdrop="static"
@@ -105,12 +105,13 @@ const AddDegreeModal = ({
         </Modal.Header>
 
         <Modal.Body>
-        <div style={{minHeight: 300,}}>
+        <div style={{minHeight: 40,}}>
             <label className="font-semibold text-lg">
                 Enter the Degree Name:
             </label>
             <div>
                 <input
+                    className="border-2 rounded-md border-black"
                     ref={degreeInput}
                     type="text"
                     name="degreeName"

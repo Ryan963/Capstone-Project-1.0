@@ -152,9 +152,7 @@ const Minors = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
-                            Update
-                          </Dropdown.Item>
+                          
                           <Dropdown.Item
                             onClick={() => {
                               setShowRequirementsModal(true);

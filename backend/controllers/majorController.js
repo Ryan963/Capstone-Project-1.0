@@ -65,7 +65,7 @@ const deleteMajor = async (req, res) => {
   }
 
   await major.remove()
-  res.status(200).json({id: req.params.id})
+  res.status(200).json({success: true, id: req.params.id})
 }
 
 module.exports = {
