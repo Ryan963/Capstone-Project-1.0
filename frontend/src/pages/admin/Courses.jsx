@@ -8,14 +8,14 @@ import Loader from "../../components/UI/Loader";
 import ViewCourseModal from "../../components/Modals/ViewCourseModal";
 import UpdateCourseModal from "../../components/Modals/UpdateCourseModal";
 import AddCourseModal from "../../components/Modals/AddCourseModal";
-import DeletCourseModal from "../../components/Modals/DeletCourseModal";
+import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [currentCourse, setCurrentCourse] = useState({});
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false);
+  const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const [showUpdateCourseModal, setShowUpdateCourseModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -145,7 +145,7 @@ const Courses = () => {
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => {
                             setCurrentCourse(course)
-                            setShowDeleteCourseModal(true)
+                            setShowDeleteObjectModal(true)
                           }}>
                             Delete Course
                           </Dropdown.Item>
@@ -168,11 +168,12 @@ const Courses = () => {
         close={() => setShowAddCourseModal(false)}
         addCourseToCollection={addCourse}
       />
-      <DeletCourseModal
-        show={showDeleteCourseModal}
-        close={() => setShowDeleteCourseModal(false)}
-        course={currentCourse}
-        deleteCourseFromCollection={deleteCourse}
+      <DeleteObjectModal
+        show={showDeleteObjectModal}
+        close={() => setShowDeleteObjectModal(false)}
+        object={currentCourse}
+        collection={"courses"}
+        deleteFromCollection={deleteCourse}
       />
       <ViewCourseModal
         show={showCourseModal}

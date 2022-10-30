@@ -91,7 +91,7 @@ const deleteDegree = asyncHandler( async (req,res) => {
     const degreeName = degree.name
     await degree.remove()
     
-    res.status(200).json({message: `Degree: ${degreeName} deleted`})
+    res.status(200).json({success: true, message: `Degree: ${degreeName} deleted`})
 
 })
 
