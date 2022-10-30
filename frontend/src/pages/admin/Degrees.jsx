@@ -11,7 +11,7 @@ import RequirementsViewModal from "../../components/Modals/RequirementsViewModal
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddDegreeModal from "../../components/Modals/AddDegreeModal";
-import DeleteObjectModal from "../../components/Modals/DeleteObjectModal"
+import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
@@ -94,6 +94,7 @@ const Degrees = () => {
 
     setDegrees(degreesCopy);
   };
+  
   const deleteDegree = (degree) => {
     const updatedDegrees = degrees.filter((d) => d !== degree );
     setDegrees(updatedDegrees);

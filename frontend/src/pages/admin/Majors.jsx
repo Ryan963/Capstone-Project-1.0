@@ -9,6 +9,7 @@ import RequirementsViewModal from "../../components/Modals/RequirementsViewModal
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
+import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 
 const Majors = () => {
   const [majors, setMajors] = useState([]);
@@ -23,6 +24,7 @@ const Majors = () => {
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
+  const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -90,6 +92,11 @@ const Majors = () => {
       }
     }
     setMajors(majorsCopy);
+  };
+
+  const deleteMajor = (major) => {
+    const updatedMajors = majors.filter((m) => m !== major );
+    setMajors(updatedMajors);
   };
   return (
     <div className="flex flex-row w-full">
@@ -204,7 +211,10 @@ const Majors = () => {
                           >
                             View Requirements
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentMajor(major);
+                            setShowDeleteObjectModal(true);
+                          }}>
                             Delete Major
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -250,6 +260,13 @@ const Majors = () => {
         updateRequirementInCollection={updateRequirementInMajor}
         collection={"major"}
         name={currentMajor.name}
+      />
+      <DeleteObjectModal
+        show={showDeleteObjectModal}
+        close={() => setShowDeleteObjectModal(false)}
+        object = {currentMajor}
+        collection = {"majors"}
+        deleteFromCollection={deleteMajor}
       />
     </div>
   );
