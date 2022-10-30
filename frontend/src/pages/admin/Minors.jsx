@@ -9,6 +9,7 @@ import RequirementsViewModal from "../../components/Modals/RequirementsViewModal
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
+import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 
 const Minors = () => {
   const [minors, setMinors] = useState([]);
@@ -23,6 +24,7 @@ const Minors = () => {
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
+  const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const token = localStorage.getItem("token");
   useEffect(() => {
     getMinors();
@@ -91,6 +93,10 @@ const Minors = () => {
     setMinors(minorsCopy);
   };
 
+  const deleteMinor = (minor) => {
+    const updatedMinors = minors.filter((m) => m !== minor );
+    setMinors(updatedMinors);
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -157,7 +163,10 @@ const Minors = () => {
                           >
                             View Requirements
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentMinor(minor);
+                            setShowDeleteObjectModal(true);
+                          }}>
                             Delete minor
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -203,6 +212,13 @@ const Minors = () => {
         updateRequirementInCollection={updateRequirementInMinor}
         collection={"minor"}
         name={currentMinor.name}
+      />
+      <DeleteObjectModal
+        show={showDeleteObjectModal}
+        close={() => setShowDeleteObjectModal(false)}
+        object = {currentMinor}
+        collection = {"minors"}
+        deleteFromCollection={deleteMinor}
       />
     </div>
   );
