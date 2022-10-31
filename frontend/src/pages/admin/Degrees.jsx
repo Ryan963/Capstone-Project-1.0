@@ -11,6 +11,7 @@ import RequirementsViewModal from "../../components/Modals/RequirementsViewModal
 import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddDegreeModal from "../../components/Modals/AddDegreeModal";
+import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 
 const Degrees = () => {
   const [degrees, setDegrees] = useState([]);
@@ -25,6 +26,7 @@ const Degrees = () => {
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
   const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
   const [showAddDegreeModal, setShowAddDegreeModal] = useState(false);
+  const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const token = localStorage.getItem("token");
   //console.log("Token is:\n " + token);
   useEffect(() => {
@@ -92,6 +94,11 @@ const Degrees = () => {
 
     setDegrees(degreesCopy);
   };
+  
+  const deleteDegree = (degree) => {
+    const updatedDegrees = degrees.filter((d) => d !== degree );
+    setDegrees(updatedDegrees);
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -148,9 +155,7 @@ const Degrees = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {}}>
-                            Update
-                          </Dropdown.Item>
+                          
                           <Dropdown.Item
                             onClick={() => {
                               setCurrentDegree(degree);
@@ -159,7 +164,10 @@ const Degrees = () => {
                           >
                             View Requirements
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentDegree(degree);
+                            setShowDeleteObjectModal(true);
+                          }}>
                             Delete Degree
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -206,6 +214,13 @@ const Degrees = () => {
         updateRequirementInCollection={updateRequirementInDegree}
         collection={"degree"}
         name={currentDegree.name}
+      />
+      <DeleteObjectModal
+        show={showDeleteObjectModal}
+        close={() => setShowDeleteObjectModal(false)}
+        object = {currentDegree}
+        collection = {"degree"}
+        deleteFromCollection={deleteDegree}
       />
     </div>
   );

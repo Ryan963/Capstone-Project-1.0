@@ -47,10 +47,10 @@ function ViewCourseModal({
                 </p>
               </div>
               <div>
-                <h5>Credits: {credits}</h5>
+                <h5 class="inline">Credits: </h5><span>{credits}</span>
               </div>
               <div>
-                <h5>Discipline: {discipline}</h5>
+                <h5 class="inline">Discipline: </h5><span>{discipline}</span>
               </div>
             </div>
           </Modal.Body>

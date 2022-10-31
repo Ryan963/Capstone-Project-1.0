@@ -75,7 +75,7 @@ export default function AdminSidebar({ route }) {
           <SideBarItem
             link="/admin/courses"
             Icon={() => <FaFolder size={24} />}
-            text="courses"
+            text="Courses"
             route="courses"
             selectedRoute={route}
           />

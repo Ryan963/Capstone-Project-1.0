@@ -276,38 +276,7 @@ function UpdateCourseModal({
                   })}
                 </select>
               </div>
-              <label className="font-semibold text-lg">
-                Course Corequisites:
-              </label>
-              <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
-                    {course.corequisites.map((corequisite, idx) => (
-                      <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
-                        <div className="flex items-center justify-center">
-                          <span>{corequisite}</span>
-                          <AiOutlineClose
-                            onClick={() => removeCorequisite(corequisite)}
-                            className="text-danger cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-              <div className="w-full max-h-64 overflow-scroll">
-                    <ListGroup>
-                      {allCourses.map((course) => {
-                        return (
-                          <ListGroup.Item
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              addCourseToCorequisites(course);
-                            }}
-                          >
-                            {course.name}
-                          </ListGroup.Item>
-                        );
-                      })}
-                    </ListGroup>
-              </div>
+              
               <label className="font-semibold">
                 Enter the Course Prerequisites
               </label>
@@ -332,6 +301,38 @@ function UpdateCourseModal({
                             style={{ cursor: "pointer" }}
                             onClick={() => {
                               addCourseToPrerequisites(course);
+                            }}
+                          >
+                            {course.name}
+                          </ListGroup.Item>
+                        );
+                      })}
+                    </ListGroup>
+              </div>
+              <label className="font-semibold text-lg">
+                Course Corequisites:
+              </label>
+              <div className="container border-2 mb-2 rounded-md pt-1 border-black w-full h-36 flex flex-wrap flex-row">
+                    {course.corequisites.map((corequisite, idx) => (
+                      <div className="p-2 bg-lightgrey rounded-full w-fit h-fit">
+                        <div className="flex items-center justify-center">
+                          <span>{corequisite}</span>
+                          <AiOutlineClose
+                            onClick={() => removeCorequisite(corequisite)}
+                            className="text-danger cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+              <div className="w-full max-h-64 overflow-scroll">
+                    <ListGroup>
+                      {allCourses.map((course) => {
+                        return (
+                          <ListGroup.Item
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              addCourseToCorequisites(course);
                             }}
                           >
                             {course.name}

@@ -24,10 +24,10 @@ const StudentCard = ({ _id, firstname, lastname, email, password, degree,
                 <span>id: {_id} </span>
             </div>
             <div>
-              <span>Firstname: {firstname} </span>
+              <span>First Name: {firstname} </span>
             </div>
             <div>
-              <span>Lastname: {lastname} </span>
+              <span>Last Name: {lastname} </span>
             </div>
             <div>
               <span>Email: {email} </span>
@@ -51,7 +51,7 @@ const StudentCard = ({ _id, firstname, lastname, email, password, degree,
                 : courses.slice(0, 6).join(",") + ", etc..."}
             </div>
             <div>
-              <span>Current Yaer: {currentyear} </span>
+              <span>Current Year: {currentyear} </span>
             </div>
             <div>
               <span>Current Semester: {currentsemester} </span>
@@ -100,7 +100,7 @@ const StudentViewModal = ({
           <Modal.Body>
             <div
               style={{
-                minHeight: 500,
+                minHeight: 250,
               }}
             >
             <div>

@@ -5,13 +5,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 
-function DeletCourseModal( {
-  course,
+function DeleteObjectModal( {
   show,
   close,
-  deleteCourseFromCollection
+  collection,
+  object,
+  deleteFromCollection
 }) {
-  const {_id, name} = course
+  const {_id, name} = object
 
   const handleDelete = () => {
     const token = localStorage.getItem("token");
@@ -22,13 +23,13 @@ function DeletCourseModal( {
     };
     axios
       .delete(
-        `${process.env.REACT_APP_SERVER_API}/courses/${_id}`,
+        `${process.env.REACT_APP_SERVER_API}/${collection}/${_id}`,
         config
       )
       .then((res) => {
         if (res.data.success) {
-          deleteCourseFromCollection( course );
-          toast.success("Course Removed"); 
+          deleteFromCollection( object );
+          toast.success(`${name} Removed`); 
         } else {
           toast.error(res.data.message);
         }
@@ -69,4 +70,4 @@ function DeletCourseModal( {
   )
 }
 
-export default DeletCourseModal
+export default DeleteObjectModal

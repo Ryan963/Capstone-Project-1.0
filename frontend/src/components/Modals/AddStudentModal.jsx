@@ -51,7 +51,7 @@ const AddStudentModal = ({ close, show, students, setStudents }) => {
                 }}
                 type="text"
               />
-              <p style={{ paddingTop: 10 }}>Password</p>
+              <p style={{ paddingTop: 10 }}>Password:</p>
               <input
                 style={{
                   outlineWidth: 1,
@@ -103,7 +103,7 @@ const AddStudentModal = ({ close, show, students, setStudents }) => {
                 }}
                 type="text"
               />
-              <p style={{ paddingTop: 10 }}>Current year:</p>
+              <p style={{ paddingTop: 10 }}>Current Year:</p>
               <input
                 style={{
                   outlineWidth: 1,
@@ -117,7 +117,7 @@ const AddStudentModal = ({ close, show, students, setStudents }) => {
                 min="1"
                 max="4"
               />
-              <p style={{ paddingTop: 10 }}>Current Master: </p>
+              <p style={{ paddingTop: 10 }}>Current Semester: </p>
               <input
                 style={{
                   outlineWidth: 1,

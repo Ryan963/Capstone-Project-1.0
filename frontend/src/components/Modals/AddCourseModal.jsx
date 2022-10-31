@@ -267,16 +267,7 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
                   <option value="4">400</option>
                 </select>
               </div>
-              <label className="font-semibold text-lg">
-                Course Corequisites:
-              </label>
-
-              <CourseSelections
-                addCourse={addCourseToCorequisites}
-                courses={allCourses}
-                addedCourses={course.corequisites}
-                removeCourse={removeCorequisite}
-              />
+              
               <label className="font-semibold">
                 Enter the Course Prerequisites
               </label>
@@ -286,6 +277,17 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
                 courses={allCourses}
                 addedCourses={course.prerequisites}
                 removeCourse={removePrerequisite}
+              />
+              
+              <label className="font-semibold text-lg">
+                Course Corequisites:
+              </label>
+
+              <CourseSelections
+                addCourse={addCourseToCorequisites}
+                courses={allCourses}
+                addedCourses={course.corequisites}
+                removeCourse={removeCorequisite}
               />
             </form>
           </div>
