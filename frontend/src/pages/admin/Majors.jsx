@@ -171,7 +171,9 @@ const Majors = () => {
                         <span className="font-bold">{major.name}</span>
                       </div>
                       <div>
-                        <span className="font-bold">{major.stream}</span>
+                        <span className="font-bold ">
+                          {major.stream ? major.stream : "N/A"}
+                        </span>
                       </div>
                       <div className="align-center text-end ml-auto mr-10">
                         <Dropdown>
