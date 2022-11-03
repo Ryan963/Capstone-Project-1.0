@@ -1,36 +1,27 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const majorSchema = mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: [true, "Please add name of major"],
-            unique: true
-        },
-        requirements: {
-            type: [{
-                type: Object,
-                strict: false, 
-            }],
-            required: [true, "Please add a requirements"]
-        },
-        streams: [
-            {
-                name: String,
-                requirements: 
-                    {
-                        type: [{
-                            type: Object,
-                            strict: false, 
-                        }],
-                    }          
-    
-            }
-        ],
+  {
+    name: {
+      type: String,
+      required: [true, "Please add name of major"],
     },
-    {
-        timeStamps: true,
-    }
-)
-
-module.exports = mongoose.model("Major", majorSchema)
+    requirements: {
+      type: [
+        {
+          type: Object,
+          strict: false,
+        },
+      ],
+      required: [true, "Please add a requirements"],
+    },
+    stream: {
+      type: String,
+    },
+  },
+  {
+    timeStamps: true,
+  }
+);
+majorSchema.index({ name: 1, stream: 1 }, { unique: true });
+module.exports = mongoose.model("Major", majorSchema);

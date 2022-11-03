@@ -22,7 +22,8 @@ const Majors = () => {
   });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] =
+    useState(false);
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const token = localStorage.getItem("token");
@@ -30,7 +31,6 @@ const Majors = () => {
   useEffect(() => {
     //Moved to separate function so I can call function in modal and update main page
     getMajors();
-    
   }, []);
 
   const getMajors = () => {
@@ -49,7 +49,7 @@ const Majors = () => {
         toast.error(error.message);
         console.log(error);
       });
-  }
+  };
 
   const addRequirementToMajor = (majorName, requirement) => {
     const majorsCopy = [...majors];
@@ -69,7 +69,11 @@ const Majors = () => {
     majorsCopy[idx] = major;
     setMajors(majorsCopy);
   };
-  const updateRequirementInMajor = (majorName, oldRequirement, newRequirement) => {
+  const updateRequirementInMajor = (
+    majorName,
+    oldRequirement,
+    newRequirement
+  ) => {
     const majorsCopy = [...majors];
     // find index of this major
     let idx = 0;
@@ -85,7 +89,8 @@ const Majors = () => {
         oldRequirement.type === majorsCopy[idx].requirements[req].type &&
         oldRequirement.credits === majorsCopy[idx].requirements[req].credits &&
         oldRequirement.courses === majorsCopy[idx].requirements[req].courses &&
-        oldRequirement.description === majorsCopy[idx].requirements[req].description
+        oldRequirement.description ===
+          majorsCopy[idx].requirements[req].description
       ) {
         majorsCopy[idx].requirements[req] = newRequirement;
         break;
@@ -95,7 +100,7 @@ const Majors = () => {
   };
 
   const deleteMajor = (major) => {
-    const updatedMajors = majors.filter((m) => m !== major );
+    const updatedMajors = majors.filter((m) => m !== major);
     setMajors(updatedMajors);
   };
   return (
@@ -109,118 +114,99 @@ const Majors = () => {
             <div
               className={`flex mt-1 p-3 items-center rounded-3xl border bg-lightgrey text-grey`}
             >
-              <div className="font-semibold ml-12">
+              <div className="font-semibold w-60 text-center">
                 <span>Major ID</span>
               </div>
-              <div className="font-semibold ml-40">
+              <div className="font-semibold w-60 ml-10 ">
                 <span>Name</span>
               </div>
+              <div className="font-semibold w-48">
+                <span>Stream</span>
+              </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success" onClick={() =>setShowAddMajorMinorModal(true)}>New Major</Button>
-                <AddMajorMinorModal 
-                  minorOrMajor = "Major"
-                  show = {showAddMajorMinorModal}
+                <Button
+                  variant="success"
+                  onClick={() => setShowAddMajorMinorModal(true)}
+                >
+                  New Major
+                </Button>
+                <AddMajorMinorModal
+                  minorOrMajor="Major"
+                  show={showAddMajorMinorModal}
                   close={() => setShowAddMajorMinorModal(false)}
-                  getMajorMinorInModal = {getMajors}
+                  getMajorMinorInModal={getMajors}
                 />
               </div>
             </div>
             <div>
-              {majors.map((major, idx) => {
-                // if (major.streams && major.streams.length > 0) {
-                //   major.streams.map((stream) => {
-                //     return (
-                //       <div
-                //         key={major._id}
-                //         className={`flex mt-1 p-3 items-center rounded-3xl border  ${
-                //           idx % 2 === 1 ? "bg-lightblue2" : ""
-                //         }`}
-                //       >
-                //         <div
-                //           style={{
-                //             whiteSpace: "nowrap",
-                //             overflow: "hidden",
-                //             textOverflow: "ellipsis",
-                //           }}
-                //         >
-                //           <span>{major._id}</span>
-                //         </div>
-                //         <div className="ml-10">
-                //           <span className="font-bold">{major.name}</span>
-                //         </div>
-                //         <div className="ml-20">
-                //           <span className="font-bold">{stream}</span>
-                //         </div>
-                //         <div className="align-center text-end ml-auto mr-10">
-                //           <Dropdown>
-                //             <Dropdown.Toggle variant="success" id="dropdown-basic">
-                //               More
-                //             </Dropdown.Toggle>
-
-                //             <Dropdown.Menu>
-                //               <Dropdown.Item onClick={() => {}}>
-                //                 Update
-                //               </Dropdown.Item>
-                //               <Dropdown.Item onClick={() => {}}>
-                //                 View Requirements
-                //               </Dropdown.Item>
-                //               <Dropdown.Item onClick={() => {}}>
-                //                 Delete Major
-                //               </Dropdown.Item>
-                //             </Dropdown.Menu>
-                //           </Dropdown>
-                //         </div>
-                //       </div>
-                //     );
-                //   });
-                // }
-                return (
-                  <div
-                    key={major._id}
-                    className={`flex mt-1 p-3 items-center rounded-3xl border  ${
-                      idx % 2 === 1 ? "bg-lightblue2" : ""
-                    }`}
-                  >
+              {majors
+                .sort((a, b) => {
+                  if (a.name > b.name) {
+                    return 1;
+                  } else if (a.name < b.name) {
+                    return -1;
+                  } else {
+                    return 0;
+                  }
+                })
+                .map((major, idx) => {
+                  return (
                     <div
-                      style={{
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
+                      key={major._id}
+                      className={`flex mt-1 p-3 items-center rounded-3xl border  ${
+                        idx % 2 === 1 ? "bg-lightblue2" : ""
+                      }`}
                     >
-                      <span>{major._id}</span>
-                    </div>
-                    <div className="ml-10">
-                      <span className="font-bold">{major.name}</span>
-                    </div>
-                    <div className="align-center text-end ml-auto mr-10">
-                      <Dropdown>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                          More
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          
-                          <Dropdown.Item
-                            onClick={() => {
-                              setCurrentMajor(major);
-                              setShowRequirementsModal(true);
-                            }}
+                      <div
+                        className="w-60"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        <span>{major._id}</span>
+                      </div>
+                      <div className="ml-10 w-60">
+                        <span className="font-bold">{major.name}</span>
+                      </div>
+                      <div>
+                        <span className="font-bold ">
+                          {major.stream ? major.stream : "N/A"}
+                        </span>
+                      </div>
+                      <div className="align-center text-end ml-auto mr-10">
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="success"
+                            id="dropdown-basic"
                           >
-                            View Requirements
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentMajor(major);
-                            setShowDeleteObjectModal(true);
-                          }}>
-                            Delete Major
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                            More
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() => {
+                                setCurrentMajor(major);
+                                setShowRequirementsModal(true);
+                              }}
+                            >
+                              View Requirements
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() => {
+                                setCurrentMajor(major);
+                                setShowDeleteObjectModal(true);
+                              }}
+                            >
+                              Delete Major
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </>
         ) : (
@@ -239,7 +225,7 @@ const Majors = () => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
-        showUpdateRequirementsModal= {(requirement) => {
+        showUpdateRequirementsModal={(requirement) => {
           setCurrentRequirement(requirement);
           setShowUpdateRequirementModal(true);
         }}
@@ -262,8 +248,8 @@ const Majors = () => {
       <DeleteObjectModal
         show={showDeleteObjectModal}
         close={() => setShowDeleteObjectModal(false)}
-        object = {currentMajor}
-        collection = {"majors"}
+        object={currentMajor}
+        collection={"majors"}
         deleteFromCollection={deleteMajor}
       />
     </div>

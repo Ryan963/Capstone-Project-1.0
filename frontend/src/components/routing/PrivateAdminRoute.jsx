@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-const PrivateAdminRoute = ({ auth }) => {
+const PrivateAdminRoute = () => {
   const userEmail = localStorage.getItem("email");
   const userType = localStorage.getItem("type");
 
