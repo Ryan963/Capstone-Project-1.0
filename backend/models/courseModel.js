@@ -6,7 +6,7 @@ const courseSchema = mongoose.Schema({
         required: [true, "Please add Course Name"]
     },
     prerequisites: {
-        type: [String],
+        type: [{courses: [String], credits: Number, description: String}],
         required: false
     },
     corequisites: {
