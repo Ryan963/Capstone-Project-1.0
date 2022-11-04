@@ -45,7 +45,8 @@ function compileCourses(recsArr, courseArr) {
                 
                 break;
             } else if (j === courseArr.length-1) {
-                compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
+                console.log(recsArr[i]);
+                //compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
             }
         }
     }
@@ -61,19 +62,36 @@ function compileCourses(recsArr, courseArr) {
  */
 function prereqCheck(courseArr, completedArr) {
     var reducedArr = []
-    for(var course in courseArr) {
-        var complete = true;
+    
+    // Loop through each course and evaluate prerequisites
+    for(let course in courseArr) {
+        var complete = true
         var prereqArr = courseArr[course].course.prerequisites
-        for (var prereq in prereqArr) {
-            if (!completedArr.includes(prereqArr[prereq])) {
+        
+        // Loop through each prereq in course, and evaluate
+        for (let prereq in prereqArr) {
+            let quota = prereqArr[prereq].credits / 3 // Number of courses needed to fulfill prerequisite
+            
+            // Check each requisite course to see if in array of completed courses
+            for (let req in prereqArr[prereq].courses) {
+                if (completedArr.includes(prereqArr[prereq].courses[req])) {
+                    quota = quota - 1; 
+                }
+                if (quota === 0) { // prereq is fulfilled
+                    break;
+                }
+            }   
+
+            if (quota > 0) { // prereq is unfulfilled
                 complete = false;
                 break;
             }
         }
 
-        if (complete === true) {
+        if (complete === true) { // all prereqs are fulfilled, recommend course
             reducedArr.push(courseArr[course])
         }
+        
     }
 
     return reducedArr;
