@@ -8,7 +8,9 @@ import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
 import { AiOutlineClose } from "react-icons/ai";
 import CourseSelections from "../CourseSelections";
-
+import { Typography, Stepper, Step, StepLabel } from "@material-ui/core";
+import AddPreRequisiteModal from "./AddPreRequisiteModal";
+import PrereqsDisplay from "../PrereqsDisplay";
 function getDisciplines(courses) {
   const disciplines = [];
   for (let course of courses) {
@@ -31,6 +33,7 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
     level: 0,
   });
   const [allCourses, setAllCourses] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
 
   const disciplines = getDisciplines(allCourses);
 
@@ -73,21 +76,6 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
     });
   };
 
-  const addCourseToPrerequisites = (prerequisite) => {
-    for (let current of course.prerequisites) {
-      if (current === prerequisite.name) {
-        toast.error("Prerequisite is already added");
-        return;
-      }
-    }
-    setCourse((prevCourse) => {
-      return {
-        ...prevCourse,
-        prerequisites: [...prevCourse.prerequisites, prerequisite.name],
-      };
-    });
-  };
-
   const addCourseToCorequisites = (corequisite) => {
     for (let current of course.corequisites) {
       if (current === corequisite.name) {
@@ -103,10 +91,10 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
     });
   };
 
-  const removePrerequisite = (prerequisite) => {
+  const removePrerequisite = (index) => {
     setCourse((prevCourse) => {
       const newPrerequsites = [...prevCourse.prerequisites].filter(
-        (p) => p !== prerequisite
+        (p, i) => i !== index
       );
       return {
         ...prevCourse,
@@ -189,8 +177,8 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
   return (
     <>
       <Modal show={show} size="lg" scrollable={true}>
-        <Modal.Header>
-          <Modal.Title>Add A Course </Modal.Title>
+        <Modal.Header style={{ width: "100%", display: "flex" }}>
+          <Modal.Title className="w-full text-center">Add a Course</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div
@@ -198,98 +186,110 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
               minHeight: 300,
             }}
           >
-            <form>
-              <label className="font-semibold text-lg">
-                Enter the Course Name:
-              </label>
-              <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                id="grid-first-name"
-                type="text"
-                placeholder="ex: 'ENGL102'"
-                name="name"
-                value={course.name}
-                onChange={handleChange}
-              />
-              <label className="font-semibold text-lg">
-                Enter Course Descritpion:
-              </label>
-              <div>
-                <textarea
-                  id="message"
-                  rows="4"
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Course Description..."
-                  name="description"
-                  value={course.description}
-                  onChange={handleChange}
-                />
-              </div>
-              <Input
-                handleChange={handleNumberChange}
-                name="credits"
-                placeholder="Enter number of credits"
-                value={course.credits}
-              />
-              <div>
+            {activeStep === 0 && (
+              <form>
                 <label className="font-semibold text-lg">
-                  Course Discipline:
+                  Enter the Course Name:
                 </label>
-
-                <select
-                  className="w-40 m-2 border rounded-md border-primary "
+                <input
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                   id="grid-first-name"
                   type="text"
-                  name="discipline"
-                  placeholder="ex. English"
+                  placeholder="ex: 'ENGL102'"
+                  name="name"
+                  value={course.name}
                   onChange={handleChange}
-                  value={course.discipline}
-                >
-                  <option value={""}></option>
-                  {disciplines.map((discipline, idx) => (
-                    <option key={idx} value={discipline}>
-                      {discipline}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="font-semibold text-lg">Course Level:</label>
-                <select
-                  className="w-50 m-2 pt-2 border rounded-md self-center border-primaryt"
-                  onChange={handleNumberChange}
-                  value={course.level}
-                  name="level"
-                >
-                  <option value="1">100</option>
-                  <option value="2">200</option>
-                  <option value="3">300</option>
-                  <option value="4">400</option>
-                </select>
-              </div>
-              
-              <label className="font-semibold">
-                Enter the Course Prerequisites
-              </label>
+                />
+                <label className="font-semibold text-lg">
+                  Enter Course Descritpion:
+                </label>
+                <div>
+                  <textarea
+                    id="message"
+                    rows="4"
+                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Course Description..."
+                    name="description"
+                    value={course.description}
+                    onChange={handleChange}
+                  />
+                </div>
+                <Input
+                  handleChange={handleNumberChange}
+                  name="credits"
+                  placeholder="Enter number of credits"
+                  value={course.credits}
+                />
+                <div>
+                  <label className="font-semibold text-lg">
+                    Course Discipline:
+                  </label>
 
-              <CourseSelections
-                addCourse={addCourseToPrerequisites}
-                courses={allCourses}
-                addedCourses={course.prerequisites}
-                removeCourse={removePrerequisite}
-              />
-              
-              <label className="font-semibold text-lg">
-                Course Corequisites:
-              </label>
+                  <select
+                    className="w-40 m-2 border rounded-md border-primary "
+                    id="grid-first-name"
+                    type="text"
+                    name="discipline"
+                    placeholder="ex. English"
+                    onChange={handleChange}
+                    value={course.discipline}
+                  >
+                    <option value={""}></option>
+                    {disciplines.map((discipline, idx) => (
+                      <option key={idx} value={discipline}>
+                        {discipline}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-semibold text-lg">Course Level:</label>
+                  <select
+                    className="w-50 m-2 pt-2 border rounded-md self-center border-primary"
+                    onChange={handleNumberChange}
+                    value={course.level}
+                    name="level"
+                  >
+                    <option value="1">100</option>
+                    <option value="2">200</option>
+                    <option value="3">300</option>
+                    <option value="4">400</option>
+                  </select>
+                </div>
+                <div className="font-semibold  flex justify-between my-3">
+                  <div>Course Pre-requisites:</div>
+                  <Button
+                    className="btn"
+                    variant="info"
+                    onClick={() => setActiveStep(1)}
+                  >
+                    Add Pre-requisite
+                  </Button>
+                </div>
+                <PrereqsDisplay
+                  prerequisites={course.prerequisites}
+                  removePrerequisite={removePrerequisite}
+                />
 
-              <CourseSelections
-                addCourse={addCourseToCorequisites}
-                courses={allCourses}
-                addedCourses={course.corequisites}
-                removeCourse={removeCorequisite}
+                <label className="font-semibold text-lg">
+                  Course Corequisites:
+                </label>
+
+                <CourseSelections
+                  addCourse={addCourseToCorequisites}
+                  courses={allCourses}
+                  addedCourses={course.corequisites}
+                  removeCourse={removeCorequisite}
+                />
+              </form>
+            )}
+            {activeStep === 1 && (
+              <AddPreRequisiteModal
+                allCourses={allCourses}
+                setCourse={setCourse}
+                setActiveStep={setActiveStep}
               />
-            </form>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -302,6 +302,7 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
           >
             Cancel
           </Button>
+
           <Button className="btn" variant="success" onClick={handleSubmit}>
             Submit
           </Button>

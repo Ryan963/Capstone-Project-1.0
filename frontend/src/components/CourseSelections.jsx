@@ -38,7 +38,6 @@ const CourseSelections = ({
       }
       return true;
     });
-    console.log(coursesToAdd);
     for (let course of coursesToAdd) {
       addCourse(course);
     }
