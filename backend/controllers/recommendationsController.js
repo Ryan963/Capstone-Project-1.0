@@ -25,14 +25,14 @@ const recommendCourses = asyncHandler(async (req, res) => {
 
   // Create d/M/m requirements array
   var requirements = degree.requirements;
+  
   for (var i = 0; i < Math.max(user.majors.length, user.minors.length); i++) {
-    var major,
-      minor = null;
+    var major, minor = null;
     if (user.majors.length > i) {
       // add major
-      major = await Major.findById(user.majors[i].majorID);
+      major = await Major.findById(user.majors[i]);
       buildRequirements(requirements, major.requirements);
-
+      
       // var stream = getStream(user.majors[i].stream, major);
       // if (stream != null) { // add stream
       //     buildRequirements(requirements, stream.requirements);
@@ -41,18 +41,21 @@ const recommendCourses = asyncHandler(async (req, res) => {
 
     if (user.minors.length > i) {
       // add minor
-      minor = await Minor.findById(user.minors[i].minorID);
+      minor = await Minor.findById(user.minors[i]);
       buildRequirements(requirements, minor.requirements);
+      
     }
   }
 
   var recommendations = []; // Initialize recommendations array
+ 
 
   // Loop through all requirements
   for (var i = 0; i < requirements.length; i++) {
     var req = requirements[i];
     var quota = req.credits / 3; // number of courses to complete requirement (credits / 3 is one course)
     var incomplete_courses = [];
+    
 
     // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
     for (var j = 0; j < req.courses.length; j++) {
@@ -69,21 +72,24 @@ const recommendCourses = asyncHandler(async (req, res) => {
 
     // Add courses to recommend, until there are enough to satisfy requirement
     while (quota > 0) {
+      
       recommendations.push(incomplete_courses[quota - 1]);
       quota = quota - 1;
     }
   }
 
+  
   recommendations = [...new Set(recommendations)]; // Make entries unique (removes duplicates)
-
+  
   // Compile courses from course database, and remove any courses that have incomplete prerequisites
   recommendations = prereqCheck(
     compileCourses(recommendations, courses),
     coursesTaken
   );
-
+  
+  
   // Calculate importance level of courses, by comparing to prerequisites
-  recommendations = prereqImportance(recommendations, requirements);
+  recommendations = prereqImportance(recommendations, requirements, courses);
 
   // Sort recommendations
   recommendations.sort((a, b) => b.importance - a.importance);
