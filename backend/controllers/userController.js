@@ -81,7 +81,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check user email exists and evaluate password
   const user = await User.findOne({ email });
-  if (user && await bcrypt.compare(password, user.password)) {
+  if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       _id: user.id,
       firstname: user.firstname,
@@ -183,16 +183,78 @@ const removeCourses = async (id, coursesToRemove) => {
 const getCourses = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const user = await User.findOne({email:email});
- 
-  console.log(user)
+  const user = await User.findOne({ email: email });
+
+  console.log(user);
   res.status(200).json({
     _id: user.id,
     firstname: user.firstname,
     lastname: user.lastname,
     degree: user.degree,
-    courses: user.courses
+    courses: user.courses,
   });
+});
+
+const getFutureCourses = asyncHandler(async (req, res) => {
+  const { futureCourses } = await User.findById(req.user.id);
+  res.status(200).json({
+    futureCourses,
+  });
+});
+
+// @desc  add future courses to User
+// @route PUT /api/users/futureCourses
+// @access Private
+const addFutureCourses = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const futureCourses = req.body;
+
+    // check if value entered
+    if (!futureCourses) {
+      res.status(400);
+      throw new Error("Please enter value");
+    }
+
+    //* do checks on front end?
+    if (futureCourses.some((c) => user.futureCourses.includes(c))) {
+      res.status(400);
+      throw new Error("selected course(s) already saved");
+    }
+
+    user.futureCourses.push(...futureCourses);
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error.message });
+  }
+});
+
+// @desc  remove User's future courses
+// @route DELETE /api/users/futureCourses
+// @access Private
+const removeFutureCourses = asyncHandler(async (req, res) => {
+  try {
+    const removeCourses = req.body;
+    const user = await User.findById(req.user.id);
+
+    // check if value recieved
+    if (Object.keys(req.body).length === 0) {
+      res.status(400);
+      throw new Error("Please enter value(s) to remove");
+    }
+
+    removeCourses.forEach((course) => {
+      user.futureCourses.pull(course);
+    });
+
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error.message });
+  }
 });
 
 module.exports = {
@@ -202,4 +264,7 @@ module.exports = {
   updateUser,
   getAllUsers,
   getCourses,
+  getFutureCourses,
+  addFutureCourses,
+  removeFutureCourses,
 };

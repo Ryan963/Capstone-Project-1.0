@@ -35,6 +35,10 @@ const userSchema = mongoose.Schema(
       type: [String],
       required: false,
     },
+    futureCourses: {
+      type: [String],
+      required: false,
+    },
     currentyear: {
       type: Number,
       required: false,
