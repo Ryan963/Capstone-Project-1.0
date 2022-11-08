@@ -85,7 +85,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
   );
 
   // Calculate importance level of courses, by comparing to prerequisites
-  recommendations = prereqImportance(recommendations, requirements);
+  recommendations = prereqImportance(recommendations, requirements, courses);
 
   // Sort recommendations
   recommendations.sort((a, b) => b.importance - a.importance);

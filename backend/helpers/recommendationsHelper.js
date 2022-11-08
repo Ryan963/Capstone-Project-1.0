@@ -104,16 +104,23 @@ function prereqCheck(courseArr, completedArr) {
  * @param {*} requirements 
  * @returns 
  */
-function prereqImportance(courseArr, requirements) {
-    for (var course in courseArr) {
-        for (var req in requirements) {
-            
-            if (requirements[req].courses.includes(courseArr[course].course.name)) {
-                courseArr[course].importance = courseArr[course].importance + 1 ;
-            }
-        }
-        
+function prereqImportance(courseArr, requirements, compileArr) {
+    // Compile array of required courses
+    let requireCourses = [];
+    for (var req in requirements) { 
+        requireCourses = requireCourses.concat(requirements[req].courses);        
+        /*if (requirements[req].courses.includes(courseArr[course].course.name)) {
+            courseArr[course].importance = courseArr[course].importance + 1 ;
+        }*/            
     }
+    compiledReqs = compileCourses(requireCourses, compileArr);
+    console.log(compiledReqs[0]);
+    // Loop through courses and increment importance based on frequency in requirements and other courses prerequisites
+    /*for (var course in courseArr) {
+
+        
+        
+    }*/
 
     return courseArr;
 }
