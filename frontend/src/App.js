@@ -14,6 +14,11 @@ import Majors from "./pages/admin/Majors";
 import Courses from "./pages/admin/Courses";
 import Students from "./pages/admin/Students";
 import Minors from "./pages/admin/Minors";
+import UserHome from "./pages/user/UserHome";
+import UserRecommend from "./pages/user/UserRecommend";
+import UserCourses from "./pages/user/UserCourses";
+import UserProfile from "./pages/user/UserProfile";
+import PrivateUserRoute from "./components/routing/PrivateUserRoute";
 
 function App() {
   return (
@@ -26,6 +31,13 @@ function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route element={<PrivateUserRoute />}>
+              <Route path="/user/me" element={<UserHome />} />
+              {/* Change these paths to the actual endpoints you will be using */}
+              <Route path="/user/recommend" element={<UserRecommend />} />
+              <Route path="/user/courses" element={<UserCourses />} />
+              <Route path="/user/profile" element={<UserProfile />} />
+            </Route>
             <Route element={<PrivateAdminRoute />}>
               <Route path="/admin/degrees" element={<Degrees />} />
               <Route path="/admin/majors" element={<Majors />} />

@@ -16,7 +16,11 @@ const Dashboard = () => {
       navigate("/login");
     }
   }, [navigate]);
-  return <div>Dashboard</div>;
+  return (
+    <>
+      <div>DASHBOARD</div>
+    </>
+  );
 };
 
 export default Dashboard;
