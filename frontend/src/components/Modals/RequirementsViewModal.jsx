@@ -3,7 +3,6 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
-
 const RequirementCard = ({ requirement }) => {
   //const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
   /* TO DO
@@ -12,10 +11,7 @@ const RequirementCard = ({ requirement }) => {
   }*/
 
   return (
-    <div 
-      style={{ cursor: "pointer" }} 
-      
-    >
+    <div style={{ cursor: "pointer" }}>
       <div
         style={{
           padding: "0.4rem",
@@ -47,9 +43,7 @@ const RequirementCard = ({ requirement }) => {
           </>
         )}
       </div>
-      
     </div>
-    
   );
 };
 
@@ -61,9 +55,7 @@ const RequirementsViewModal = ({
   close,
   showAddRequirementsModal,
   showUpdateRequirementsModal,
-  
 }) => {
-  
   return (
     <>
       {requirements && (
@@ -75,7 +67,6 @@ const RequirementsViewModal = ({
             close();
           }}
         >
-          
           <Modal.Header>
             <Modal.Title>{name} Requirements</Modal.Title>
             <Button
@@ -95,17 +86,14 @@ const RequirementsViewModal = ({
               }}
             >
               {requirements.map((req, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   onClick={() => {
                     //console.log(req);
                     showUpdateRequirementsModal(req);
                   }}
                 >
-                  <RequirementCard 
-                    requirement={req}
-                    
-                  />
+                  <RequirementCard requirement={req} />
                 </div>
               ))}
             </div>
