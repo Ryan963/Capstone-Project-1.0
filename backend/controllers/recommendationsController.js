@@ -55,6 +55,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
     var req = requirements[i];
     var quota = req.credits / 3; // number of courses to complete requirement (credits / 3 is one course)
     var incomplete_courses = [];
+    
 
     // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
     for (var j = 0; j < req.courses.length; j++) {
@@ -71,19 +72,22 @@ const recommendCourses = asyncHandler(async (req, res) => {
 
     // Add courses to recommend, until there are enough to satisfy requirement
     while (quota > 0) {
+      
       recommendations.push(incomplete_courses[quota - 1]);
       quota = quota - 1;
     }
   }
 
+  
   recommendations = [...new Set(recommendations)]; // Make entries unique (removes duplicates)
-
+  
   // Compile courses from course database, and remove any courses that have incomplete prerequisites
   recommendations = prereqCheck(
     compileCourses(recommendations, courses),
     coursesTaken
   );
-
+  
+  
   // Calculate importance level of courses, by comparing to prerequisites
   recommendations = prereqImportance(recommendations, requirements, courses);
 
