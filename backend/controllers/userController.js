@@ -9,7 +9,20 @@ const mongoose = require("mongoose");
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { firstname, lastname, email, password, degree } = req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    password,
+    degree,
+    currentyear,
+    currentsemester,
+    graduated,
+    gpa,
+    majors,
+    minors,
+    courses,
+  } = req.body;
 
   if (!firstname || !lastname || !email || !password || !degree) {
     res.status(400);
@@ -23,15 +36,6 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("Email already in use");
   }
 
-  // Check if degree exists and store degree objectId
-  const degreeExists = await Degree.findOne({ name: degree });
-  if (!degreeExists) {
-    res.status(400);
-    throw new Error("Degree not found");
-  } else {
-    var degreeId = degreeExists._id;
-  }
-
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,19 +46,20 @@ const registerUser = asyncHandler(async (req, res) => {
     lastname,
     email,
     password: hashedPassword,
-    degree: degreeId,
-    majors: [],
-    minors: [],
-    courses: [],
-    currentyear: null,
-    currentsemester: null,
-    graduated: false,
-    gpa: null,
+    degree: degree,
+    majors: majors,
+    minors: minors,
+    courses: courses,
+    currentyear: Number.parseInt(currentyear),
+    currentsemester: Number.parseInt(currentsemester),
+    graduated: graduated,
+    gpa: Number.parseFloat(gpa),
   });
 
   // Check user created without issue
   if (user) {
     res.status(201).json({
+      success: true,
       _id: user.id,
       firstname: user.firstname,
       lastname: user.lastname,
@@ -83,6 +88,7 @@ const loginUser = asyncHandler(async (req, res) => {
       lastname: user.lastname,
       email: user.email,
       degree: user.degree,
+      success: true,
       token: generateToken(user._id),
     });
   } else {
@@ -171,6 +177,23 @@ const removeCourses = async (id, coursesToRemove) => {
   await User.findByIdAndUpdate(id, update);
   return;
 };
+// @desc  Get User Data
+// @route GET /api/users/me
+// @access Private
+const getCourses = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email: email });
+
+  console.log(user);
+  res.status(200).json({
+    _id: user.id,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    degree: user.degree,
+    courses: user.courses,
+  });
+});
 
 const getFutureCourses = asyncHandler(async (req, res) => {
   const { futureCourses } = await User.findById(req.user.id);
@@ -240,6 +263,7 @@ module.exports = {
   getMe,
   updateUser,
   getAllUsers,
+  getCourses,
   getFutureCourses,
   addFutureCourses,
   removeFutureCourses,

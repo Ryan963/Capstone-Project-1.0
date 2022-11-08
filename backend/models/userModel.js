@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema(
       required: false,
     },
     majors: {
-      type: [{ majorID: mongoose.Schema.Types.ObjectId, stream: String }],
+      type: [mongoose.Schema.Types.ObjectId],
       required: false,
     },
     minors: {
