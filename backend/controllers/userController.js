@@ -76,13 +76,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check user email exists and evaluate password
   const user = await User.findOne({ email });
-  if (user && (await bcrypt.compare(password, user.password))) {
+  if (user && await bcrypt.compare(password, user.password)) {
     res.status(200).json({
       _id: user.id,
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
       degree: user.degree,
+      success: true,
       token: generateToken(user._id),
     });
   } else {
@@ -171,11 +172,23 @@ const removeCourses = async (id, coursesToRemove) => {
   await User.findByIdAndUpdate(id, update);
   return;
 };
+// @desc  Get User Data
+// @route GET /api/users/me
+// @access Private
+const getCourses = asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-const getCourses = async (id) => {
-  const user = await User.findById(id);
-  return user.courses;
-};
+  const user = await User.findOne({email:email});
+ 
+  console.log(user)
+  res.status(200).json({
+    _id: user.id,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    degree: user.degree,
+    courses: user.courses
+  });
+});
 
 module.exports = {
   registerUser,
@@ -183,4 +196,5 @@ module.exports = {
   getMe,
   updateUser,
   getAllUsers,
+  getCourses,
 };
