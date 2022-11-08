@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema(
       required: false,
     },
     majors: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: [{ majorID: mongoose.Schema.Types.ObjectId, stream: String }],
       required: false,
     },
     minors: {
@@ -32,6 +32,10 @@ const userSchema = mongoose.Schema(
       required: false,
     },
     courses: {
+      type: [String],
+      required: false,
+    },
+    futureCourses: {
       type: [String],
       required: false,
     },
