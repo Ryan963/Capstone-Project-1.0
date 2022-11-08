@@ -64,3 +64,9 @@
   box-shadow: none;
   outline: 0 none;
 }
+
+.input2:focus {
+  border: 2px solid var(--primary-color);
+  box-shadow: none;
+  outline: 0 none;
+}

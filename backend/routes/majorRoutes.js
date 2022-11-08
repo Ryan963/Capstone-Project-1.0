@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express");
 const {
   getMajors,
   addMajor,
@@ -6,10 +6,10 @@ const {
   deleteMajor,
 } = require("../controllers/majorController");
 
-const router = express.Router()
-const { protect } = require('../middleware/adminAuthMiddleware') // admins can edit majors
+const router = express.Router();
+const { protect } = require("../middleware/adminAuthMiddleware"); // admins can edit majors
 
-router.route('/').get(protect, getMajors).post(protect, addMajor)
-router.route('/:id').delete(protect, deleteMajor).put(protect, updateMajor)
+router.route("/").get(getMajors).post(protect, addMajor);
+router.route("/:id").delete(protect, deleteMajor).put(protect, updateMajor);
 
-module.exports = router
+module.exports = router;
