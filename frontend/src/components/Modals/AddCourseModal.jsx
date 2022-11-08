@@ -219,6 +219,8 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
                   name="credits"
                   placeholder="Enter number of credits"
                   value={course.credits}
+                  label="Enter number of credits"
+                  type="number"
                 />
                 <div>
                   <label className="font-semibold text-lg">

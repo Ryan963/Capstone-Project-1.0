@@ -226,6 +226,8 @@ const UpdateRequirementModal = ({
                     name="credits"
                     placeholder="Enter number of credits"
                     value={requirement.credits}
+                    label="Enter number of credits"
+                    type="number"
                   />
                   <label className="font-semibold">
                     Enter the Courses that the user can choose from:
