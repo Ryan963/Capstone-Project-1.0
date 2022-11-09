@@ -50,6 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
     majors: majors,
     minors: minors,
     courses: courses,
+    futureCourses: [],
     currentyear: Number.parseInt(currentyear),
     currentsemester: Number.parseInt(currentsemester),
     graduated: graduated,
@@ -101,16 +102,14 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, firstname, lastname, email, degree } = await User.findById(
-    req.user.id
-  );
+  const user = await User.findOne({ email: req.query.email });
+
+  if (!user) {
+    res.status(400).json({ message: "User does not exist" });
+  }
 
   res.status(200).json({
-    id: _id,
-    firstname,
-    lastname,
-    email,
-    degree,
+    user,
   });
 });
 
@@ -208,7 +207,7 @@ const getFutureCourses = asyncHandler(async (req, res) => {
 const addFutureCourses = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    const futureCourses = req.body;
+    const futureCourses = req.body.futureCourses;
 
     // check if value entered
     if (!futureCourses) {
@@ -217,12 +216,16 @@ const addFutureCourses = asyncHandler(async (req, res) => {
     }
 
     //* do checks on front end?
-    if (futureCourses.some((c) => user.futureCourses.includes(c))) {
+    if (
+      futureCourses.filter((c) => user.futureCourses.includes(c)).length > 0
+    ) {
       res.status(400);
       throw new Error("selected course(s) already saved");
     }
 
-    user.futureCourses.push(...futureCourses);
+    for (let course of futureCourses) {
+      user.futureCourses.push(course);
+    }
     user.save();
     res.status(200).json({ success: true, futureCourses: user.futureCourses });
   } catch (error) {
@@ -236,18 +239,16 @@ const addFutureCourses = asyncHandler(async (req, res) => {
 // @access Private
 const removeFutureCourses = asyncHandler(async (req, res) => {
   try {
-    const removeCourses = req.body;
-    const user = await User.findById(req.user.id);
+    const coursesToRemove = req.body.coursesToRemove;
+    const user = await User.findById(req.body.id);
 
-    // check if value recieved
-    if (Object.keys(req.body).length === 0) {
-      res.status(400);
-      throw new Error("Please enter value(s) to remove");
+    console.log(req.body);
+    if (!user) {
+      throw new Error("Could not find user ");
     }
-
-    removeCourses.forEach((course) => {
-      user.futureCourses.pull(course);
-    });
+    user.futureCourses = user.futureCourses.filter(
+      (course) => !coursesToRemove.includes(course)
+    );
 
     user.save();
     res.status(200).json({ success: true, futureCourses: user.futureCourses });
@@ -256,6 +257,28 @@ const removeFutureCourses = asyncHandler(async (req, res) => {
     res.status(200).json({ success: false, message: error.message });
   }
 });
+
+const completeCourse = async (req, res) => {
+  try {
+    const course = req.body.course;
+    if (!course) {
+      throw new Error("Course is not found");
+    }
+    const user = await User.findById(req.body.id);
+
+    if (!user) {
+      throw new Error("Could not find user ");
+    }
+    user.futureCourses = user.futureCourses.filter((c) => c !== course);
+
+    user.courses.push(course);
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -267,4 +290,5 @@ module.exports = {
   getFutureCourses,
   addFutureCourses,
   removeFutureCourses,
+  completeCourse,
 };

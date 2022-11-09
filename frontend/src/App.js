@@ -19,6 +19,7 @@ import UserRecommend from "./pages/user/UserRecommend";
 import UserCourses from "./pages/user/UserCourses";
 import UserProfile from "./pages/user/UserProfile";
 import PrivateUserRoute from "./components/routing/PrivateUserRoute";
+import UserProgress from "./pages/user/UserProgress";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path="/user/recommend" element={<UserRecommend />} />
               <Route path="/user/courses" element={<UserCourses />} />
               <Route path="/user/profile" element={<UserProfile />} />
+              <Route path="/user/progress" element={<UserProgress />} />
             </Route>
             <Route element={<PrivateAdminRoute />}>
               <Route path="/admin/degrees" element={<Degrees />} />

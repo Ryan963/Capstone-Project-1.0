@@ -11,6 +11,7 @@ const {
   getFutureCourses,
   addFutureCourses,
   removeFutureCourses,
+  completeCourse,
 } = require("../controllers/userController");
 
 router.post("/", registerUser);
@@ -19,7 +20,8 @@ router.get("/me", protect, getMe);
 router
   .route("/futureCourses")
   .get(protect, getFutureCourses)
-  .put(protect, addFutureCourses)
+  .post(protect, addFutureCourses)
+  .put(protect, completeCourse)
   .delete(protect, removeFutureCourses);
 router.put("/:id", protect, updateUser);
 router.get("/", adminProtect.protect, getAllUsers);
