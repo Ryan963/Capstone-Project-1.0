@@ -1,7 +1,7 @@
 import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { AiOutlineClose } from "react-icons/ai";
-const PrereqsDisplay = ({ prerequisites, removePrerequisite }) => {
+const PrereqsDisplay = ({ prerequisites, removePrerequisite, viewOnly }) => {
   console.log(prerequisites);
   return (
     <div className="w-full h-64 overflow-y-scroll ">
@@ -23,17 +23,19 @@ const PrereqsDisplay = ({ prerequisites, removePrerequisite }) => {
                   borderRadius: 50,
                 }}
               >
-                <AiOutlineClose
-                  className="absolute top-5 right-5 text-danger cursor-pointer"
-                  size={25}
-                  onClick={() => {
-                    if (removePrerequisite) {
-                      removePrerequisite(index);
-                    } else {
-                      return;
-                    }
-                  }}
-                />
+                {!viewOnly && (
+                  <AiOutlineClose
+                    className="absolute top-5 right-5 text-danger cursor-pointer"
+                    size={25}
+                    onClick={() => {
+                      if (removePrerequisite) {
+                        removePrerequisite(index);
+                      } else {
+                        return;
+                      }
+                    }}
+                  />
+                )}
                 <>
                   <div className="flex  w-100">
                     <span>Credits: {prereq.credits} </span>
