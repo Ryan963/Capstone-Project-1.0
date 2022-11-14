@@ -99,7 +99,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
     recommendations.splice(10, recommendations.length - 10);
   }
 
-  res.status(200).json({ recommendations });
+  res.status(200).json({success: true, recommendedCourses: recommendations });
 });
 
 module.exports = { recommendCourses };
