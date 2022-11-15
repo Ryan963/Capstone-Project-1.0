@@ -17,7 +17,6 @@ const Login = () => {
 
   const handleChange = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
-    //console.log("email: " + userInfo.email + "\npassword: " + userInfo.password);
   };
 
   const handleSubmit = (e) => {
