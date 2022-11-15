@@ -31,7 +31,14 @@ import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect } from "react";
+import Loader from "../../components/UI/Loader";
+import ViewCourseModal from "../../components/Modals/ViewCourseModal";
 const drawerWidth = 200;
+const Page = {
+  Start: 'Start',
+  Load: 'Load',
+  Recommend: 'Recommend',
+};
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -69,7 +76,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const DrawerHeader = styled("div")(({ theme, recommend }) => ({
+const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
@@ -97,8 +104,10 @@ export default function UserRecommend() {
   };
 
   const [open, setOpen] = React.useState(false);
-  const [recommend, setRecommend] = React.useState(false);
+  const [page, setPage] = React.useState(Page.Start);
   const [recommendedCourses, setRecommendedCourses] = React.useState([]);
+  const [currentCourse, setCurrentCourse] = React.useState({});
+  const [showCourseModal, setShowCourseModal] = React.useState(false);
 
   const theme = createTheme({
     palette: {
@@ -127,6 +136,7 @@ export default function UserRecommend() {
   };
 
   const handleRecommend = () => {
+    setPage(Page.Load);
     const token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -140,11 +150,8 @@ export default function UserRecommend() {
       )
       .then((res) => {
         if (res.data.success) {
-          //console.log(res.data)
           toast.success("Courses have been chosen successfully");
-          //return(res.data.recommendedCourses)
           setRecommendedCourses(res.data.recommendedCourses);
-          
         } else {
           toast.error(res.data.message);
         }
@@ -159,7 +166,8 @@ export default function UserRecommend() {
 
   useEffect(() => {
     if (recommendedCourses.length > 0) {
-      setRecommend(true);
+      console.log(recommendedCourses);
+      setPage(Page.Recommend);
     }  
   }, [recommendedCourses])
   //Controls Icons and links on the navigation drawer/hamburger menu
@@ -290,7 +298,7 @@ export default function UserRecommend() {
         </Drawer>
         <Main open={open}>
           <DrawerHeader />
-            {!recommend && (
+            {page === Page.Start && (
               <div>
                 <div 
                   className="flex justify-center"
@@ -303,7 +311,17 @@ export default function UserRecommend() {
                 </div>
               </div>
             )}
-            {recommend && (
+            {page === Page.Load && (
+              <div>
+                <div className="flex justify-center">
+                 <span>Building list of courses...</span>
+                </div>
+                <div class="pt-4 flex justify-center">
+                  <Loader />
+                </div>
+              </div>
+            )}
+            {page === Page.Recommend && (
               <div>
                 
                 <div>
@@ -311,7 +329,7 @@ export default function UserRecommend() {
                     return(
                       <div 
                         key={idx}
-                        className={`flex mt-1 mx-4 p-10 items-center rounded-3xl border  ${
+                        className={`flex mt-1 mx-60 p-10 items-center rounded-3xl border  ${
                           idx % 2 === 1 ? "bg-lightblue2" : ""
                         }`}
                       >
@@ -325,7 +343,14 @@ export default function UserRecommend() {
                             </div>
                         </div>
                         <div className="align-center mx-auto ">
-                          <div><Button >View Course</Button></div>
+                          <div>
+                            <Button onClick={() => {
+                              setCurrentCourse(course.course)
+                              setShowCourseModal(true)
+                            }}>
+                              View Course
+                            </Button>
+                          </div>
                           
                           <div className="pt-2"><Button variant="success">Add Course</Button></div>
                         </div>
@@ -337,8 +362,13 @@ export default function UserRecommend() {
                   )}
                 </div>
                 <div class="pt-4 flex justify-center">
-                  <Button variant="success" onClick={() => setRecommend(false)}>Add All</Button>
+                  <Button variant="success" onClick={() => setPage(Page.Start)}>Add All</Button>
                 </div>
+                <ViewCourseModal
+                  show={showCourseModal}
+                  close={() => setShowCourseModal(false)}
+                  course={currentCourse}
+                />
               </div>
             )}
             
