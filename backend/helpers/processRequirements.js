@@ -34,8 +34,17 @@ function processRequirements(requirement) {
         );
       }
       return requirement;
-    
-    //Add new requiremens here by using case "REQUIREMENT_TYPE"
+    // need level and number of credits
+    case "max_by_level":
+      break;
+    // need desciplines and number of credits maximum
+    case "max_by_descipline":
+      break;
+    // need only number of credits and the check will check any descipline
+    case "max_by_all_desciplines":
+      break;
+    case "max_by_course":
+      break;
     default:
       throw new Error("type does not exist");
   }
