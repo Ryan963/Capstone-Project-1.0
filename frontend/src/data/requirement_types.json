@@ -1,3 +1,7 @@
 {
-  "credits_of_group": ["credits", "courses", "description"]
+  "credits_of_group": ["credits", "courses", "description"],
+  "max_by_level": ["credits", "level", "description"],
+  "max_by_discipline": ["credits", "disciplines", "description"],
+  "max_by_all_disciplines": ["credits", "description"],
+  "max_by_course": ["credits", "courses", "description"]
 }

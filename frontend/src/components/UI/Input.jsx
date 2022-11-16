@@ -1,7 +1,15 @@
 import React from "react";
 import styles from "../../styles/Login.module.css";
 
-const Input = ({ name, placeholder, value, handleChange, label, type }) => {
+const Input = ({
+  name,
+  placeholder,
+  value,
+  handleChange,
+  label,
+  type,
+  disabled,
+}) => {
   return (
     <div className={`mt-1 mb-3`}>
       {label && <label className="font-semibold text-lg">{label}</label>}
@@ -12,6 +20,7 @@ const Input = ({ name, placeholder, value, handleChange, label, type }) => {
         placeholder={placeholder}
         name={name}
         value={value}
+        disabled={disabled}
       />
     </div>
   );

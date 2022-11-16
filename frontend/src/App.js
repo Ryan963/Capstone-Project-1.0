@@ -6,8 +6,6 @@ import Register from "./pages/Register";
 import AdminLogin from "./pages/AdminLogin";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
-import AdminDashboard from "./pages/AdminDashboard";
-import Dashboard from "./pages/Dashboard";
 import PrivateAdminRoute from "./components/routing/PrivateAdminRoute";
 import Degrees from "./pages/admin/Degrees";
 import Majors from "./pages/admin/Majors";
@@ -47,8 +45,6 @@ function App() {
               <Route path="/admin/courses" element={<Courses />} />
               <Route path="/admin/students" element={<Students />} />
             </Route>
-
-            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </div>
       </Router>

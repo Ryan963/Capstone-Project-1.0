@@ -42,6 +42,60 @@ const RequirementCard = ({ requirement }) => {
             </div>
           </>
         )}
+        {requirement.type === "max_by_level" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="flex  w-100">
+              <span>Level: {requirement.level} </span>
+            </div>
+
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_discipline" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="flex  w-100">
+              <span>Disciplines: {requirement.disciplines.join(", ")} </span>
+            </div>
+
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_all_disciplines" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_course" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="row p-2">
+              Courses:{" "}
+              {requirement.courses.length < 10
+                ? requirement.courses.join(", ")
+                : requirement.courses.slice(0, 6).join(",") + ", etc..."}
+            </div>
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

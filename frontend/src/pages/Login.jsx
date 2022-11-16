@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const Login = () => {
   const navigate = useNavigate();
   const [inputFocus, updateFocus] = useState(false);
@@ -92,7 +91,6 @@ const Login = () => {
       </div>
     </div>
   );
-  
 };
 
 export default Login;
