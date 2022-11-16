@@ -118,6 +118,8 @@ const AddPreRequisiteModal = ({ allCourses, setCourse, setActiveStep }) => {
         name="credits"
         placeholder="Enter number of credits"
         value={prereq.credits}
+        label="Enter number of credits"
+        type="number"
       />
       <label className="font-semibold">
         Enter the Courses needed for the Pre-requisite:

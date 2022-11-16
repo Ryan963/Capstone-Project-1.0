@@ -18,6 +18,7 @@ function ViewCourseModal({ course, show, close }) {
         <Modal
           show={show}
           size="lg"
+          style={{ zIndex: 100000 }}
           scrollable={true}
           onHide={() => {
             close();
@@ -42,7 +43,10 @@ function ViewCourseModal({ course, show, close }) {
                   {prerequisites === undefined || prerequisites.length === 0 ? (
                     "N/A"
                   ) : (
-                    <PrereqsDisplay prerequisites={prerequisites} />
+                    <PrereqsDisplay
+                      prerequisites={prerequisites}
+                      viewOnly={true}
+                    />
                   )}
                 </p>
               </div>

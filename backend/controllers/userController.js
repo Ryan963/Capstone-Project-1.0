@@ -9,7 +9,20 @@ const mongoose = require("mongoose");
 // @route POST /api/users
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { firstname, lastname, email, password, degree } = req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    password,
+    degree,
+    currentyear,
+    currentsemester,
+    graduated,
+    gpa,
+    majors,
+    minors,
+    courses,
+  } = req.body;
 
   if (!firstname || !lastname || !email || !password || !degree) {
     res.status(400);
@@ -23,15 +36,6 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("Email already in use");
   }
 
-  // Check if degree exists and store degree objectId
-  const degreeExists = await Degree.findOne({ name: degree });
-  if (!degreeExists) {
-    res.status(400);
-    throw new Error("Degree not found");
-  } else {
-    var degreeId = degreeExists._id;
-  }
-
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,19 +46,21 @@ const registerUser = asyncHandler(async (req, res) => {
     lastname,
     email,
     password: hashedPassword,
-    degree: degreeId,
-    majors: [],
-    minors: [],
-    courses: [],
-    currentyear: null,
-    currentsemester: null,
-    graduated: false,
-    gpa: null,
+    degree: degree,
+    majors: majors,
+    minors: minors,
+    courses: courses,
+    futureCourses: [],
+    currentyear: Number.parseInt(currentyear),
+    currentsemester: Number.parseInt(currentsemester),
+    graduated: graduated,
+    gpa: Number.parseFloat(gpa),
   });
 
   // Check user created without issue
   if (user) {
     res.status(201).json({
+      success: true,
       _id: user.id,
       firstname: user.firstname,
       lastname: user.lastname,
@@ -76,7 +82,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check user email exists and evaluate password
   const user = await User.findOne({ email });
-  if (user && await bcrypt.compare(password, user.password)) {
+  if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       _id: user.id,
       firstname: user.firstname,
@@ -96,16 +102,14 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, firstname, lastname, email, degree } = await User.findById(
-    req.user.id
-  );
+  const user = await User.findOne({ email: req.query.email });
+
+  if (!user) {
+    res.status(400).json({ message: "User does not exist" });
+  }
 
   res.status(200).json({
-    id: _id,
-    firstname,
-    lastname,
-    email,
-    degree,
+    user,
   });
 });
 
@@ -178,17 +182,103 @@ const removeCourses = async (id, coursesToRemove) => {
 const getCourses = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const user = await User.findOne({email:email});
- 
-  console.log(user)
+  const user = await User.findOne({ email: email });
+
+  console.log(user);
   res.status(200).json({
     _id: user.id,
     firstname: user.firstname,
     lastname: user.lastname,
     degree: user.degree,
-    courses: user.courses
+    courses: user.courses,
   });
 });
+
+const getFutureCourses = asyncHandler(async (req, res) => {
+  const { futureCourses } = await User.findById(req.user.id);
+  res.status(200).json({
+    futureCourses,
+  });
+});
+
+// @desc  add future courses to User
+// @route PUT /api/users/futureCourses
+// @access Private
+const addFutureCourses = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const futureCourses = req.body.futureCourses;
+
+    // check if value entered
+    if (!futureCourses) {
+      res.status(400);
+      throw new Error("Please enter value");
+    }
+
+    //* do checks on front end?
+    if (
+      futureCourses.filter((c) => user.futureCourses.includes(c)).length > 0
+    ) {
+      res.status(400);
+      throw new Error("selected course(s) already saved");
+    }
+
+    for (let course of futureCourses) {
+      user.futureCourses.push(course);
+    }
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error.message });
+  }
+});
+
+// @desc  remove User's future courses
+// @route DELETE /api/users/futureCourses
+// @access Private
+const removeFutureCourses = asyncHandler(async (req, res) => {
+  try {
+    const coursesToRemove = req.body.coursesToRemove;
+    const user = await User.findById(req.body.id);
+
+    console.log(req.body);
+    if (!user) {
+      throw new Error("Could not find user ");
+    }
+    user.futureCourses = user.futureCourses.filter(
+      (course) => !coursesToRemove.includes(course)
+    );
+
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({ success: false, message: error.message });
+  }
+});
+
+const completeCourse = async (req, res) => {
+  try {
+    const course = req.body.course;
+    if (!course) {
+      throw new Error("Course is not found");
+    }
+    const user = await User.findById(req.body.id);
+
+    if (!user) {
+      throw new Error("Could not find user ");
+    }
+    user.futureCourses = user.futureCourses.filter((c) => c !== course);
+
+    user.courses.push(course);
+    user.save();
+    res.status(200).json({ success: true, futureCourses: user.futureCourses });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -197,4 +287,8 @@ module.exports = {
   updateUser,
   getAllUsers,
   getCourses,
+  getFutureCourses,
+  addFutureCourses,
+  removeFutureCourses,
+  completeCourse,
 };

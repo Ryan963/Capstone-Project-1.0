@@ -45,10 +45,12 @@ function compileCourses(recsArr, courseArr) {
                 
                 break;
             } else if (j === courseArr.length-1) {
-                compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
+                //console.log(recsArr[i]);
+                //compiledArr.push(new Object({name: recsArr[i], description: "No course found"}));
             }
         }
     }
+    
     return compiledArr;
 }
 
@@ -61,19 +63,36 @@ function compileCourses(recsArr, courseArr) {
  */
 function prereqCheck(courseArr, completedArr) {
     var reducedArr = []
-    for(var course in courseArr) {
-        var complete = true;
+    
+    // Loop through each course and evaluate prerequisites
+    for(let course in courseArr) {
+        var complete = true
         var prereqArr = courseArr[course].course.prerequisites
-        for (var prereq in prereqArr) {
-            if (!completedArr.includes(prereqArr[prereq])) {
+        
+        // Loop through each prereq in course, and evaluate
+        for (let prereq in prereqArr) {
+            let quota = prereqArr[prereq].credits / 3 // Number of courses needed to fulfill prerequisite
+            
+            // Check each requisite course to see if in array of completed courses
+            for (let req in prereqArr[prereq].courses) {
+                if (completedArr.includes(prereqArr[prereq].courses[req])) {
+                    quota = quota - 1; 
+                }
+                if (quota === 0) { // prereq is fulfilled
+                    break;
+                }
+            }   
+
+            if (quota > 0) { // prereq is unfulfilled
                 complete = false;
                 break;
             }
         }
 
-        if (complete === true) {
+        if (complete === true) { // all prereqs are fulfilled, recommend course
             reducedArr.push(courseArr[course])
         }
+        
     }
 
     return reducedArr;
@@ -82,21 +101,43 @@ function prereqCheck(courseArr, completedArr) {
 /**
  * Increments importance of course
  * based on the number of times it appears in other requirements prerequisites
- * @param {*} courseArr 
- * @param {*} requirements 
+ * @param {Array} courseArr array of courses to be recommended
+ * @param {Array} requirements array of user's requirements
+ * @param {Array} compileArr database course data for compiling
  * @returns 
  */
-function prereqImportance(courseArr, requirements) {
-    for (var course in courseArr) {
-        for (var req in requirements) {
+function prereqImportance(courseArr, requirements, compileArr) {
+    
+    // Compile array of required courses
+    let requireCourses = [];
+    for (var req in requirements) { 
+        requireCourses = requireCourses.concat(requirements[req].courses);        
+        /*if (requirements[req].courses.includes(courseArr[course].course.name)) {
+            courseArr[course].importance = courseArr[course].importance + 1 ;
+        }*/            
+    }
+    compiledReqs = compileCourses(requireCourses, compileArr);
+   
+    // Loop through courses and increment importance based on frequency in requirements and other courses prerequisites
+    for (let i=0; i < courseArr.length; i++) {
+        currentCourse = courseArr[i];
+        // Loop through requirements
+        for (let j=0; j < compiledReqs.length; j++) {
+            currentReq = compiledReqs[j];
+            if (currentCourse.course.name === currentReq.course.name) {
+                currentCourse.importance = currentCourse.importance+1;
+            }
             
-            if (requirements[req].courses.includes(courseArr[course].course.name)) {
-                courseArr[course].importance = courseArr[course].importance + 1 ;
+            // Loop through requirement prereqs
+            for (let prereq in currentReq.course.prerequisites) {
+                currentPrereq = currentReq.course.prerequisites[prereq];
+                if (currentPrereq.courses.includes(currentCourse.course.name)) {
+                    currentCourse.importance = currentCourse.importance+1;
+                }
             }
         }
-        
     }
-
+    
     return courseArr;
 }
 
