@@ -4,12 +4,6 @@ import Button from "react-bootstrap/Button";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const RequirementCard = ({ requirement }) => {
-  //const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
-  /* TO DO
-  const updateRequirement = (requirement) => {
-    const requirementCopy = [...requirement]
-  }*/
-
   return (
     <div style={{ cursor: "pointer" }}>
       <div
