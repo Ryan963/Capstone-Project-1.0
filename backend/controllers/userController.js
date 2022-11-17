@@ -6,7 +6,7 @@ const Degree = require("../models/degreeModel");
 const mongoose = require("mongoose");
 
 // @desc Register new User
-// @route POST /api/users
+// @route POST /api/user
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
   const {
@@ -75,7 +75,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 // @desc  Login User
-// @route POST /api/users/login
+// @route POST /api/user/login
 // @access Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -99,7 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 // @desc  Get User Data
-// @route GET /api/users/me
+// @route GET /api/user/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.query.email });
@@ -121,7 +121,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 // @desc  update User Data
-// @route PUT /api/users/
+// @route PUT /api/user/
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
@@ -177,7 +177,7 @@ const removeCourses = async (id, coursesToRemove) => {
   return;
 };
 // @desc  Get User Data
-// @route GET /api/users/me
+// @route GET /api/user/me
 // @access Private
 const getCourses = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -202,7 +202,7 @@ const getFutureCourses = asyncHandler(async (req, res) => {
 });
 
 // @desc  add future courses to User
-// @route PUT /api/users/futureCourses
+// @route POST /api/user/futureCourses
 // @access Private
 const addFutureCourses = asyncHandler(async (req, res) => {
   try {
@@ -235,7 +235,7 @@ const addFutureCourses = asyncHandler(async (req, res) => {
 });
 
 // @desc  remove User's future courses
-// @route DELETE /api/users/futureCourses
+// @route DELETE /api/user/futureCourses
 // @access Private
 const removeFutureCourses = asyncHandler(async (req, res) => {
   try {

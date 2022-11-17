@@ -33,6 +33,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import Loader from "../../components/UI/Loader";
 import ViewCourseModal from "../../components/Modals/ViewCourseModal";
+import useUser from "../../hooks/useUser"
 const drawerWidth = 200;
 const Page = {
   Start: 'Start',
@@ -108,6 +109,7 @@ export default function UserRecommend() {
   const [recommendedCourses, setRecommendedCourses] = React.useState([]);
   const [currentCourse, setCurrentCourse] = React.useState({});
   const [showCourseModal, setShowCourseModal] = React.useState(false);
+  const [user, setUser] = useUser();
 
   const theme = createTheme({
     palette: {
@@ -159,10 +161,46 @@ export default function UserRecommend() {
       .catch((err) => {
         console.log(err);
         toast.error(err.message);
-      });
-    
-    
+      });   
   };
+
+  const handleAddCourse = (courseArray) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .post(
+        `${process.env.REACT_APP_SERVER_API}/user/futureCourses`,
+        {
+          id: user._id,
+          futureCourses: courseArray
+        },
+        config
+      )
+      .then((res) => {
+        if (res.data.success) {
+          toast.success("Course(s) added to Future Courses");
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.message);
+      });
+  }
+
+  const handleAddAll = () => {
+    let courseArray = [];
+    for (var course in recommendedCourses) {
+      courseArray.push(recommendedCourses[course].course.name);
+    }
+
+    handleAddCourse(courseArray);
+  }
 
   useEffect(() => {
     if (recommendedCourses.length > 0) {
@@ -352,7 +390,10 @@ export default function UserRecommend() {
                             </Button>
                           </div>
                           
-                          <div className="pt-2"><Button variant="success">Add Course</Button></div>
+                          <div className="pt-2"><Button variant="success" onClick={() => {
+                            
+                            handleAddCourse([course.course.name]);
+                          }}>Add Course</Button></div>
                         </div>
                       </div>
 
@@ -362,7 +403,7 @@ export default function UserRecommend() {
                   )}
                 </div>
                 <div class="pt-4 flex justify-center">
-                  <Button variant="success" onClick={() => setPage(Page.Start)}>Add All</Button>
+                  <Button variant="success" onClick={handleAddAll}>Add All</Button>
                 </div>
                 <ViewCourseModal
                   show={showCourseModal}
