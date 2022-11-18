@@ -16,6 +16,7 @@
   position: fixed;
   width: 100%;
   top: 0;
+  left: 0;
   border-bottom: solid 1px var(--dark-color);
   opacity: 1;
   z-index: 1;
@@ -55,7 +56,6 @@
   color: var(--dark-color-2);
 }
 
-
-.grid-container{
+.grid-container {
   width: 50%;
 }

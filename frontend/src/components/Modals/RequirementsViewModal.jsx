@@ -4,12 +4,6 @@ import Button from "react-bootstrap/Button";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 
 const RequirementCard = ({ requirement }) => {
-  //const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
-  /* TO DO
-  const updateRequirement = (requirement) => {
-    const requirementCopy = [...requirement]
-  }*/
-
   return (
     <div style={{ cursor: "pointer" }}>
       <div
@@ -31,6 +25,60 @@ const RequirementCard = ({ requirement }) => {
               <span>Credits: {requirement.credits} </span>
             </div>
 
+            <div className="row p-2">
+              Courses:{" "}
+              {requirement.courses.length < 10
+                ? requirement.courses.join(", ")
+                : requirement.courses.slice(0, 6).join(",") + ", etc..."}
+            </div>
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_level" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="flex  w-100">
+              <span>Level: {requirement.level} </span>
+            </div>
+
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_discipline" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="flex  w-100">
+              <span>Disciplines: {requirement.disciplines.join(", ")} </span>
+            </div>
+
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_all_disciplines" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
+            <div className="row p-2">
+              Description: {requirement.description}
+            </div>
+          </>
+        )}
+        {requirement.type === "max_by_course" && (
+          <>
+            <div className="flex  w-100">
+              <span>Credits: {requirement.credits} </span>
+            </div>
             <div className="row p-2">
               Courses:{" "}
               {requirement.courses.length < 10

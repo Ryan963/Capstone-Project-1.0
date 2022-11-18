@@ -1,7 +1,9 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import { styled, createTheme } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
+import ReactDOM from "react-dom";
 import {
   Grid,
   Box,
@@ -26,9 +28,15 @@ import SchoolIcon from "@mui/icons-material/School";
 import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
+import ProgressBar from "react-animated-progress-bar";
+import ProgressLine from "../../components/homePageComponents/ProgressLine";
+import { toast } from "react-toastify";
+import axios from "axios";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import { useState, useEffect } from "react";
 
 const drawerWidth = 200;
+const progress = 80;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -76,11 +84,13 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function UserHome() {
+  const token = localStorage.getItem("token");
   //const theme = useTheme();
   //const userEmail = localStorage.getItem("email");
   const userType = localStorage.getItem("type");
   const navigate = useNavigate();
-
+  const [majors, setMajors] = useState([]);
+  const [minors, setMinors] = useState([]);
   // logs out the user not matter what type he is
   const logout = () => {
     localStorage.clear();
@@ -93,6 +103,46 @@ export default function UserHome() {
   };
 
   const [open, setOpen] = React.useState(false);
+
+  const getMajors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/progress/major`, config)
+      .then((res) => {
+        setMajors(res.data);
+        console.log(majors);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getMinors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/progress/minor`, config)
+      .then((res) => {
+        setMinors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    //Moved to separate function so I can call function in modal and update main page
+    getMajors();
+    getMinors();
+  }, []);
 
   const theme = createTheme({
     palette: {
@@ -212,7 +262,7 @@ export default function UserHome() {
         <Drawer
           sx={{
             width: drawerWidth,
-            flexShrink: 0,
+            boxSizing: "border-box",
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
@@ -248,7 +298,39 @@ export default function UserHome() {
         {/** Main Body Start */}
         <Main open={open}>
           <DrawerHeader />
+
           <Typography paragraph>User Home</Typography>
+          {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
+          <h7>Majors</h7>
+          <div className="container">
+            {majors.map((major) => (
+              <ProgressLine
+                percentGiven={major.percentage}
+                label={major.description + " " + major.percentage + "%"}
+                visualParts={[
+                  {
+                    percentage: major.percentage + "%",
+                    color: "green",
+                  },
+                ]}
+              />
+            ))}
+          </div>
+          <h7>Minors</h7>
+          <div className="container">
+            {minors.map((minor) => (
+              <ProgressLine
+                percentGiven={minor.percentage}
+                label={minor.description + " " + minor.percentage + "%"}
+                visualParts={[
+                  {
+                    percentage: minor.percentage + "%",
+                    color: "blue",
+                  },
+                ]}
+              />
+            ))}
+          </div>
         </Main>
       </Box>
     </ThemeProvider>
