@@ -182,6 +182,9 @@ export default function UserCourses() {
   const [filterByDiscipline, setFilterByDiscipline] = useState("");
   const [filterByLevel, setFilterByLevel] = useState("");
 
+  // variable to save how many requiremnts the selected course counts towards
+  const [neededByRequirements, setNeededByRequirements] = useState(0);
+
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -200,7 +203,7 @@ export default function UserCourses() {
   const disciplines = getDisciplines(courses);
 
   const addFutureCourse = (course) => {
-    //* checks ?
+    //* check if course already taken or already in future courses
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -214,6 +217,28 @@ export default function UserCourses() {
       )
       .then((res) => {
         toast.success("Course added successfully!");
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getRequirementSatisfaction = (course) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(
+        `${process.env.REACT_APP_SERVER_API}/recommendations/${course._id}`,
+        config
+      )
+      .then((res) => {
+        setNeededByRequirements(res.data.satisfied);
+        // console.log(neededByRequirements + " " + res.data.satisfied);
+        setShowConfirmModal(true);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -426,7 +451,7 @@ export default function UserCourses() {
                             <Dropdown.Item
                               onClick={() => {
                                 setCurrentCourse(course);
-                                setShowConfirmModal(true);
+                                getRequirementSatisfaction(course);
                               }}
                             >
                               Add to Future Courses
@@ -463,8 +488,14 @@ export default function UserCourses() {
               <Modal.Title>Confirm Action</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              Are you sure you want to Add this course to future courses?
+              Are you sure you want to add the following course to your future
+              courses?
               <p className="font-semibold">{currentCourse.name}</p>
+              <p>
+                This course will count towards{" "}
+                <strong>{neededByRequirements} </strong>
+                Degree/Major/Minor requirement(s)
+              </p>
             </Modal.Body>
             <Modal.Footer>
               <Button
