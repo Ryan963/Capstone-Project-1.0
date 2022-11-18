@@ -209,6 +209,7 @@ const addFutureCourses = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user.id);
     const futureCourses = req.body.futureCourses;
 
+    console.log(futureCourses);
     // check if value entered
     if (!futureCourses) {
       res.status(400);
