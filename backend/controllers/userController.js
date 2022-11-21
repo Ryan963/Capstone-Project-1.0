@@ -22,6 +22,7 @@ const registerUser = asyncHandler(async (req, res) => {
     majors,
     minors,
     courses,
+    futureCourses,
   } = req.body;
 
   if (!firstname || !lastname || !email || !password || !degree) {
@@ -50,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
     majors: majors,
     minors: minors,
     courses: courses,
-    futureCourses: [],
+    futureCourses: futureCourses,
     currentyear: Number.parseInt(currentyear),
     currentsemester: Number.parseInt(currentsemester),
     graduated: graduated,
@@ -136,6 +137,21 @@ const updateUser = asyncHandler(async (req, res) => {
   res.status(200).json(updatedUser);
 });
 
+// @desc Delete user
+// @route DELETE /api/user/
+// @access private
+const deleteUser = async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(401);
+    throw new Error("Major not found");
+  }
+
+  await user.remove();
+  res.status(200).json({ success: true, id: req.params.id });
+};
+
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_USER_SECRET, {
@@ -176,8 +192,8 @@ const removeCourses = async (id, coursesToRemove) => {
   await User.findByIdAndUpdate(id, update);
   return;
 };
-// @desc  Get User Data
-// @route GET /api/user/me
+// @desc  Get Courses
+// @route GET /api/user/courses
 // @access Private
 const getCourses = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -202,14 +218,13 @@ const getFutureCourses = asyncHandler(async (req, res) => {
 });
 
 // @desc  add future courses to User
-// @route POST /api/user/futureCourses
+// @route PUT /api/user/futureCourses
 // @access Private
 const addFutureCourses = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     const futureCourses = req.body.futureCourses;
 
-    console.log(futureCourses);
     // check if value entered
     if (!futureCourses) {
       res.status(400);
@@ -286,6 +301,7 @@ module.exports = {
   loginUser,
   getMe,
   updateUser,
+  deleteUser,
   getAllUsers,
   getCourses,
   getFutureCourses,

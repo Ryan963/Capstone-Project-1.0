@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import AddStudentModal from "./AddStudentModal";
-
 
 const StudentCard = ({ _id, firstname, lastname, email, password, degree,
-    majors, minors, courses, currentyear, currentsemester , graduated}) => {
+    majors, minors, courses, futureCourses, currentyear, currentsemester, graduated, gpa}) => {
     return (
       <div style={{ cursor: "pointer" }}>
         <div
@@ -51,6 +49,12 @@ const StudentCard = ({ _id, firstname, lastname, email, password, degree,
                 : courses.slice(0, 6).join(",") + ", etc..."}
             </div>
             <div>
+              Future Courses: {" "} 
+              {futureCourses.length < 10
+                ? futureCourses.join(", ")
+                : futureCourses.slice(0, 6).join(",") + ", etc..."}
+            </div>
+            <div>
               <span>Current Year: {currentyear} </span>
             </div>
             <div>
@@ -58,6 +62,9 @@ const StudentCard = ({ _id, firstname, lastname, email, password, degree,
             </div>
             <div>
               <span>Graduated (T/F): {graduated.toString()} </span>
+            </div>
+            <div>
+              <span>GPA: {gpa} </span>
             </div>
         </>
         </div>
@@ -67,7 +74,6 @@ const StudentCard = ({ _id, firstname, lastname, email, password, degree,
 };
 
 const StudentViewModal = ({
-    collection,
     show,
     close,
     id,
@@ -79,9 +85,11 @@ const StudentViewModal = ({
     majors,
     minors,
     courses,
+    futureCourses,
     currentyear,
     currentsemester,
     graduated,
+    gpa,
   }) => {
 
     return (  
@@ -114,9 +122,11 @@ const StudentViewModal = ({
                     majors={majors}
                     minors={minors}
                     courses={courses}
+                    futureCourses={futureCourses}
                     currentyear={currentyear}
                     currentsemester={currentsemester}
                     graduated={graduated}
+                    gpa={gpa}
                 />
             </div>
               
@@ -140,11 +150,3 @@ const StudentViewModal = ({
 };
 
 export default StudentViewModal;
-/*
-{students.map((req, idx) => (
-                <div key={idx}>
-                  <StudentCard students={req} />
-                </div>
-              ))}
-
-*/
