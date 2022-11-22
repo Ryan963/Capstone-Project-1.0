@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
     majors: majors,
     minors: minors,
     courses: courses,
-    futureCourses: futureCourses,
+    futureCourses: [],
     currentyear: Number.parseInt(currentyear),
     currentsemester: Number.parseInt(currentsemester),
     graduated: graduated,
