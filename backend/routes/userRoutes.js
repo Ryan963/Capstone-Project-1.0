@@ -8,6 +8,7 @@ const {
   getMe,
   updateUser,
   getAllUsers,
+  deleteUser,
   getFutureCourses,
   addFutureCourses,
   removeFutureCourses,
@@ -23,7 +24,8 @@ router
   .post(protect, addFutureCourses)
   .put(protect, completeCourse)
   .delete(protect, removeFutureCourses);
-router.put("/:id", protect, updateUser);
 router.get("/", adminProtect.protect, getAllUsers);
+router.put("/:id", adminProtect.protect, updateUser);
+router.route("/:id").delete(adminProtect.protect, deleteUser);
 
 module.exports = router;

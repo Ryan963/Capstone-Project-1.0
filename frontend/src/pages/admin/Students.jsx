@@ -5,17 +5,23 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
-import AddStudentModal from "../../components/Modals/AddStudentModal";
-import StudentViewModal from "../../components/Modals/StudentViewModel";
+import StudentViewModal from "../../components/Modals/StudentViewModal";
+import DeleteStudentModal from "../../components/Modals/DeleteStudentModal";
 
 const Students = () => {
-  const [addStudentModal, setAddStudentModel] = useState(false);
-  const [studentViewModal, setStudentViewModel] = useState(false);
-
+  const [majors, setMajors] = useState([]);
+  const [currentMajor, setCurrentMajor] = useState({});
+  const [studentViewModal, setStudentViewModal] = useState(false);
+  const [showDeleteStudentModal, setShowDeleteStudentModal] = useState(false);
   const [students, setStudents] = useState([]);
-  const [currentStudents, setCurrentStudents] = useState({});
+  const [currentStudent, setCurrentStudent] = useState({});
   const token = localStorage.getItem("token");
   useEffect(() => {
+    getUsers();
+    getMajors();
+  }, []);
+
+  const getUsers = () => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -26,12 +32,54 @@ const Students = () => {
         .get(`${process.env.REACT_APP_SERVER_API}/user`, config)
         .then((res) => {
           setStudents(res.data.users);
+          //console.log(students);
         });
     } catch (error) {
       toast.error(error.message);
       console.log(error);
+    };
+  };
+
+  const getMajors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
+      .then((res) => {
+        //console.log(res.data);
+        setMajors(res.data);
+        //console.log(majors);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const addStudent = (student) => {
+    const newStudentList = [...students, student]
+    setStudents(newStudentList)
+  };
+
+  const deleteStudent = (student) => {
+    const updatedStudents = students.filter((u) => u !== student)
+    setStudents(updatedStudents)
+  }
+  /*
+  const checkMajor = (id) =>{
+    const majorsCopy = [...majors];
+    for (let i = 0; i < majorsCopy.length; i++) {
+      if (majorsCopy[i]._id === id) {
+        console.log("id"+id);
+        console.log("major"+majorsCopy[i]._id);
+        currentMajor = majorsCopy[i].name;
+        return currentMajor;
+      }
     }
-  }, []);
+  }*/
 
   return (
     <div className="flex flex-row w-full">
@@ -50,16 +98,7 @@ const Students = () => {
               <div style={{ marginLeft: "7%" }} className="font-semibold ml-40">
                 <span>Name</span>
               </div>
-              <div className="align-center text-end ml-auto mr-10">
-                <Button
-                  onClick={() => {
-                    setAddStudentModel(true); //open the page for adding new user
-                  }}
-                  variant="success"
-                >
-                  New Student
-                </Button>
-              </div>
+              
             </div>
             <div>
               {students.map((student, idx) => {
@@ -98,13 +137,17 @@ const Students = () => {
                         <Dropdown.Menu>
                           <Dropdown.Item
                             onClick={() => {
-                              setCurrentStudents(student);
-                              setStudentViewModel(true);
+                              setCurrentStudent(student);
+                              setStudentViewModal(true);
+                              setCurrentMajor(student.majors);
                             }}
                           >
                             View Student info
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {}}>
+                          <Dropdown.Item onClick={() => {
+                            setCurrentStudent(student);
+                            setShowDeleteStudentModal(true);
+                          }}>
                             Delete Student
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -121,28 +164,30 @@ const Students = () => {
           </div>
         )}
       </div>
-      <AddStudentModal
-        show={addStudentModal}
-        close={() => setAddStudentModel(false)}
-        students={students}
-        setStudents={setStudents}
-      />
       <StudentViewModal
         show={studentViewModal}
-        close={() => setStudentViewModel(false)}
-        collection={"student"}
-        id={currentStudents._id}
-        firstname={currentStudents.firstname}
-        lastname={currentStudents.lastname}
-        email={currentStudents.email}
-        password={currentStudents.password}
-        degree={currentStudents.degree}
-        majors={currentStudents.majors}
-        minors={currentStudents.minors}
-        courses={currentStudents.courses}
-        currentyear={currentStudents.currentyear}
-        currentsemester={currentStudents.currentsemester}
-        graduated={currentStudents.graduated}
+        close={() => setStudentViewModal(false)}
+        id={currentStudent._id}
+        firstname={currentStudent.firstname}
+        lastname={currentStudent.lastname}
+        email={currentStudent.email}
+        password={currentStudent.password}
+        degree={currentStudent.degree}
+        majors={currentStudent.majors}
+        minors={currentStudent.minors}
+        courses={currentStudent.courses}
+        futureCourses={currentStudent.futureCourses}
+        currentyear={currentStudent.currentyear}
+        currentsemester={currentStudent.currentsemester}
+        graduated={currentStudent.graduated}
+        gpa={currentStudent.gpa}
+      />
+      <DeleteStudentModal
+        show={showDeleteStudentModal}
+        close={() => setShowDeleteStudentModal(false)}
+        student = {currentStudent}
+        collection = {"user"}
+        deleteStudentFromCollection={deleteStudent}
       />
     </div>
   );
