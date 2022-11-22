@@ -5,14 +5,12 @@ import AdminSidebar from "../../components/admin/AdminSideBar";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import Loader from "../../components/UI/Loader";
-import AddStudentModal from "../../components/Modals/AddStudentModal";
 import StudentViewModal from "../../components/Modals/StudentViewModal";
 import DeleteStudentModal from "../../components/Modals/DeleteStudentModal";
 
 const Students = () => {
   const [majors, setMajors] = useState([]);
   const [currentMajor, setCurrentMajor] = useState({});
-  const [addStudentModal, setAddStudentModal] = useState(false);
   const [studentViewModal, setStudentViewModal] = useState(false);
   const [showDeleteStudentModal, setShowDeleteStudentModal] = useState(false);
   const [students, setStudents] = useState([]);
@@ -100,16 +98,7 @@ const Students = () => {
               <div style={{ marginLeft: "7%" }} className="font-semibold ml-40">
                 <span>Name</span>
               </div>
-              <div className="align-center text-end ml-auto mr-10">
-                <Button
-                  onClick={() => {
-                    setAddStudentModal(true); //open the page for adding new user
-                  }}
-                  variant="success"
-                >
-                  New Student
-                </Button>
-              </div>
+              
             </div>
             <div>
               {students.map((student, idx) => {
@@ -175,11 +164,6 @@ const Students = () => {
           </div>
         )}
       </div>
-      <AddStudentModal
-        show={addStudentModal}
-        close={() => setAddStudentModal(false)}
-        addStudentToCollection={addStudent}
-      />
       <StudentViewModal
         show={studentViewModal}
         close={() => setStudentViewModal(false)}
