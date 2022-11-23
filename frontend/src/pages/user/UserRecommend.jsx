@@ -339,10 +339,14 @@ export default function UserRecommend() {
             {page === Page.Start && (
               <div>
                 <div 
-                  className="flex justify-center"
+                  className="px-5 flex justify-center"
                   //style={{ height: `${height > 900 ? "50rem" : "40rem"}` }}
                 >
-                  <Typography variant="h6" >10 courses will be recommended for you to take, ranked by the number of requirements and prerequisites the course satisfies.</Typography> 
+                  <Typography variant="h6" >10 courses will be recommended for you to take, ranked by a combination of 3 factors:
+                                            <p>&emsp; 1. The course level (lower level gets higher priority),</p>
+                                            <p>&emsp; 2. the number of requirements it helps satisfy, and</p>
+                                            <p>&emsp; 3. the number of prerequisites it satisfies for other courses in your degree.</p></Typography>
+                  
                 </div>
                 <div class="pt-4 flex justify-center">
                   <Button variant="success" onClick={handleRecommend}>Recommend Courses</Button>
@@ -373,11 +377,11 @@ export default function UserRecommend() {
                       >
                         <div className="w-5/6">
                             <div className="row p-2 font-bold">{course.course.name}</div>
-                            {/* <div className="pl-10">
-                              <span> {course.course.description} </span>
-                            </div> */}
                             <div className="font-bold text-sm pt-4">
-                              <span>This course satisfies {course.importance - (4-course.course.level)} requirement(s)/prerequisite(s)</span>
+                              <span>This course satisfies {course.requirements.length} requirement(s) and {course.prereqs.length} prerequisite(s)&emsp;</span>
+                              <Button variant="info" onClick={() => {}}>
+                                View Satisfied Results
+                              </Button>
                             </div>
                         </div>
                         <div className="align-center mx-auto ">
@@ -390,17 +394,18 @@ export default function UserRecommend() {
                             </Button>
                           </div>
                           
-                          <div className="pt-2"><Button variant="success" onClick={() => {
-                            
-                            handleAddCourse([course.course.name]);
-                          }}>Add Course</Button></div>
+                          <div className="pt-2">
+                            <Button variant="success" onClick={() => {
+                              handleAddCourse([course.course.name]);
+                          }}>
+                              Add Course
+                            </Button>
+                          </div>
+                          
                         </div>
-                      </div>
-
-                      
+                      </div>   
                     )
-                  }
-                  )}
+                  })}
                 </div>
                 <div class="pt-4 flex justify-center">
                   <Button variant="success" onClick={handleAddAll}>Add All</Button>
@@ -411,13 +416,7 @@ export default function UserRecommend() {
                   course={currentCourse}
                 />
               </div>
-            )}
-            
-            
-            
-          
- 
-          
+            )}         
         </Main>
       </Box>
     </ThemeProvider>
