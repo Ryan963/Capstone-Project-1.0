@@ -43,7 +43,7 @@ function FulfilledReqsModal({ requirements, prereqs, course, show, close }) {
                 </p>
               </div>
               <div>
-                <h5>Prerequisite For Following Courses:</h5>
+                <h5>Prerequisite For Following Courses in Degree:</h5>
                 <p>
                   {prereqs === undefined || prereqs.length === 0 ? (
                     "N/A"

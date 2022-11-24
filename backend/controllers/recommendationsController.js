@@ -25,6 +25,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
 
   // Create d/M/m requirements array
   var requirements = degree.requirements;
+  var incompleteRequirements = [];
 
   for (var i = 0; i < Math.max(user.majors.length, user.minors.length); i++) {
     var major,
@@ -68,6 +69,10 @@ const recommendCourses = asyncHandler(async (req, res) => {
       }
     }
 
+    if (quota > 0) {
+      incompleteRequirements.push(req);
+    }
+
     // Add courses to recommend, until there are enough to satisfy requirement
     while (quota > 0) {
       recommendations.push(incomplete_courses[quota - 1]);
@@ -84,7 +89,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
   );
 
   // Calculate importance level of courses, by comparing to prerequisites
-  recommendations = prereqImportance(recommendations, requirements, courses);
+  recommendations = prereqImportance(recommendations, incompleteRequirements, courses);
 
   // Sort recommendations
   recommendations.sort((a, b) => b.importance - a.importance);
