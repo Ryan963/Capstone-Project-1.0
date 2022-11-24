@@ -22,17 +22,17 @@ const userSchema = mongoose.Schema(
     degree: {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref:"Degree",
+      ref: "Degree",
     },
     majors: {
       type: [mongoose.Schema.Types.ObjectId],
       required: false,
-      ref:"Major",
+      ref: "Major",
     },
     minors: {
       type: [mongoose.Schema.Types.ObjectId],
       required: false,
-      ref:"Minor",
+      ref: "Minor",
     },
     courses: {
       type: [String],
@@ -44,10 +44,6 @@ const userSchema = mongoose.Schema(
     },
     currentyear: {
       type: Number,
-      required: false,
-    },
-    currentsemester: {
-      type: String,
       required: false,
     },
     graduated: {

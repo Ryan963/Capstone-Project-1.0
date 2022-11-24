@@ -26,6 +26,7 @@ const UpdateRequirementModal = ({
   oldRequirement,
   collection,
   name,
+  stream,
   updateRequirementInCollection,
 }) => {
   const [requirement, setRequirement] = useState({});
@@ -239,6 +240,7 @@ const UpdateRequirementModal = ({
         {
           name,
           collection,
+          stream,
           oldRequirement,
           newRequirement: { ...requirement },
         },

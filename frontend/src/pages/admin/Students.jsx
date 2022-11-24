@@ -37,7 +37,7 @@ const Students = () => {
     } catch (error) {
       toast.error(error.message);
       console.log(error);
-    };
+    }
   };
 
   const getMajors = () => {
@@ -60,14 +60,14 @@ const Students = () => {
   };
 
   const addStudent = (student) => {
-    const newStudentList = [...students, student]
-    setStudents(newStudentList)
+    const newStudentList = [...students, student];
+    setStudents(newStudentList);
   };
 
   const deleteStudent = (student) => {
-    const updatedStudents = students.filter((u) => u !== student)
-    setStudents(updatedStudents)
-  }
+    const updatedStudents = students.filter((u) => u !== student);
+    setStudents(updatedStudents);
+  };
   /*
   const checkMajor = (id) =>{
     const majorsCopy = [...majors];
@@ -98,7 +98,6 @@ const Students = () => {
               <div style={{ marginLeft: "7%" }} className="font-semibold ml-40">
                 <span>Name</span>
               </div>
-              
             </div>
             <div>
               {students.map((student, idx) => {
@@ -144,10 +143,12 @@ const Students = () => {
                           >
                             View Student info
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentStudent(student);
-                            setShowDeleteStudentModal(true);
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentStudent(student);
+                              setShowDeleteStudentModal(true);
+                            }}
+                          >
                             Delete Student
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -178,15 +179,14 @@ const Students = () => {
         courses={currentStudent.courses}
         futureCourses={currentStudent.futureCourses}
         currentyear={currentStudent.currentyear}
-        currentsemester={currentStudent.currentsemester}
         graduated={currentStudent.graduated}
         gpa={currentStudent.gpa}
       />
       <DeleteStudentModal
         show={showDeleteStudentModal}
         close={() => setShowDeleteStudentModal(false)}
-        student = {currentStudent}
-        collection = {"user"}
+        student={currentStudent}
+        collection={"user"}
         deleteStudentFromCollection={deleteStudent}
       />
     </div>
