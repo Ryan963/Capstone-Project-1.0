@@ -124,7 +124,6 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
         major = await Major.findById(user.majors[i]);
         buildRequirements(requirements, major.requirements);
       }
-
       if (user.minors.length > i) {
         // add minor
         minor = await Minor.findById(user.minors[i]);
@@ -132,22 +131,25 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
       }
     }
 
+    // Array to seave the requirements that selected course will count towards
+    var requirementsSatisfied = [];
+
     for (var i = 0; i < requirements.length; i++) {
       var req = requirements[i];
-      var incomplete_courses = [];
-
       // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
       for (var j = 0; j < req.courses.length; j++) {
         if (req.courses[j] === course.name) {
           satisfied++;
+          requirementsSatisfied.push(req);
           break;
         }
       }
     }
-
-    console.log(satisfied);
-
-    res.status(200).json({ success: true, satisfied: satisfied });
+    res.status(200).json({
+      success: true,
+      satisfied: satisfied,
+      reqs: requirementsSatisfied,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({ success: false, message: error.message });
