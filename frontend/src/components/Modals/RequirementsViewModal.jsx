@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
-
-const RequirementCard = ({ requirement }) => {
+import { AiOutlineClose } from "react-icons/ai";
+import axios from "axios";
+import { toast } from "react-toastify";
+const RequirementCard = ({ requirement, removeRequirement, index }) => {
   return (
-    <div style={{ cursor: "pointer" }}>
+    <div style={{ cursor: "pointer", position: "relative" }}>
       <div
         style={{
           padding: "0.4rem",
@@ -17,6 +19,15 @@ const RequirementCard = ({ requirement }) => {
           border: "2px solid darkred",
         }}
       >
+        <div className="absolute top-3 right-3">
+          <AiOutlineClose
+            onClick={(e) => {
+              e.stopPropagation();
+              removeRequirement(requirement, index);
+            }}
+            className="text-danger cursor-pointer text-2xl"
+          />
+        </div>
         <div className="row p-2 font-bold">Type: {requirement.type}</div>
         <hr className="m-0" style={{ opacity: "10%" }} />
         {requirement.type === "credits_of_group" && (
@@ -101,9 +112,45 @@ const RequirementsViewModal = ({
   requirements,
   show,
   close,
+  deleteRequirementFromState,
   showAddRequirementsModal,
   showUpdateRequirementsModal,
+  stream,
 }) => {
+  const removeRequirement = (requirement, index) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        collection,
+        stream,
+        name,
+        requirement,
+        stream,
+      },
+    };
+    axios
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/requirements`,
+
+        config
+      )
+      .then((res) => {
+        if (res.data.success) {
+          deleteRequirementFromState(index);
+          toast.success("Requirement has been deleted successfully");
+        } else {
+          console.log(res.data.message);
+          toast.error(res.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not update requirement");
+      });
+  };
   return (
     <>
       {requirements && (
@@ -141,7 +188,11 @@ const RequirementsViewModal = ({
                     showUpdateRequirementsModal(req);
                   }}
                 >
-                  <RequirementCard requirement={req} />
+                  <RequirementCard
+                    requirement={req}
+                    index={idx}
+                    removeRequirement={removeRequirement}
+                  />
                 </div>
               ))}
             </div>

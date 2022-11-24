@@ -9,50 +9,34 @@ import ViewCourseModal from "../../components/Modals/ViewCourseModal";
 import UpdateCourseModal from "../../components/Modals/UpdateCourseModal";
 import AddCourseModal from "../../components/Modals/AddCourseModal";
 import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
+import useCourses from "../../hooks/useCourses";
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useCourses();
   const [currentCourse, setCurrentCourse] = useState({});
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const [showUpdateCourseModal, setShowUpdateCourseModal] = useState(false);
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/courses`, config)
-      .then((res) => {
-        setCourses(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  }, []);
 
   const addCourse = (course) => {
-    const newCourseList = [...courses, course]
-    setCourses(newCourseList)
+    const newCourseList = [...courses, course];
+    setCourses(newCourseList);
   };
 
   const deleteCourse = (course) => {
-    const updatedCourses = courses.filter((c) => c !== course )
-    setCourses(updatedCourses)
-  }
+    const updatedCourses = courses.filter((c) => c !== course);
+    setCourses(updatedCourses);
+  };
 
-  const updateCourseInList =  (updatedCourse) => {
-    const updatedCourses = [...courses]
-    const idx = courses.findIndex(c => {
-      return c._id === updatedCourse._id
-    })
-    Object.assign(updatedCourses[idx], updatedCourse)
-    setCourses(updatedCourses)
-  }
+  const updateCourseInList = (updatedCourse) => {
+    const updatedCourses = [...courses];
+    const idx = courses.findIndex((c) => {
+      return c._id === updatedCourse._id;
+    });
+    Object.assign(updatedCourses[idx], updatedCourse);
+    setCourses(updatedCourses);
+  };
 
   return (
     <div className="flex flex-row w-full">
@@ -78,8 +62,12 @@ const Courses = () => {
                 <span>Level</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success" onClick={() => {
-                  setShowAddCourseModal(true)}}>
+                <Button
+                  variant="success"
+                  onClick={() => {
+                    setShowAddCourseModal(true);
+                  }}
+                >
                   New Course
                 </Button>
               </div>
@@ -131,22 +119,28 @@ const Courses = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentCourse(course)
-                            setShowUpdateCourseModal(true)
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentCourse(course);
+                              setShowUpdateCourseModal(true);
+                            }}
+                          >
                             Update
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentCourse(course)
-                            setShowCourseModal(true)
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentCourse(course);
+                              setShowCourseModal(true);
+                            }}
+                          >
                             View Course info
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentCourse(course)
-                            setShowDeleteObjectModal(true)
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentCourse(course);
+                              setShowDeleteObjectModal(true);
+                            }}
+                          >
                             Delete Course
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -183,7 +177,7 @@ const Courses = () => {
       <UpdateCourseModal
         show={showUpdateCourseModal}
         close={() => {
-          setShowUpdateCourseModal(false)
+          setShowUpdateCourseModal(false);
         }}
         updateCourse={updateCourseInList}
         oldCourse={currentCourse}

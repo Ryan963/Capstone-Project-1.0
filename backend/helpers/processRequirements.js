@@ -6,7 +6,7 @@ REQUIREMENT_TYPES = {
   credits_of_group: ["type", "credits", "courses", "description"],
   max_by_level: ["type", "credits", "level", "description"],
   max_by_discipline: ["type", "credits", "disciplines", "description"],
-  max_by_all_desciplines: ["type", "credits", "description"],
+  max_by_all_disciplines: ["type", "credits", "description"],
   max_by_course: ["type", "credits", "courses", "description"],
 };
 

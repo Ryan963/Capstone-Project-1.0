@@ -24,7 +24,6 @@ const Register = () => {
     minors: [],
     courses: [],
     currentyear: null,
-    currentsemester: null,
     graduated: false,
     gpa: null,
   });
@@ -73,10 +72,6 @@ const Register = () => {
     }
 
     if (!user.currentyear) {
-      toast.error("Current year is required");
-      return;
-    }
-    if (!user.currentsemester) {
       toast.error("Current year is required");
       return;
     }
@@ -345,26 +340,6 @@ const Register = () => {
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
-                </select>
-                <div className="font-semibold text-lg">Current Semester:</div>
-                <select
-                  className="w-full m-2 pt-2 border rounded-md self-center border-primary"
-                  value={user.year}
-                  onChange={handleChange}
-                  name="currentsemester"
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="1">5</option>
-                  <option value="2">6</option>
-                  <option value="3">7</option>
-                  <option value="4">8</option>
-                  <option value="1">9</option>
-                  <option value="2">10</option>
-                  <option value="3">11</option>
-                  <option value="4">12</option>
                 </select>
               </div>
               <label className="font-semibold text-lg mr-3">Graduated:</label>

@@ -63,7 +63,11 @@ const addRequirement = async (req, res) => {
         );
         break;
       case "major":
-        const major = await Major.findOne({ name });
+        const stream = req.body.stream;
+        if (!stream) {
+          throw new Error("Please Enter a stream for the major");
+        }
+        const major = await Major.findOne({ name, stream });
         if (!major) {
           throw new Error("Major was not found!");
         }
@@ -73,7 +77,7 @@ const addRequirement = async (req, res) => {
         }
         newMajorReqs.push(databaseRequirement);
         await Major.findOneAndUpdate(
-          { name },
+          { name, stream },
           {
             requirements: newMajorReqs,
           }
@@ -107,7 +111,8 @@ const addRequirement = async (req, res) => {
 };
 
 const deleteRequirement = async (req, res) => {
-  var { collection, name, requirement } = req.body;
+  var { collection, name, requirement, stream } = req.body;
+  console.log(req.body);
   try {
     if (!collection || !requirement) {
       throw new Error("some fields are missing!");
@@ -126,7 +131,17 @@ const deleteRequirement = async (req, res) => {
       default:
         res.status(400).json({ message: "collection does not exist" });
     }
-    const model = await Model.findOne({ name });
+    let model = null;
+    if (collection.toLowerCase() === "major") {
+      if (!stream) {
+        throw new Error("Please provide a stream for this major");
+      }
+      model = await Model.findOne({ name, stream });
+      console.log(name, stream);
+    } else {
+      model = await Model.findOne({ name });
+    }
+
     if (!model) {
       throw new Error(`${collection} was not found!`);
     }
@@ -161,12 +176,23 @@ const deleteRequirement = async (req, res) => {
     if (newModelReqs.length === model.requirements.length) {
       throw new Error("Requirement was not found");
     }
-    await Model.findOneAndUpdate(
-      { name },
-      {
-        requirements: newModelReqs,
-      }
-    );
+
+    if (collection.toLowerCase() === "major") {
+      await Model.findOneAndUpdate(
+        { name, stream },
+        {
+          requirements: newModelReqs,
+        }
+      );
+    } else {
+      await Model.findOneAndUpdate(
+        { name },
+        {
+          requirements: newModelReqs,
+        }
+      );
+    }
+
     res.status(200).json({ success: true });
   } catch (error) {
     res.status(200).json({ success: false, message: error.message });
@@ -180,7 +206,7 @@ const updateRequirement = async (req, res) => {
       throw new Error("some fields are missing!");
     }
     const databaseRequirement = processRequirements(newRequirement);
-    
+
     switch (collection.toLowerCase()) {
       case "degree":
         const degree = await Degree.findOne({ name });
@@ -191,18 +217,18 @@ const updateRequirement = async (req, res) => {
         if (checkIfRequirementExist(newRequirement, newDegreeReqs)) {
           throw new Error("Requirement unchanged");
         }
-        
+
         // Loop to find old requirement index and update
         for (let req in newDegreeReqs) {
           let reqArr = [];
           reqArr.push(newDegreeReqs[req]);
           if (checkIfRequirementExist(oldRequirement, reqArr)) {
             newDegreeReqs[req] = databaseRequirement;
-            
+
             break;
           }
         }
-        
+
         await Degree.findOneAndUpdate(
           { name },
           {
@@ -211,7 +237,11 @@ const updateRequirement = async (req, res) => {
         );
         break;
       case "major":
-        const major = await Major.findOne({ name });
+        const stream = req.body.stream;
+        if (!stream) {
+          throw new Error("Please Enter a stream for the major");
+        }
+        const major = await Major.findOne({ name, stream });
         if (!major) {
           throw new Error("Major was not found!");
         }
@@ -219,7 +249,7 @@ const updateRequirement = async (req, res) => {
         if (checkIfRequirementExist(newRequirement, newMajorReqs)) {
           throw new Error("Requirement unchanged");
         }
-        
+
         // Loop to find old requirement index and update
         for (let req in newMajorReqs) {
           let reqArr = [];
@@ -231,7 +261,7 @@ const updateRequirement = async (req, res) => {
         }
 
         await Major.findOneAndUpdate(
-          { name },
+          { name, stream },
           {
             requirements: newMajorReqs,
           }
@@ -246,7 +276,7 @@ const updateRequirement = async (req, res) => {
         if (checkIfRequirementExist(newRequirement, newMinorReqs)) {
           throw new Error("Requirement unchanged");
         }
-        
+
         // Loop to find old requirement index and update
         for (let req in newMinorReqs) {
           let reqArr = [];
