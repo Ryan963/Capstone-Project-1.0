@@ -10,9 +10,9 @@ import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
 import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
-
+import useMinors from "../../hooks/useMinors";
 const Minors = () => {
-  const [minors, setMinors] = useState([]);
+  const [minors, setMinors] = useMinors();
   const [currentMinor, setCurrentMinor] = useState({});
   const [currentRequirement, setCurrentRequirement] = useState({
     type: "",
@@ -22,31 +22,11 @@ const Minors = () => {
   });
   const [showRequirementsModal, setShowRequirementsModal] = useState(false);
   const [showAddRequirementModal, setShowAddRequirementModal] = useState(false);
-  const [showUpdateRequirementModal, setShowUpdateRequirementModal] = useState(false);
+  const [showUpdateRequirementModal, setShowUpdateRequirementModal] =
+    useState(false);
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    getMinors();
-    
-  }, []);
 
-  const getMinors = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
-      .then((res) => {
-        setMinors(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  }
   const addRequirementToMinor = (minorName, requirement) => {
     const minorsCopy = [...minors];
     // find index of this minor
@@ -66,7 +46,11 @@ const Minors = () => {
     setMinors(minorsCopy);
   };
 
-  const updateRequirementInMinor = (minorName, oldRequirement, newRequirement) => {
+  const updateRequirementInMinor = (
+    minorName,
+    oldRequirement,
+    newRequirement
+  ) => {
     const minorsCopy = [...minors];
     // find index of this minor
     let idx = 0;
@@ -76,14 +60,15 @@ const Minors = () => {
         break;
       }
     }
-     
+
     // update requirement in minorsCopy
     for (let req in minorsCopy[idx].requirements) {
       if (
         oldRequirement.type === minorsCopy[idx].requirements[req].type &&
         oldRequirement.credits === minorsCopy[idx].requirements[req].credits &&
         oldRequirement.courses === minorsCopy[idx].requirements[req].courses &&
-        oldRequirement.description === minorsCopy[idx].requirements[req].description
+        oldRequirement.description ===
+          minorsCopy[idx].requirements[req].description
       ) {
         minorsCopy[idx].requirements[req] = newRequirement;
         break;
@@ -94,8 +79,35 @@ const Minors = () => {
   };
 
   const deleteMinor = (minor) => {
-    const updatedMinors = minors.filter((m) => m !== minor );
+    const updatedMinors = minors.filter((m) => m !== minor);
     setMinors(updatedMinors);
+  };
+
+  const deleteRequirement = (index) => {
+    const id = currentMinor._id;
+    setCurrentMinor({
+      ...currentMinor,
+      requirements: currentMinor.requirements.filter(
+        (req, idx) => idx !== index
+      ),
+    });
+    setMinors((prevMinors) => {
+      let minorCopy = [...prevMinors];
+      minorCopy = minorCopy.map((minor) => {
+        if (minor._id === id) {
+          let newMinor = {
+            ...minor,
+            requirements: minor.requirements.filter(
+              (req, idx) => idx !== index
+            ),
+          };
+          return newMinor;
+        } else {
+          return minor;
+        }
+      });
+      return minorCopy;
+    });
   };
   return (
     <div className="flex flex-row w-full">
@@ -115,12 +127,16 @@ const Minors = () => {
                 <span>Name</span>
               </div>
               <div className="align-center text-end ml-auto mr-10">
-                <Button variant="success" onClick={() =>setShowAddMajorMinorModal(true)}>New Minor</Button>
-                <AddMajorMinorModal 
-                  minorOrMajor = "Minor"
-                  show = {showAddMajorMinorModal}
+                <Button
+                  variant="success"
+                  onClick={() => setShowAddMajorMinorModal(true)}
+                >
+                  New Minor
+                </Button>
+                <AddMajorMinorModal
+                  minorOrMajor="Minor"
+                  show={showAddMajorMinorModal}
                   close={() => setShowAddMajorMinorModal(false)}
-                  getMajorMinorInModal = {getMinors}
                 />
               </div>
             </div>
@@ -152,7 +168,6 @@ const Minors = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          
                           <Dropdown.Item
                             onClick={() => {
                               setShowRequirementsModal(true);
@@ -161,10 +176,12 @@ const Minors = () => {
                           >
                             View Requirements
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => {
-                            setCurrentMinor(minor);
-                            setShowDeleteObjectModal(true);
-                          }}>
+                          <Dropdown.Item
+                            onClick={() => {
+                              setCurrentMinor(minor);
+                              setShowDeleteObjectModal(true);
+                            }}
+                          >
                             Delete minor
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -187,14 +204,15 @@ const Minors = () => {
         collection={"minor"}
         name={currentMinor.name}
         requirements={currentMinor.requirements}
+        deleteRequirementFromState={deleteRequirement}
         showAddRequirementsModal={() => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);
         }}
-        showUpdateRequirementsModal= {(requirement) => {
+        showUpdateRequirementsModal={(requirement) => {
           setCurrentRequirement(requirement);
           setShowUpdateRequirementModal(true);
-        }}  
+        }}
       />
       <AddRequirementModal
         show={showAddRequirementModal}
@@ -214,8 +232,8 @@ const Minors = () => {
       <DeleteObjectModal
         show={showDeleteObjectModal}
         close={() => setShowDeleteObjectModal(false)}
-        object = {currentMinor}
-        collection = {"minors"}
+        object={currentMinor}
+        collection={"minors"}
         deleteFromCollection={deleteMinor}
       />
     </div>

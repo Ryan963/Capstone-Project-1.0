@@ -16,7 +16,6 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     degree,
     currentyear,
-    currentsemester,
     graduated,
     gpa,
     majors,
@@ -53,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
     courses: courses,
     futureCourses: [],
     currentyear: Number.parseInt(currentyear),
-    currentsemester: Number.parseInt(currentsemester),
+
     graduated: graduated,
     gpa: Number.parseFloat(gpa),
   });
@@ -150,7 +149,6 @@ const deleteUser = async (req, res) => {
   await user.remove();
   res.status(200).json({ success: true, id: req.params.id });
 };
-
 
 // Generate JWT
 const generateToken = (id) => {

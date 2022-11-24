@@ -12,9 +12,10 @@ import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddDegreeModal from "../../components/Modals/AddDegreeModal";
 import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
+import useDegrees from "../../hooks/useDegrees";
 
 const Degrees = () => {
-  const [degrees, setDegrees] = useState([]);
+  const [degrees, setDegrees] = useDegrees();
   const [currentDegree, setCurrentDegree] = useState({});
   const [currentRequirement, setCurrentRequirement] = useState({
     type: "",
@@ -29,28 +30,7 @@ const Degrees = () => {
   const [showAddDegreeModal, setShowAddDegreeModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
   const token = localStorage.getItem("token");
-  //console.log("Token is:\n " + token);
-  useEffect(() => {
-    //Moved to separate function so I can call function in modal and update main page
-    getDegrees();
-  }, []);
 
-  const getDegrees = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
-      .then((res) => {
-        setDegrees(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  };
   const addRequirementToDegree = (degreeName, requirement) => {
     const degreesCopy = [...degrees];
     // find index of this degree
@@ -105,6 +85,33 @@ const Degrees = () => {
     const updatedDegrees = degrees.filter((d) => d !== degree);
     setDegrees(updatedDegrees);
   };
+
+  const deleteRequirement = (index) => {
+    const id = currentDegree._id;
+    setCurrentDegree({
+      ...currentDegree,
+      requirements: currentDegree.requirements.filter(
+        (req, idx) => idx !== index
+      ),
+    });
+    setDegrees((prevDegrees) => {
+      let degreesCopy = [...prevDegrees];
+      degreesCopy = degreesCopy.map((degree) => {
+        if (degree._id === id) {
+          const newDegree = {
+            ...degree,
+            requirements: degree.requirements.filter(
+              (req, idx) => idx !== index
+            ),
+          };
+          return newDegree;
+        } else {
+          return degree;
+        }
+      });
+      return degreesCopy;
+    });
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -133,8 +140,6 @@ const Degrees = () => {
                 <AddDegreeModal
                   show={showAddDegreeModal}
                   close={() => setShowAddDegreeModal(false)}
-                  getDegreesInModal={getDegrees}
-                  //addDegreeToCollection={addRequirementToDegree}
                 />
               </div>
             </div>
@@ -202,6 +207,7 @@ const Degrees = () => {
         collection={"degree"}
         name={currentDegree.name}
         requirements={currentDegree.requirements}
+        deleteRequirementFromState={deleteRequirement}
         showAddRequirementsModal={() => {
           setShowRequirementsModal(false);
           setShowAddRequirementModal(true);

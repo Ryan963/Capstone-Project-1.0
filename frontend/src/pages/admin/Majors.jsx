@@ -10,9 +10,10 @@ import AddRequirementModal from "../../components/Modals/AddRequirementModal";
 import UpdateRequirementModal from "../../components/Modals/UpdateRequirementModal";
 import AddMajorMinorModal from "../../components/Modals/AddMajorMinorModal";
 import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
+import useMajors from "../../hooks/useMajors";
 
 const Majors = () => {
-  const [majors, setMajors] = useState([]);
+  const [majors, setMajors] = useMajors;
   const [currentMajor, setCurrentMajor] = useState({});
   const [currentRequirement, setCurrentRequirement] = useState({
     type: "",
@@ -26,30 +27,6 @@ const Majors = () => {
     useState(false);
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    //Moved to separate function so I can call function in modal and update main page
-    getMajors();
-  }, []);
-
-  const getMajors = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
-      .then((res) => {
-        console.log(res.data);
-        setMajors(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  };
 
   const addRequirementToMajor = (majorName, requirement) => {
     const majorsCopy = [...majors];
@@ -103,6 +80,33 @@ const Majors = () => {
     const updatedMajors = majors.filter((m) => m !== major);
     setMajors(updatedMajors);
   };
+
+  const deleteRequirement = (index) => {
+    const id = currentMajor._id;
+    setCurrentMajor({
+      ...currentMajor,
+      requirements: currentMajor.requirements.filter(
+        (req, idx) => idx !== index
+      ),
+    });
+    setMajors((prevMajors) => {
+      let majorCopy = [...prevMajors];
+      majorCopy = majorCopy.map((major) => {
+        if (major._id === id) {
+          const newMajor = {
+            ...major,
+            requirements: major.requirements.filter(
+              (req, idx) => idx !== index
+            ),
+          };
+          return newMajor;
+        } else {
+          return major;
+        }
+      });
+      return majorCopy;
+    });
+  };
   return (
     <div className="flex flex-row w-full">
       <div>
@@ -134,7 +138,6 @@ const Majors = () => {
                   minorOrMajor="Major"
                   show={showAddMajorMinorModal}
                   close={() => setShowAddMajorMinorModal(false)}
-                  getMajorMinorInModal={getMajors}
                 />
               </div>
             </div>
@@ -219,6 +222,8 @@ const Majors = () => {
         show={showRequirementsModal}
         close={() => setShowRequirementsModal(false)}
         collection={"major"}
+        stream={currentMajor.stream}
+        deleteRequirementFromState={deleteRequirement}
         name={currentMajor.name}
         requirements={currentMajor.requirements}
         showAddRequirementsModal={() => {
@@ -236,6 +241,7 @@ const Majors = () => {
         addRequirementToCollection={addRequirementToMajor}
         collection={"major"}
         name={currentMajor.name}
+        stream={currentMajor.stream}
       />
       <UpdateRequirementModal
         show={showUpdateRequirementModal}
@@ -244,6 +250,7 @@ const Majors = () => {
         updateRequirementInCollection={updateRequirementInMajor}
         collection={"major"}
         name={currentMajor.name}
+        stream={currentMajor.stream}
       />
       <DeleteObjectModal
         show={showDeleteObjectModal}

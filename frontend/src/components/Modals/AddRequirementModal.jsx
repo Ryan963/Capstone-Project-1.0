@@ -25,6 +25,7 @@ const AddRequirementModal = ({
   show,
   collection,
   name,
+  stream,
   addRequirementToCollection,
 }) => {
   const [requirement, setRequirement] = useState({
@@ -240,6 +241,7 @@ const AddRequirementModal = ({
           name,
           collection,
           requirement,
+          stream,
         },
         config
       )
@@ -248,6 +250,7 @@ const AddRequirementModal = ({
           addRequirementToCollection(name, { ...requirement });
           toast.success("Requirement added successfully!");
         } else {
+          console.log(res.data.message);
           toast.error(res.data.message);
         }
       })
@@ -291,7 +294,7 @@ const AddRequirementModal = ({
               >
                 <option></option>
                 {Object.keys(requirementTypes).map((type, idx) => (
-                  <option value={type}>{type}</option>
+                  <option value={type}>{type.replaceAll("_", " ")}</option>
                 ))}
               </select>
               {requirement.type === "credits_of_group" && (
