@@ -28,7 +28,6 @@ import SchoolIcon from "@mui/icons-material/School";
 import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
-import ProgressBar from "react-animated-progress-bar";
 import ProgressLine from "../../components/homePageComponents/ProgressLine";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -36,7 +35,6 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useState, useEffect } from "react";
 
 const drawerWidth = 200;
-const progress = 80;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -91,6 +89,7 @@ export default function UserHome() {
   const navigate = useNavigate();
   const [majors, setMajors] = useState([]);
   const [minors, setMinors] = useState([]);
+  const [progress, setProgress] = useState([]);
   // logs out the user not matter what type he is
   const logout = () => {
     localStorage.clear();
@@ -103,6 +102,25 @@ export default function UserHome() {
   };
 
   const [open, setOpen] = React.useState(false);
+
+  const getProgress = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/progress/degree`, config)
+      .then((res) => {
+        setProgress(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+
+      console.log(progress.percentBreadth);
+  };
 
   const getMajors = () => {
     const config = {
@@ -142,6 +160,7 @@ export default function UserHome() {
     //Moved to separate function so I can call function in modal and update main page
     getMajors();
     getMinors();
+    getProgress();
   }, []);
 
   const theme = createTheme({
@@ -301,11 +320,34 @@ export default function UserHome() {
 
           <Typography paragraph>User Home</Typography>
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
+          <h7>Degree</h7>
+          <div className="container">
+          
+            <ProgressLine
+              label={"Breadth: " + progress.percentBreadth +"%\n" +
+              "Major: " + progress.percentMajor +"%\n" +
+              "Minor: " + progress.percentMinor + "%"}
+              visualParts={[
+                {
+                  // percentage: progress.percentBreadth,
+                  percentage: progress.percentBreadth + "%",
+                  color: "gold"
+                },
+                {
+                  percentage: progress.percentMajor+ "%",
+                  color: "green"
+                },
+                {
+                  percentage: progress.percentMinor+ "%",
+                  color: "blue"
+                },
+              ]}
+            />
+          </div>
           <h7>Majors</h7>
           <div className="container">
             {majors.map((major) => (
               <ProgressLine
-                percentGiven={major.percentage}
                 label={major.description + " " + major.percentage + "%"}
                 visualParts={[
                   {
@@ -320,7 +362,6 @@ export default function UserHome() {
           <div className="container">
             {minors.map((minor) => (
               <ProgressLine
-                percentGiven={minor.percentage}
                 label={minor.description + " " + minor.percentage + "%"}
                 visualParts={[
                   {
