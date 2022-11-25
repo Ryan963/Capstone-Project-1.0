@@ -5,9 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Input from "../UI/Input";
 import { toast } from "react-toastify";
-import ListGroup from "react-bootstrap/ListGroup";
 import axios from "axios";
-import { AiOutlineClose } from "react-icons/ai";
 import CourseSelections from "../CourseSelections";
 
 function getDisciplines(courses) {
