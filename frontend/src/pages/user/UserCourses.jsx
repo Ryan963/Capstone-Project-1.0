@@ -33,6 +33,9 @@ import { Button, Dropdown, Modal } from "react-bootstrap";
 import ViewCourseModal from "../../components/Modals/ViewCourseModal";
 import useCourses from "../../hooks/useCourses";
 import useUser from "../../hooks/useUser";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import ProgressLine from "../../components/homePageComponents/ProgressLine";
+import Loader from "../../components/UI/Loader";
 
 const drawerWidth = 200;
 
@@ -168,14 +171,6 @@ export default function UserCourses() {
     },
   ];
 
-  /*
-    - filter out already taken courses
-    - display no results if filter return nothing
-    - check selected course against progress
-    - better css
-    - spinner
-  */
-
   const [courses, setCourses] = useCourses([]);
   const [user, setUser] = useUser({});
   const [currentCourse, setCurrentCourse] = useState({});
@@ -196,7 +191,7 @@ export default function UserCourses() {
 
   useEffect(() => {
     setCourses([]);
-    setUser([]);
+    setUser();
   }, []);
 
   function getDisciplines(courses) {
@@ -206,7 +201,7 @@ export default function UserCourses() {
         disciplines.push(course.discipline);
       }
     }
-    return disciplines;
+    return disciplines.sort();
   }
   const disciplines = getDisciplines(courses);
 
@@ -224,6 +219,10 @@ export default function UserCourses() {
         config
       )
       .then((res) => {
+        setUser({
+          ...user,
+          futureCourses: user.futureCourses.concat(course),
+        });
         toast.success("Course added successfully!");
       })
       .catch((error) => {
@@ -246,14 +245,53 @@ export default function UserCourses() {
       .then((res) => {
         setNeededByRequirements(res.data.satisfied);
         setRequirementsSatisfied(res.data.reqs);
-        console.log(neededByRequirements + " " + res.data.satisfied);
-        console.log("Requirement: " + requirementsSatisfied);
         setShowConfirmModal(true);
       })
       .catch((error) => {
         toast.error(error.message);
         console.log(error);
       });
+  };
+
+  // get completed courses
+  const getCompleted = (requirement, userCourses) => {
+    // array of requirment courses the user has already completed
+    const allUserCourses = user.courses.concat(user.futureCourses);
+
+    const completed = allUserCourses.filter((value) =>
+      requirement.courses.includes(value)
+    );
+
+    // check if requirment is satisfied if yes then don't display anything
+    if (
+      requirement.type === "credits_of_group" &&
+      completed.length * 3 >= requirement.credits
+    ) {
+      return;
+    }
+
+    var percent = Math.round(
+      ((completed.length * 3) / requirement.credits) * 100
+    );
+    return (
+      <li className="m-auto p-3">
+        <ProgressLine
+          percentGiven={percent}
+          label={requirement.description + " - " + percent + "% completed"}
+          visualParts={[
+            {
+              percentage: percent + "%",
+              color: "green",
+            },
+          ]}
+        />
+        {completed.length === 0
+          ? "Completed: N/A"
+          : completed.length > 5
+          ? ""
+          : "Completed: " + completed.join(" ")}{" "}
+      </li>
+    );
   };
 
   return (
@@ -419,100 +457,114 @@ export default function UserCourses() {
               <div className="align-center text-end ml-auto mr-10"></div>
             </div>
             <div>
-              {courses
-                .filter((course) => {
-                  if (filterByDiscipline.length > 0) {
-                    if (course.discipline !== filterByDiscipline) {
-                      return false;
-                    }
-                  }
-                  if (filterByLevel.length > 0) {
-                    if (course.name[course.name.length - 3] !== filterByLevel) {
-                      return false;
-                    }
-                  }
-                  if (filterByCompletion === "hide") {
-                    if (
-                      user.futureCourses.includes(course.name) ||
-                      user.courses.includes(course.name)
-                    ) {
-                      return false;
-                    }
-                  }
-                  return true;
-                })
-                .map((course, idx) => {
-                  return (
-                    <div
-                      key={course._id}
-                      className={`flex mt-1 p-3 items-center rounded-3xl border  ${
-                        idx % 2 === 1 ? "bg-lightblue2" : ""
-                      }`}
-                    >
-                      <div
-                        style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          width: "240px",
-                        }}
-                        className=" flex content-center items-center self-center justify-center p-auto"
-                      >
-                        <span className="font-bold">{course.name}</span>
-                      </div>
-                      <div
-                        style={{
-                          marginLeft: "auto",
-                        }}
-                      >
-                        <span
-                          style={{ width: "20px" }}
-                          className="font-bold  ml-auto"
+              {courses.length > 0 ? (
+                <>
+                  {courses
+                    .filter((course) => {
+                      if (filterByDiscipline.length > 0) {
+                        if (course.discipline !== filterByDiscipline) {
+                          return false;
+                        }
+                      }
+                      if (filterByLevel.length > 0) {
+                        if (
+                          course.name[course.name.length - 3] !== filterByLevel
+                        ) {
+                          return false;
+                        }
+                      }
+                      if (filterByCompletion === "hide") {
+                        if (
+                          user.courses.includes(course.name) ||
+                          user.futureCourses.includes(course.name)
+                        ) {
+                          return false;
+                        }
+                      }
+                      return true;
+                    })
+                    .map((course, idx) => {
+                      return (
+                        <div
+                          key={course._id}
+                          className={`flex mt-1 p-3 items-center rounded-3xl border  ${
+                            idx % 2 === 1 ? "bg-lightblue2" : ""
+                          }`}
                         >
-                          {course.credits}
-                        </span>
-                      </div>
-                      <div className="ml-28">
-                        <span className="font-bold">{course.level * 100}</span>
-                      </div>
-                      <div className="align-center text-end ml-auto mr-10 ">
-                        <Dropdown>
-                          <Dropdown.Toggle
-                            variant="success"
-                            id="dropdown-basic"
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              width: "240px",
+                            }}
+                            className=" flex content-center items-center self-center justify-center p-auto"
                           >
-                            More
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item
-                              onClick={() => {
-                                setCurrentCourse(course);
-                                if (
-                                  user.futureCourses.includes(course.name) ||
-                                  user.courses.includes(course.name)
-                                ) {
-                                  setshowCourseTaken(true);
-                                } else {
-                                  getRequirementSatisfaction(course);
-                                }
-                              }}
+                            <span className="font-bold">{course.name}</span>
+                          </div>
+                          <div
+                            style={{
+                              marginLeft: "auto",
+                            }}
+                          >
+                            <span
+                              style={{ width: "20px" }}
+                              className="font-bold  ml-auto"
                             >
-                              Add to Future Courses
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              onClick={() => {
-                                setCurrentCourse(course);
-                                setShowCourseModal(true);
-                              }}
-                            >
-                              View Course info
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    </div>
-                  );
-                })}
+                              {course.credits}
+                            </span>
+                          </div>
+                          <div className="ml-28">
+                            <span className="font-bold">
+                              {course.level * 100}
+                            </span>
+                          </div>
+                          <div className="align-center text-end ml-auto mr-10 ">
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                More
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item
+                                  onClick={() => {
+                                    setCurrentCourse(course);
+                                    if (
+                                      user.futureCourses.includes(
+                                        course.name
+                                      ) ||
+                                      user.courses.includes(course.name)
+                                    ) {
+                                      setshowCourseTaken(true);
+                                    } else {
+                                      getRequirementSatisfaction(course);
+                                    }
+                                  }}
+                                >
+                                  Add to Future Courses
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() => {
+                                    setCurrentCourse(course);
+                                    setShowCourseModal(true);
+                                  }}
+                                >
+                                  View Course info
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </>
+              ) : (
+                <div className="flex items-center justify-center w-full pt-10 h-full">
+                  <Loader />
+                </div>
+              )}
             </div>
           </div>
           <ViewCourseModal
@@ -538,11 +590,16 @@ export default function UserCourses() {
               <p>
                 This course will count towards{" "}
                 <strong>{neededByRequirements} </strong>
-                Degree/Major/Minor requirement(s):
+                uncompleted Degree/Major/Minor requirement(s):
               </p>
               <ul className="list-disc">
                 {requirementsSatisfied.map((requirement, idx) => {
-                  return <li key={idx}>{requirement.description}</li>;
+                  return (
+                    <div key={idx}>
+                      {/* {requirement.description} */}
+                      <div>{getCompleted(requirement, user.courses)}</div>
+                    </div>
+                  );
                 })}
               </ul>
             </Modal.Body>
