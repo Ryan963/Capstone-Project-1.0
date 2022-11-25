@@ -113,6 +113,7 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
     const degree = await Degree.findById(user.degree);
     const course = await Course.findById(req.params.id);
     const coursesTaken = user.courses;
+    const futureCourses = user.futureCourses;
 
     // Create d/M/m requirements array
     var requirements = degree.requirements;
@@ -129,7 +130,6 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
         major = await Major.findById(user.majors[i]);
         buildRequirements(requirements, major.requirements);
       }
-
       if (user.minors.length > i) {
         // add minor
         minor = await Minor.findById(user.minors[i]);
@@ -137,22 +137,42 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
       }
     }
 
+    // Array to seave the requirements that selected course will count towards
+    var requirementsSatisfied = [];
+
     for (var i = 0; i < requirements.length; i++) {
       var req = requirements[i];
-      var incomplete_courses = [];
-
       // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
       for (var j = 0; j < req.courses.length; j++) {
         if (req.courses[j] === course.name) {
           satisfied++;
+          requirementsSatisfied.push(req);
           break;
         }
       }
     }
 
-    console.log(satisfied);
+    // check if any of the requirements the selected course counts towards are already completed
 
-    res.status(200).json({ success: true, satisfied: satisfied });
+    const allCourses = coursesTaken.concat(futureCourses);
+    for (var i = 0; i < requirementsSatisfied.length; i++) {
+      var req = requirementsSatisfied[i];
+      const completed = allCourses.filter((value) =>
+        req.courses.includes(value)
+      );
+      if (
+        req.type === "credits_of_group" &&
+        completed.length * 3 >= req.credits
+      ) {
+        satisfied--;
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      satisfied: satisfied,
+      reqs: requirementsSatisfied,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({ success: false, message: error.message });
