@@ -248,7 +248,6 @@ function getBreadthPercentage(requirements){
  */
 function progressChecker(type, courses, requirements) {
     
-    console.log(type);
     const percentDMm = getPercentMajorMinor(requirements);
     const majorMinorProgress = getCreditGroups(courses, requirements);
     //Then Calculate how much percentage is actually done by user for major and minor
