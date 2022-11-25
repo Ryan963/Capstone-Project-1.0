@@ -11,7 +11,6 @@ const AddMajorMinorModal = ({
   minorOrMajor, //Same modal for both
   close,
   show,
-  getMajorMinorInModal, //This hook updates the main page info
 }) => {
   let majorName = "";
   let minorName = "";
@@ -208,8 +207,6 @@ const AddMajorMinorModal = ({
               variant="danger"
               onClick={() => {
                 close();
-                //Uses the function passed in to update main page once the close button is clicked
-                getMajorMinorInModal();
               }}
             >
               Close

@@ -32,6 +32,10 @@ import { toast } from "react-toastify";
 import { Button, Dropdown, Modal } from "react-bootstrap";
 import ViewCourseModal from "../../components/Modals/ViewCourseModal";
 import useCourses from "../../hooks/useCourses";
+import useUser from "../../hooks/useUser";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import ProgressLine from "../../components/homePageComponents/ProgressLine";
+import Loader from "../../components/UI/Loader";
 
 const drawerWidth = 200;
 
@@ -167,28 +171,27 @@ export default function UserCourses() {
     },
   ];
 
-  /*
-    - filter out already taken courses
-    - display no results if filter return nothing
-    - check selected course against progress
-    - better css
-    - spinner
-  */
-
   const [courses, setCourses] = useCourses([]);
+  const [user, setUser] = useUser({});
   const [currentCourse, setCurrentCourse] = useState({});
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCourseTaken, setshowCourseTaken] = useState(false);
   const [filterByDiscipline, setFilterByDiscipline] = useState("");
   const [filterByLevel, setFilterByLevel] = useState("");
+  const [filterByCompletion, setFilterByCompletion] = useState("");
 
   // variable to save how many requiremnts the selected course counts towards
   const [neededByRequirements, setNeededByRequirements] = useState(0);
+
+  // array of requirements that selected course counts towards
+  const [requirementsSatisfied, setRequirementsSatisfied] = useState([]);
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     setCourses([]);
+    setUser();
   }, []);
 
   function getDisciplines(courses) {
@@ -198,7 +201,7 @@ export default function UserCourses() {
         disciplines.push(course.discipline);
       }
     }
-    return disciplines;
+    return disciplines.sort();
   }
   const disciplines = getDisciplines(courses);
 
@@ -216,6 +219,10 @@ export default function UserCourses() {
         config
       )
       .then((res) => {
+        setUser({
+          ...user,
+          futureCourses: user.futureCourses.concat(course),
+        });
         toast.success("Course added successfully!");
       })
       .catch((error) => {
@@ -237,13 +244,54 @@ export default function UserCourses() {
       )
       .then((res) => {
         setNeededByRequirements(res.data.satisfied);
-        // console.log(neededByRequirements + " " + res.data.satisfied);
+        setRequirementsSatisfied(res.data.reqs);
         setShowConfirmModal(true);
       })
       .catch((error) => {
         toast.error(error.message);
         console.log(error);
       });
+  };
+
+  // get completed courses
+  const getCompleted = (requirement, userCourses) => {
+    // array of requirment courses the user has already completed
+    const allUserCourses = user.courses.concat(user.futureCourses);
+
+    const completed = allUserCourses.filter((value) =>
+      requirement.courses.includes(value)
+    );
+
+    // check if requirment is satisfied if yes then don't display anything
+    if (
+      requirement.type === "credits_of_group" &&
+      completed.length * 3 >= requirement.credits
+    ) {
+      return;
+    }
+
+    var percent = Math.round(
+      ((completed.length * 3) / requirement.credits) * 100
+    );
+    return (
+      <li className="m-auto p-3">
+        <ProgressLine
+          percentGiven={percent}
+          label={requirement.description + " - " + percent + "% completed"}
+          visualParts={[
+            {
+              percentage: percent + "%",
+              color: "green",
+            },
+          ]}
+        />
+        {completed.length === 0
+          ? "Completed: N/A"
+          : completed.length > 5
+          ? ""
+          : "Completed: " + completed.join(" ")}{" "}
+      </li>
+    );
   };
 
   return (
@@ -336,22 +384,24 @@ export default function UserCourses() {
 
         <Main open={open}>
           <DrawerHeader />
+          {/*--- Start of page body ---*/}
           <div>
-            <div className="flex ">
+            <div className="flex justify-between">
               <div>
                 <label className="font-semibold text-lg">
                   Course Discipline:
                 </label>
 
                 <select
-                  className="w-40 m-2 border rounded-md border-primary "
+                  // className="w-40 m-2 border rounded-md border-primary "
+                  className=" w-40 p-2.5 m-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   id="grid-first-name"
                   type="text"
                   name="discipline"
                   onChange={(e) => setFilterByDiscipline(e.target.value)}
                   value={filterByDiscipline}
                 >
-                  <option value={""}></option>
+                  <option value={""}>All</option>
                   {disciplines.map((discipline, idx) => (
                     <option key={idx} value={discipline}>
                       {discipline}
@@ -359,20 +409,36 @@ export default function UserCourses() {
                   ))}
                 </select>
               </div>
-              <div className="flex space-between">
+              <div>
                 <label className="font-semibold text-lg">Course Level:</label>
                 <select
-                  className="w-40 m-2 border rounded-md border-primary "
+                  className=" w-40 p-2.5 m-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   name="filterByLevel"
                   id="filterByLevel"
                   value={filterByLevel}
                   onChange={(e) => setFilterByLevel(e.target.value)}
                 >
-                  <option value={""}></option>
+                  <option value={""}>All</option>
                   <option value="1">100</option>
                   <option value="2">200</option>
                   <option value="3">300</option>
                   <option value="4">400</option>
+                </select>
+              </div>
+              <div>
+                <label className="font-semibold text-lg">
+                  Show Completed Courses:
+                </label>
+
+                <select
+                  className=" w-40 p-2.5 m-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  name="filterByCompletion"
+                  id="filterByCompletion"
+                  value={filterByCompletion}
+                  onChange={(e) => setFilterByCompletion(e.target.value)}
+                >
+                  <option value="show">Show</option>
+                  <option value="hide">Hide</option>
                 </select>
               </div>
             </div>
@@ -391,85 +457,114 @@ export default function UserCourses() {
               <div className="align-center text-end ml-auto mr-10"></div>
             </div>
             <div>
-              {courses
-                .filter((course) => {
-                  if (filterByDiscipline.length > 0) {
-                    if (course.discipline !== filterByDiscipline) {
-                      return false;
-                    }
-                  }
-                  if (filterByLevel.length > 0) {
-                    if (course.name[course.name.length - 3] !== filterByLevel) {
-                      return false;
-                    }
-                  }
-                  return true;
-                })
-                .map((course, idx) => {
-                  return (
-                    <div
-                      key={course._id}
-                      className={`flex mt-1 p-3 items-center rounded-3xl border  ${
-                        idx % 2 === 1 ? "bg-lightblue2" : ""
-                      }`}
-                    >
-                      <div
-                        style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          width: "240px",
-                        }}
-                        className=" flex content-center items-center self-center justify-center p-auto"
-                      >
-                        <span className="font-bold">{course.name}</span>
-                      </div>
-                      <div
-                        style={{
-                          marginLeft: "auto",
-                        }}
-                      >
-                        <span
-                          style={{ width: "20px" }}
-                          className="font-bold  ml-auto"
+              {courses.length > 0 ? (
+                <>
+                  {courses
+                    .filter((course) => {
+                      if (filterByDiscipline.length > 0) {
+                        if (course.discipline !== filterByDiscipline) {
+                          return false;
+                        }
+                      }
+                      if (filterByLevel.length > 0) {
+                        if (
+                          course.name[course.name.length - 3] !== filterByLevel
+                        ) {
+                          return false;
+                        }
+                      }
+                      if (filterByCompletion === "hide") {
+                        if (
+                          user.courses.includes(course.name) ||
+                          user.futureCourses.includes(course.name)
+                        ) {
+                          return false;
+                        }
+                      }
+                      return true;
+                    })
+                    .map((course, idx) => {
+                      return (
+                        <div
+                          key={course._id}
+                          className={`flex mt-1 p-3 items-center rounded-3xl border  ${
+                            idx % 2 === 1 ? "bg-lightblue2" : ""
+                          }`}
                         >
-                          {course.credits}
-                        </span>
-                      </div>
-                      <div className="ml-28">
-                        <span className="font-bold">{course.level * 100}</span>
-                      </div>
-                      <div className="align-center text-end ml-auto mr-10 ">
-                        <Dropdown>
-                          <Dropdown.Toggle
-                            variant="success"
-                            id="dropdown-basic"
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              width: "240px",
+                            }}
+                            className=" flex content-center items-center self-center justify-center p-auto"
                           >
-                            More
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item
-                              onClick={() => {
-                                setCurrentCourse(course);
-                                getRequirementSatisfaction(course);
-                              }}
+                            <span className="font-bold">{course.name}</span>
+                          </div>
+                          <div
+                            style={{
+                              marginLeft: "auto",
+                            }}
+                          >
+                            <span
+                              style={{ width: "20px" }}
+                              className="font-bold  ml-auto"
                             >
-                              Add to Future Courses
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              onClick={() => {
-                                setCurrentCourse(course);
-                                setShowCourseModal(true);
-                              }}
-                            >
-                              View Course info
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    </div>
-                  );
-                })}
+                              {course.credits}
+                            </span>
+                          </div>
+                          <div className="ml-28">
+                            <span className="font-bold">
+                              {course.level * 100}
+                            </span>
+                          </div>
+                          <div className="align-center text-end ml-auto mr-10 ">
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                More
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item
+                                  onClick={() => {
+                                    setCurrentCourse(course);
+                                    if (
+                                      user.futureCourses.includes(
+                                        course.name
+                                      ) ||
+                                      user.courses.includes(course.name)
+                                    ) {
+                                      setshowCourseTaken(true);
+                                    } else {
+                                      getRequirementSatisfaction(course);
+                                    }
+                                  }}
+                                >
+                                  Add to Future Courses
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() => {
+                                    setCurrentCourse(course);
+                                    setShowCourseModal(true);
+                                  }}
+                                >
+                                  View Course info
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </>
+              ) : (
+                <div className="flex items-center justify-center w-full pt-10 h-full">
+                  <Loader />
+                </div>
+              )}
             </div>
           </div>
           <ViewCourseModal
@@ -479,6 +574,7 @@ export default function UserCourses() {
           />
           <Modal
             show={showConfirmModal}
+            size="lg"
             onHide={() => setShowConfirmModal(false)}
             backdrop="static"
             keyboard={false}
@@ -494,8 +590,18 @@ export default function UserCourses() {
               <p>
                 This course will count towards{" "}
                 <strong>{neededByRequirements} </strong>
-                Degree/Major/Minor requirement(s)
+                uncompleted Degree/Major/Minor requirement(s):
               </p>
+              <ul className="list-disc">
+                {requirementsSatisfied.map((requirement, idx) => {
+                  return (
+                    <div key={idx}>
+                      {/* {requirement.description} */}
+                      <div>{getCompleted(requirement, user.courses)}</div>
+                    </div>
+                  );
+                })}
+              </ul>
             </Modal.Body>
             <Modal.Footer>
               <Button
@@ -512,6 +618,32 @@ export default function UserCourses() {
                 variant="success"
               >
                 Add
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          <Modal
+            show={showCourseTaken}
+            onHide={() => setshowCourseTaken(false)}
+            backdrop="static"
+            keyboard={false}
+            style={{ zIndex: 10000 }}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Warning</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                You have already taken or plan on taking:{" "}
+                <strong>{currentCourse.name}</strong>
+              </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="danger"
+                onClick={() => setshowCourseTaken(false)}
+              >
+                close
               </Button>
             </Modal.Footer>
           </Modal>

@@ -27,9 +27,9 @@ import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 import useUser from "../../hooks/useUser";
-import Card from 'react-bootstrap/Card';
+import Card from "react-bootstrap/Card";
 
 const drawerWidth = 200;
 
@@ -79,7 +79,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function UserProfile() {
-
   const token = localStorage.getItem("token");
   //const userEmail = localStorage.getItem("email");
   const userType = localStorage.getItem("type");
@@ -98,7 +97,6 @@ export default function UserProfile() {
 
   const [open, setOpen] = React.useState(false);
 
- 
   const theme = createTheme({
     palette: {
       primary: {
@@ -255,110 +253,85 @@ export default function UserProfile() {
         </Drawer>
         <Main open={open}>
           <DrawerHeader />
-          <div className="d-flex justify-content-around">
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Name:</Card.Title>
-                <Card.Text>
-                  {user.firstname + ' ' + user.lastname}
-                </Card.Text>
+          <div className="flex justify-between flex-wrap">
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Name:</Card.Title>
+                <Card.Text>{user.firstname + " " + user.lastname}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Email:</Card.Title>
-                <Card.Text>
-                  {user.email}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Email:</Card.Title>
+                <Card.Text>{user.email}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Degree:</Card.Title>
-                <Card.Text>
-                  {user.degree}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Degree:</Card.Title>
+                <Card.Text>{user.degree}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Major:</Card.Title>
-                <Card.Text>
-                  {user.majors}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Major:</Card.Title>
+                <Card.Text>{user.majors}</Card.Text>
               </Card.Body>
             </Card>
           </div>
           <br />
           <br />
           <div className="d-flex justify-content-around">
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Minor:</Card.Title>
-                <Card.Text>
-                  {user.minors}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Minor:</Card.Title>
+                <Card.Text>{user.minors}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Password:</Card.Title>
-                <Card.Text>
-                  {user.password}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Password:</Card.Title>
+                <Card.Text>{user.password}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Current Year:</Card.Title>
-                <Card.Text>
-                  {user.currentyear}
-                </Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Current Semester:</Card.Title>
-                <Card.Text>
-                  {user.currentsemester}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Current Year:</Card.Title>
+                <Card.Text>{user.currentyear}</Card.Text>
               </Card.Body>
             </Card>
           </div>
           <br />
           <br />
           <div className="d-flex justify-content-around">
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Graduated: (T/F)</Card.Title>
-                <Card.Text>
-                  {user.graduated}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Graduated: (T/F)</Card.Title>
+                <Card.Text>{user.graduated}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>Name:</Card.Title>
-                <Card.Text>
-                  {user.firstname + ' ' + user.lastname}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>Name:</Card.Title>
+                <Card.Text>{user.firstname + " " + user.lastname}</Card.Text>
               </Card.Body>
             </Card>
-            <Card border="danger" style={{ width: '20rem' }}>
-                <Card.Body>
-                  <Card.Title>GPA:</Card.Title>
-                <Card.Text>
-                  {user.gpa}
-                </Card.Text>
+            <Card border="danger" style={{ width: "20rem" }}>
+              <Card.Body>
+                <Card.Title>GPA:</Card.Title>
+                <Card.Text>{user.gpa}</Card.Text>
               </Card.Body>
             </Card>
-            <Card className="text-center pt-4" border="danger" style={{ width: '20rem' }}>
+            <Card
+              className="text-center pt-4"
+              border="danger"
+              style={{ width: "20rem" }}
+            >
               <Link to="/user/courses">
                 <Button variant="contained">Check and Romove Courses</Button>
               </Link>
             </Card>
           </div>
-
         </Main>
       </Box>
     </ThemeProvider>

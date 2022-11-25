@@ -117,16 +117,7 @@ const AddStudentModal = ({ close, show, students, setStudents }) => {
                 min="1"
                 max="4"
               />
-              <p style={{ paddingTop: 10 }}>Current Semester: </p>
-              <input
-                style={{
-                  outlineWidth: 1,
-                  outlineStyle: "solid",
-                  padding: 2,
-                  width: 280,
-                }}
-                type="text"
-              />
+
               <p style={{ paddingTop: 10 }}>Graduated (T/F) :</p>
               <select
                 style={{

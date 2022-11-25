@@ -461,7 +461,6 @@ export default function UserProgress() {
             close={() => setShowCourseModal(false)}
             course={currentCourse}
           />
-          (
           <Modal
             show={showCompletionModal}
             onHide={() => setShowCompletionModal(false)}
