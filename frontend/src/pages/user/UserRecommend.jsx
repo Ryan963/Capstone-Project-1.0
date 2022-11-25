@@ -27,13 +27,14 @@ import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Button } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect } from "react";
 import Loader from "../../components/UI/Loader";
 import ViewCourseModal from "../../components/Modals/ViewCourseModal";
-import useUser from "../../hooks/useUser"
+import FulfilledReqsModal from "../../components/Modals/FulfilledReqsModal";
+import useUser from "../../hooks/useUser";
 const drawerWidth = 200;
 const Page = {
   Start: 'Start',
@@ -110,6 +111,11 @@ export default function UserRecommend() {
   const [currentCourse, setCurrentCourse] = React.useState({});
   const [showCourseModal, setShowCourseModal] = React.useState(false);
   const [user, setUser] = useUser();
+  const [showFulfilledReqsModal, setShowFulfilledReqsModal] = React.useState(false);
+  const [fulfillCourse, setFulfillCourse] = React.useState({});
+  const [fulfillReqs, setFulfillReqs] = React.useState([]);
+  const [fulfillPrereqs, setFulfillPrereqs] = React.useState([]);
+  
 
   const theme = createTheme({
     palette: {
@@ -204,7 +210,7 @@ export default function UserRecommend() {
 
   useEffect(() => {
     if (recommendedCourses.length > 0) {
-      console.log(recommendedCourses);
+      
       setPage(Page.Recommend);
     }  
   }, [recommendedCourses])
@@ -257,7 +263,7 @@ export default function UserRecommend() {
               <Grid container rowSpacing={1} spacing={0}>
                 {/* columnSpacing={{xs: 80, sm:150, md:150}} */}
                 <Grid item xs={1}>
-                  <div class="grid-item">
+                  <div className="grid-item">
                     <IconButton
                       color="inherit"
                       aria-label="open drawer"
@@ -339,12 +345,16 @@ export default function UserRecommend() {
             {page === Page.Start && (
               <div>
                 <div 
-                  className="flex justify-center"
+                  className="px-5 flex justify-center"
                   //style={{ height: `${height > 900 ? "50rem" : "40rem"}` }}
                 >
-                  <Typography variant="h6" >10 courses will be recommended for you to take, ranked by the number of requirements and prerequisites the course satisfies.</Typography> 
+                  <Typography variant="h6" >10 courses will be recommended for you to take, ranked by a combination of 3 factors:
+                                            <p>&emsp; 1. The course level (lower level gets higher priority),</p>
+                                            <p>&emsp; 2. the number of requirements it helps satisfy, and</p>
+                                            <p>&emsp; 3. the number of prerequisites it satisfies for other courses in your degree.</p></Typography>
+                  
                 </div>
-                <div class="pt-4 flex justify-center">
+                <div className="pt-4 flex justify-center">
                   <Button variant="success" onClick={handleRecommend}>Recommend Courses</Button>
                 </div>
               </div>
@@ -354,7 +364,7 @@ export default function UserRecommend() {
                 <div className="flex justify-center">
                  <span>Building list of courses...</span>
                 </div>
-                <div class="pt-4 flex justify-center">
+                <div className="pt-4 flex justify-center">
                   <Loader />
                 </div>
               </div>
@@ -367,42 +377,57 @@ export default function UserRecommend() {
                     return(
                       <div 
                         key={idx}
-                        className={`flex mt-1 mx-60 p-10 items-center rounded-3xl border  ${
+                        className={`flex mt-1 mx-auto p-10 items-center rounded-3xl border  ${
                           idx % 2 === 1 ? "bg-lightblue2" : ""
                         }`}
                       >
                         <div className="w-5/6">
                             <div className="row p-2 font-bold">{course.course.name}</div>
-                            {/* <div className="pl-10">
-                              <span> {course.course.description} </span>
-                            </div> */}
                             <div className="font-bold text-sm pt-4">
-                              <span>This course satisfies {course.importance - (4-course.course.level)} requirement(s)/prerequisite(s)</span>
+                              <span>This course satisfies {course.requirements.length} requirement(s) and {course.prereqs.length} prerequisite(s)&emsp;</span>
                             </div>
-                        </div>
-                        <div className="align-center mx-auto ">
-                          <div>
-                            <Button onClick={() => {
-                              setCurrentCourse(course.course)
-                              setShowCourseModal(true)
-                            }}>
-                              View Course
-                            </Button>
-                          </div>
-                          
-                          <div className="pt-2"><Button variant="success" onClick={() => {
-                            
-                            handleAddCourse([course.course.name]);
-                          }}>Add Course</Button></div>
-                        </div>
-                      </div>
+                        </div> 
+                        <div className="align-center text-end ml-auto mr-10 ">
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              variant="success"
+                              id="dropdown-basic"
+                            >
+                              More
+                            </Dropdown.Toggle>
 
-                      
+                            <Dropdown.Menu>
+                            <Dropdown.Item
+                                onClick={() => {
+                                  setCurrentCourse(course.course)
+                                  setShowCourseModal(true)
+                                }}>
+                                  View Course
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => {
+                                  setFulfillCourse(course.course)
+                                  setFulfillReqs(course.requirements)
+                                  setFulfillPrereqs(course.prereqs)
+                                  setShowFulfilledReqsModal(true)
+                                }}>
+                                  View Satisfied Results
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => {
+                                  handleAddCourse([course.course.name]);
+                              }}>
+                                  Add Course
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        
+                        </div>
+                      </div>   
                     )
-                  }
-                  )}
+                  })}
                 </div>
-                <div class="pt-4 flex justify-center">
+                <div className="pt-4 flex justify-center">
                   <Button variant="success" onClick={handleAddAll}>Add All</Button>
                 </div>
                 <ViewCourseModal
@@ -410,14 +435,16 @@ export default function UserRecommend() {
                   close={() => setShowCourseModal(false)}
                   course={currentCourse}
                 />
+                <FulfilledReqsModal
+                  show={showFulfilledReqsModal}
+                  close={() => setShowFulfilledReqsModal(false)}
+                  requirements={fulfillReqs}
+                  prereqs={fulfillPrereqs}
+                  course={fulfillCourse}
+                />
+                
               </div>
-            )}
-            
-            
-            
-          
- 
-          
+            )}         
         </Main>
       </Box>
     </ThemeProvider>
