@@ -13,7 +13,7 @@ import DeleteObjectModal from "../../components/Modals/DeleteObjectModal";
 import useMajors from "../../hooks/useMajors";
 
 const Majors = () => {
-  const [majors, setMajors] = useMajors;
+  const [majors, setMajors] = useMajors();
   const [currentMajor, setCurrentMajor] = useState({});
   const [currentRequirement, setCurrentRequirement] = useState({
     type: "",
