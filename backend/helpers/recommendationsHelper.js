@@ -10,6 +10,7 @@ function buildRequirements(reqsArr, newReqs) {
 }
 
 /**
+ * DEFUNCT - STREAMS OUTSOURCED TO SEPARATE MAJORS
  * looks for stream in given major that matches given stream name
  * @param {String} stream_name Name of major stream
  * @param {Object} major Degree major
@@ -41,7 +42,7 @@ function compileCourses(recsArr, courseArr) {
         for (var j=0; j<courseArr.length; j++) {
             if (recsArr[i] === courseArr[j].name) {
                
-                compiledArr.push(new Object({course: courseArr[j], importance: 4-courseArr[j].level}));
+                compiledArr.push(new Object({course: courseArr[j], importance: 4-courseArr[j].level, requirements: [], prereqs: []}));
                 
                 break;
             } else if (j === courseArr.length-1) {
@@ -108,34 +109,42 @@ function prereqCheck(courseArr, completedArr) {
  */
 function prereqImportance(courseArr, requirements, compileArr) {
     
-    // Compile array of required courses
-    let requireCourses = [];
-    for (var req in requirements) { 
-        requireCourses = requireCourses.concat(requirements[req].courses);        
-        /*if (requirements[req].courses.includes(courseArr[course].course.name)) {
-            courseArr[course].importance = courseArr[course].importance + 1 ;
-        }*/            
-    }
-    compiledReqs = compileCourses(requireCourses, compileArr);
-   
-    // Loop through courses and increment importance based on frequency in requirements and other courses prerequisites
+    // Loop through courses and increment importance based on 
+    // frequency in requirements and other courses prerequisites
     for (let i=0; i < courseArr.length; i++) {
         currentCourse = courseArr[i];
-        // Loop through requirements
+        
+        // Compile array of required courses
+        let requireCourses = [];
+        for (var req in requirements) { 
+            requireCourses = requireCourses.concat(requirements[req].courses);        
+            if (requirements[req].courses.includes(currentCourse.course.name)) {
+                currentCourse.requirements.push(requirements[req]) ;
+            }          
+        }
+        requireCourses = [...new Set(requireCourses)]; // Make entries unique (removes duplicates)
+        compiledReqs = compileCourses(requireCourses, compileArr);
+        
+        
+        // Loop through requirements    
         for (let j=0; j < compiledReqs.length; j++) {
             currentReq = compiledReqs[j];
-            if (currentCourse.course.name === currentReq.course.name) {
+            /*if (currentCourse.course.name === currentReq.course.name) {
                 currentCourse.importance = currentCourse.importance+1;
-            }
+            }*/
             
             // Loop through requirement prereqs
             for (let prereq in currentReq.course.prerequisites) {
                 currentPrereq = currentReq.course.prerequisites[prereq];
                 if (currentPrereq.courses.includes(currentCourse.course.name)) {
-                    currentCourse.importance = currentCourse.importance+1;
+                    currentCourse.prereqs.push(currentReq.course.name);
                 }
             }
         }
+        
+        currentCourse.importance = (currentCourse.importance + 
+                                    currentCourse.requirements.length +
+                                    currentCourse.prereqs.length); 
     }
     
     return courseArr;
