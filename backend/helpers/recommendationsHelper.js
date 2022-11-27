@@ -107,7 +107,7 @@ function prereqCheck(courseArr, completedArr) {
  * @param {Array} compileArr database course data for compiling
  * @returns 
  */
-function prereqImportance(courseArr, requirements, compileArr) {
+function prereqImportance(courseArr, requirements, compileArr, completedCourses) {
     
     // Loop through courses and increment importance based on 
     // frequency in requirements and other courses prerequisites
@@ -129,13 +129,16 @@ function prereqImportance(courseArr, requirements, compileArr) {
         // Loop through requirements    
         for (let j=0; j < compiledReqs.length; j++) {
             currentReq = compiledReqs[j];
-            /*if (currentCourse.course.name === currentReq.course.name) {
-                currentCourse.importance = currentCourse.importance+1;
-            }*/
+            
             
             // Loop through requirement prereqs
             for (let prereq in currentReq.course.prerequisites) {
                 currentPrereq = currentReq.course.prerequisites[prereq];
+                if (prereqComplete(currentPrereq, completedCourses)) {
+                    continue;
+                }
+
+
                 if (currentPrereq.courses.includes(currentCourse.course.name)) {
                     currentCourse.prereqs.push(currentReq.course.name);
                 }
@@ -148,6 +151,21 @@ function prereqImportance(courseArr, requirements, compileArr) {
     }
     
     return courseArr;
+}
+
+function prereqComplete(prereq, completedCourses) {
+    quota = prereq.credits/3
+    for (let course in prereq.courses) {
+        if (completedCourses.includes(prereq.courses[course])) {
+            quota = quota-1;
+        } 
+
+        if (quota <= 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 module.exports = { buildRequirements, getStream, compileCourses, prereqCheck, prereqImportance };
