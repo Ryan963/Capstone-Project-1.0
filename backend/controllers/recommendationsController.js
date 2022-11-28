@@ -92,7 +92,8 @@ const recommendCourses = asyncHandler(async (req, res) => {
   recommendations = prereqImportance(
     recommendations,
     incompleteRequirements,
-    courses
+    courses,
+    coursesTaken
   );
 
   // Sort recommendations
