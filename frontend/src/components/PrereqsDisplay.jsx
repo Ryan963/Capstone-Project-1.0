@@ -1,8 +1,12 @@
 import React from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { AiOutlineClose } from "react-icons/ai";
-const PrereqsDisplay = ({ prerequisites, removePrerequisite, viewOnly }) => {
-  console.log(prerequisites);
+const PrereqsDisplay = ({
+  prerequisites,
+  removePrerequisite,
+  viewOnly,
+  user,
+}) => {
   return (
     <div className="w-full h-64 overflow-y-scroll ">
       {prerequisites && prerequisites.length > 0 ? (
@@ -23,31 +27,41 @@ const PrereqsDisplay = ({ prerequisites, removePrerequisite, viewOnly }) => {
                   borderRadius: 50,
                 }}
               >
-                {!viewOnly && (
-                  <AiOutlineClose
-                    className="absolute top-5 right-5 text-danger cursor-pointer"
-                    size={25}
-                    onClick={() => {
-                      if (removePrerequisite) {
-                        removePrerequisite(index);
-                      } else {
-                        return;
-                      }
-                    }}
-                  />
-                )}
-                <>
-                  <div className="flex  w-100">
-                    <span>Credits: {prereq.credits} </span>
+                {user ? (
+                  <div className="row p-2">
+                    {prereq.credits === prereq.courses.length * 3
+                      ? prereq.courses.join(", ")
+                      : prereq.description}
                   </div>
+                ) : (
+                  <>
+                    {!viewOnly && (
+                      <AiOutlineClose
+                        className="absolute top-5 right-5 text-danger cursor-pointer"
+                        size={25}
+                        onClick={() => {
+                          if (removePrerequisite) {
+                            removePrerequisite(index);
+                          } else {
+                            return;
+                          }
+                        }}
+                      />
+                    )}
+                    <>
+                      <div className="flex  w-100">
+                        <span>Credits: {prereq.credits} </span>
+                      </div>
 
-                  <div className="row p-2">
-                    Courses: {prereq.courses.join(", ")}
-                  </div>
-                  <div className="row p-2">
-                    Description: {prereq.description}
-                  </div>
-                </>
+                      <div className="row p-2">
+                        Courses: {prereq.courses.join(", ")}
+                      </div>
+                      <div className="row p-2">
+                        Description: {prereq.description}
+                      </div>
+                    </>
+                  </>
+                )}
               </ListGroup.Item>
             );
           })}

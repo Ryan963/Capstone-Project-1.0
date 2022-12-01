@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import PrereqsDisplay from "../PrereqsDisplay";
 
-function ViewCourseModal({ course, show, close }) {
+function ViewCourseModal({ course, show, close, user }) {
   const {
     name,
     description,
@@ -46,6 +46,7 @@ function ViewCourseModal({ course, show, close }) {
                     <PrereqsDisplay
                       prerequisites={prerequisites}
                       viewOnly={true}
+                      user={user}
                     />
                   )}
                 </p>
