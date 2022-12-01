@@ -460,6 +460,7 @@ export default function UserProgress() {
             show={showCourseModal}
             close={() => setShowCourseModal(false)}
             course={currentCourse}
+            user={true}
           />
           <Modal
             show={showCompletionModal}

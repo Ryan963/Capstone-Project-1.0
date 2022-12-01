@@ -571,6 +571,7 @@ export default function UserCourses() {
             show={showCourseModal}
             close={() => setShowCourseModal(false)}
             course={currentCourse}
+            user={true}
           />
           <Modal
             show={showConfirmModal}
