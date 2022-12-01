@@ -261,6 +261,9 @@ function progressChecker(type, courses, requirements) {
   var indexMax = 0;
   var percentFinished = [];
   var creditsFinishedPerReq;
+  requirements = requirements.filter(
+    (req) => req.type.toLowerCase() === "credits_of_group"
+  );
   for (var x = 0; x < requirements.length; x++) {
     if (requirements[x].type === "credits_of_group") {
       //Get number of credits finished per requirement then divide by how much the major or minor counts towards the degree
@@ -325,6 +328,7 @@ function getCreditGroups(userCourses, requirements) {
       completion.push(obj);
     }
   }
+  console.log(completion);
 
   return completion;
 }
