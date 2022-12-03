@@ -25,7 +25,7 @@ router
   .put(protect, completeCourse)
   .delete(protect, removeFutureCourses);
 router.get("/", adminProtect.protect, getAllUsers);
-router.put("/:id", adminProtect.protect, updateUser);
+router.put("/:id", protect, updateUser);
 router.route("/:id").delete(adminProtect.protect, deleteUser);
 
 module.exports = router;

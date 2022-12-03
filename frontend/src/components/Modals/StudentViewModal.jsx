@@ -32,9 +32,6 @@ const StudentCard = ({
       >
         <>
           <div>
-            <span>id: {_id} </span>
-          </div>
-          <div>
             <span>First Name: {firstname} </span>
           </div>
           <div>
@@ -42,9 +39,6 @@ const StudentCard = ({
           </div>
           <div>
             <span>Email: {email} </span>
-          </div>
-          <div>
-            <span>Password: {password} </span>
           </div>
           <div>
             <span>Degree: {degree} </span>
@@ -121,11 +115,9 @@ const StudentViewModal = ({
           >
             <div>
               <StudentCard
-                _id={id}
                 firstname={firstname}
                 lastname={lastname}
                 email={email}
-                password={password}
                 degree={degree}
                 majors={majors}
                 minors={minors}
