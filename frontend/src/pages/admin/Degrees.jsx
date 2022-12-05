@@ -86,6 +86,11 @@ const Degrees = () => {
     setDegrees(updatedDegrees);
   };
 
+  const addDegree = (degree) => {
+    const updatedDegrees = [...degrees, degree];
+    setDegrees(updatedDegrees);
+  };
+
   const deleteRequirement = (index) => {
     const id = currentDegree._id;
     setCurrentDegree({
@@ -140,6 +145,7 @@ const Degrees = () => {
                 <AddDegreeModal
                   show={showAddDegreeModal}
                   close={() => setShowAddDegreeModal(false)}
+                  addDegreeToCollection={addDegree}
                 />
               </div>
             </div>
