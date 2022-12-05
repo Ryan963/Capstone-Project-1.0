@@ -11,6 +11,10 @@ import DeleteStudentModal from "../../components/Modals/DeleteStudentModal";
 const Students = () => {
   const [majors, setMajors] = useState([]);
   const [currentMajor, setCurrentMajor] = useState({});
+  const [degrees, setDegrees] = useState([]);
+  const [currentDegree, setCurrentDegree] = useState({});
+  const [minors, setMinors] = useState([]);
+  const [currentMinor, setCurrentMinor] = useState({});
   const [studentViewModal, setStudentViewModal] = useState(false);
   const [showDeleteStudentModal, setShowDeleteStudentModal] = useState(false);
   const [students, setStudents] = useState([]);
@@ -19,6 +23,8 @@ const Students = () => {
   useEffect(() => {
     getUsers();
     getMajors();
+    getMinors();
+    getDegrees();
   }, []);
 
   const getUsers = () => {
@@ -59,27 +65,70 @@ const Students = () => {
       });
   };
 
-  const addStudent = (student) => {
-    const newStudentList = [...students, student];
-    setStudents(newStudentList);
+  const getDegrees = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
+      .then((res) => {
+        setDegrees(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
   };
+
+  const getMinors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
+      .then((res) => {
+        setMinors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  }
+
+  const checkDegrees = (id) =>{
+    for (let i = 0; i < degrees.length; i++) {
+      if (degrees[i]._id === id) {
+        setCurrentDegree(degrees[i].name);
+      }
+    }
+  }
+  const checkMinors = (idArray) =>{
+    var id = idArray[0];
+    for (let i = 0; i < minors.length; i++) {
+      if (minors[i]._id === id) {
+        setCurrentMinor(minors[i].name);
+      }
+    }
+  }
+  const checkMajors = (idArray) =>{
+    var id = idArray[0];
+    for (let i = 0; i < majors.length; i++) {
+      if (majors[i]._id === id) {
+        setCurrentMajor(majors[i].name);
+      }
+    }
+  }
+
 
   const deleteStudent = (student) => {
     const updatedStudents = students.filter((u) => u !== student);
     setStudents(updatedStudents);
   };
-  /*
-  const checkMajor = (id) =>{
-    const majorsCopy = [...majors];
-    for (let i = 0; i < majorsCopy.length; i++) {
-      if (majorsCopy[i]._id === id) {
-        console.log("id"+id);
-        console.log("major"+majorsCopy[i]._id);
-        currentMajor = majorsCopy[i].name;
-        return currentMajor;
-      }
-    }
-  }*/
+  
 
   return (
     <div className="flex flex-row w-full">
@@ -138,7 +187,9 @@ const Students = () => {
                             onClick={() => {
                               setCurrentStudent(student);
                               setStudentViewModal(true);
-                              setCurrentMajor(student.majors);
+                              checkDegrees(student.degree);
+                              checkMajors(student.majors);
+                              checkMinors(student.minors);
                             }}
                           >
                             View Student info
@@ -168,14 +219,12 @@ const Students = () => {
       <StudentViewModal
         show={studentViewModal}
         close={() => setStudentViewModal(false)}
-        id={currentStudent._id}
         firstname={currentStudent.firstname}
         lastname={currentStudent.lastname}
         email={currentStudent.email}
-        password={currentStudent.password}
-        degree={currentStudent.degree}
-        majors={currentStudent.majors}
-        minors={currentStudent.minors}
+        degree={currentDegree}
+        majors={currentMajor}
+        minors={currentMinor}
         courses={currentStudent.courses}
         futureCourses={currentStudent.futureCourses}
         currentyear={currentStudent.currentyear}
