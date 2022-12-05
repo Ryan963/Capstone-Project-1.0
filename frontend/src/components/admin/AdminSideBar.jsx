@@ -86,13 +86,6 @@ export default function AdminSidebar({ route }) {
             route="students"
             selectedRoute={route}
           />
-          <SideBarItem
-            link="/admin/analytics"
-            Icon={() => <FaChartBar size={24} />}
-            text="Analytics"
-            route="analytics"
-            selectedRoute={route}
-          />
         </div>
       </div>
     </>

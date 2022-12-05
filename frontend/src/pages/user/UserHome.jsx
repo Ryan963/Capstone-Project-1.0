@@ -119,7 +119,7 @@ export default function UserHome() {
         console.log(error);
       });
 
-      console.log(progress.percentBreadth);
+    console.log(progress.percentBreadth);
   };
 
   const getMajors = () => {
@@ -322,24 +322,31 @@ export default function UserHome() {
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
           <h7>Degree</h7>
           <div className="container">
-          
             <ProgressLine
-              label={"Breadth: " + progress.percentBreadth +"%\n" +
-              "Major: " + progress.percentMajor +"%\n" +
-              "Minor: " + progress.percentMinor + "%"}
+              label={
+                "Breadth: " +
+                progress.percentBreadth +
+                "%\n" +
+                "Major: " +
+                progress.percentMajor +
+                "%\n" +
+                "Minor: " +
+                progress.percentMinor +
+                "%"
+              }
               visualParts={[
                 {
                   // percentage: progress.percentBreadth,
                   percentage: progress.percentBreadth + "%",
-                  color: "gold"
+                  color: "gold",
                 },
                 {
-                  percentage: progress.percentMajor+ "%",
-                  color: "green"
+                  percentage: progress.percentMajor + "%",
+                  color: "green",
                 },
                 {
-                  percentage: progress.percentMinor+ "%",
-                  color: "blue"
+                  percentage: progress.percentMinor + "%",
+                  color: "blue",
                 },
               ]}
             />
