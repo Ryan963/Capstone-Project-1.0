@@ -11,6 +11,7 @@ const AddMajorMinorModal = ({
   minorOrMajor, //Same modal for both
   close,
   show,
+  addToCollection,
 }) => {
   let majorName = "";
   let minorName = "";
@@ -100,6 +101,8 @@ const AddMajorMinorModal = ({
           )
           .then((res) => {
             if (JSON.stringify(res.status) === "200") {
+              addToCollection(res.data);
+              setAllMajors([...allMajors, res.data]);
               toast.success("Major added successfully!");
               close();
             } else {
@@ -124,7 +127,7 @@ const AddMajorMinorModal = ({
             JSON.stringify(allMinors[i].name)
         );
         if (minorName === allMinors[i].name) {
-          alert("Major exists");
+          alert("Minor exists");
           minorDuplicate = true;
           break;
         }
@@ -144,9 +147,12 @@ const AddMajorMinorModal = ({
             config
           )
           .then((res) => {
-            console.log(JSON.stringify(res));
+            // console.log(JSON.stringify(res));
             if (JSON.stringify(res.status) === "200") {
+              addToCollection(res.data);
               toast.success("Minor added successfully!");
+              setAllMinors([...allMinors, res.data]);
+              close();
             } else {
               toast.error(JSON.stringify(res.data.message));
             }

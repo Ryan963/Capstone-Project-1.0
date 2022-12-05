@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useRef } from "react";
 
-const AddDegreeModal = ({ close, show }) => {
+const AddDegreeModal = ({ close, show, addDegreeToCollection }) => {
   let degreeName = "";
 
   const degreeInput = useRef(null);
@@ -74,7 +74,9 @@ const AddDegreeModal = ({ close, show }) => {
         )
         .then((res) => {
           if (JSON.stringify(res.status) === "201") {
+            addDegreeToCollection(res.data);
             toast.success("Degree added successfully!");
+            close();
           } else {
             toast.error(JSON.stringify(res.data.message));
           }

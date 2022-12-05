@@ -1,18 +1,17 @@
-import React from 'react'
+import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-
-function DeleteObjectModal( {
+function DeleteObjectModal({
   show,
   close,
   collection,
   object,
-  deleteFromCollection
+  deleteFromCollection,
 }) {
-  const {_id, name} = object
+  const { _id, name } = object;
 
   const handleDelete = () => {
     const token = localStorage.getItem("token");
@@ -28,29 +27,23 @@ function DeleteObjectModal( {
       )
       .then((res) => {
         if (res.data.success) {
-          deleteFromCollection( object );
-          toast.success(`${name} Removed`); 
+          deleteFromCollection(object);
+          toast.success(`${name} Removed`);
         } else {
           toast.error(res.data.message);
         }
-        close()
+        close();
       })
       .catch((error) => {
         toast.error(error.message);
         console.log(error);
       });
-  }
-  
+  };
+
   return (
     <>
-      (
-        <Modal
-          show={show}
-          onHide={close}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
+      <Modal show={show} onHide={close} backdrop="static" keyboard={false}>
+        <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -67,7 +60,7 @@ function DeleteObjectModal( {
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }
 
-export default DeleteObjectModal
+export default DeleteObjectModal;
