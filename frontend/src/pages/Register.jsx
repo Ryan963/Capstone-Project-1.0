@@ -25,7 +25,7 @@ const Register = () => {
     courses: [],
     currentyear: null,
     graduated: false,
-    gpa: null,
+    gpa: 4.0,
   });
   const [doubleMajorCheck, setDoubleMajorCheck] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -350,14 +350,6 @@ const Register = () => {
                 name="graduated"
               />
 
-              <Input
-                handleChange={handleChange}
-                name="gpa"
-                label="Enter gpa"
-                value={user.gpa}
-                placeholder="EX: 3.2"
-                type="number"
-              />
               <div className="flex justify-between">
                 {activeStep > 0 && (
                   <Button
