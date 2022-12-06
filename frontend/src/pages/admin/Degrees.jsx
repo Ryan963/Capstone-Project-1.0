@@ -135,7 +135,7 @@ const Degrees = () => {
                   onClick={() => setShowAddDegreeModal(true)}
                 >
                   New Degree
-                </Button>
+                </Button> 
 
                 <AddDegreeModal
                   show={showAddDegreeModal}
