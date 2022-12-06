@@ -47,7 +47,9 @@ const recommendCourses = asyncHandler(async (req, res) => {
       buildRequirements(requirements, minor.requirements);
     }
   }
-  const filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+  let filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+
+  filteredRequirements = filteredRequirements.filter(req => req.credits <= 60);
   var recommendations = []; // Initialize recommendations array
 
   // Loop through all requirements
