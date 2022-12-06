@@ -16,6 +16,7 @@ import {
   ListItemText,
   ListItemIcon,
   ThemeProvider,
+  TextField,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -27,9 +28,13 @@ import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import Button from "@mui/material/Button";
+import Button from 'react-bootstrap/Button'
 import useUser from "../../hooks/useUser";
 import Card from "react-bootstrap/Card";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import Form from 'react-bootstrap/Form'
 
 const drawerWidth = 200;
 
@@ -163,7 +168,109 @@ export default function UserProfile() {
   ];
 
   const [user, setUser] = useUser();
+  const [majors, setMajors] = useState([]);
+  const [currentMajor, setCurrentMajor] = useState({});
+  const [degrees, setDegrees] = useState([]);
+  const [currentDegree, setCurrentDegree] = useState({});
+  const [minors, setMinors] = useState([]);
+  const [currentMinor, setCurrentMinor] = useState({});
+  //const [updateStudentModal, setUpdateStudentModal] = useState(false);
 
+  useEffect(() => {
+    getMajors();
+    getDegrees();
+    getMinors();
+  }, []);
+  
+  const getDegrees = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
+      .then((res) => {
+        setDegrees(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getMajors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
+      .then((res) => {
+        setMajors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getMinors = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
+      .then((res) => {
+        setMinors(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  }
+
+  const checkDegrees = (id) =>{
+    for (let i = 0; i < degrees.length; i++) {
+      if (degrees[i]._id === id) {
+        return(degrees[i].name);
+      }
+    }
+  }
+  const checkMinors = (idArray) =>{
+    if(idArray === undefined){
+      return;
+    }
+    var id = idArray[0];
+    for (let i = 0; i < minors.length; i++) {
+      if (minors[i]._id === id) {
+        return(minors[i].name);
+      }
+    }
+  }
+  const checkMajors = (idArray) =>{
+    if(idArray === undefined){
+      return;
+    }
+    var id = idArray[0];
+
+    for (let i = 0; i < majors.length; i++) {
+      if (majors[i]._id === id) {
+
+        return(majors[i].name);
+      }
+    }
+  }
+/*
+  const updateStudent= (updatedStudent) => {
+    
+    //Object.repalce(user, updatedStudent);
+    setUser(updatedStudent);
+  };
+*/
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
@@ -253,85 +360,40 @@ export default function UserProfile() {
         </Drawer>
         <Main open={open}>
           <DrawerHeader />
-          <div className="flex justify-between flex-wrap">
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Name:</Card.Title>
-                <Card.Text>{user.firstname + " " + user.lastname}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Email:</Card.Title>
-                <Card.Text>{user.email}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Degree:</Card.Title>
-                <Card.Text>{user.degree}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Major:</Card.Title>
-                <Card.Text>{user.majors}</Card.Text>
-              </Card.Body>
-            </Card>
-          </div>
+          <Form>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Name: {user.firstname + " " + user.lastname}</Form.Label>
+
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email: {user.email}</Form.Label>
+              
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Degree: {checkDegrees(user.degree)}</Form.Label>
+             
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              
+              <Form.Label>Major:{ checkMajors(user.majors)}</Form.Label>
+            
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Minor: {checkMinors(user.minors)}</Form.Label>
+              
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Current Year: {user.currentyear}</Form.Label>
+              
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>GPA: {user.gpa}</Form.Label>
+              
+            </Form.Group>
+
+          </Form>
           <br />
-          <br />
-          <div className="d-flex justify-content-around">
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Minor:</Card.Title>
-                <Card.Text>{user.minors}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Password:</Card.Title>
-                <Card.Text>{user.password}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Current Year:</Card.Title>
-                <Card.Text>{user.currentyear}</Card.Text>
-              </Card.Body>
-            </Card>
-          </div>
-          <br />
-          <br />
-          <div className="d-flex justify-content-around">
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Graduated: (T/F)</Card.Title>
-                <Card.Text>{user.graduated}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>Name:</Card.Title>
-                <Card.Text>{user.firstname + " " + user.lastname}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card border="danger" style={{ width: "20rem" }}>
-              <Card.Body>
-                <Card.Title>GPA:</Card.Title>
-                <Card.Text>{user.gpa}</Card.Text>
-              </Card.Body>
-            </Card>
-            <Card
-              className="text-center pt-4"
-              border="danger"
-              style={{ width: "20rem" }}
-            >
-              <Link to="/user/courses">
-                <Button variant="contained">Check and Romove Courses</Button>
-              </Link>
-            </Card>
-          </div>
+
         </Main>
       </Box>
     </ThemeProvider>

@@ -180,6 +180,8 @@ export default function UserCourses() {
   const [filterByDiscipline, setFilterByDiscipline] = useState("");
   const [filterByLevel, setFilterByLevel] = useState("");
   const [filterByCompletion, setFilterByCompletion] = useState("");
+  const [filterByRequirement, setFilterByRequirement] = useState({});
+  const [requirements, setRequirements] = useState([]);
 
   // variable to save how many requiremnts the selected course counts towards
   const [neededByRequirements, setNeededByRequirements] = useState(0);
@@ -192,6 +194,7 @@ export default function UserCourses() {
   useEffect(() => {
     setCourses([]);
     setUser();
+    getRequirements();
   }, []);
 
   function getDisciplines(courses) {
@@ -246,6 +249,26 @@ export default function UserCourses() {
         setNeededByRequirements(res.data.satisfied);
         setRequirementsSatisfied(res.data.reqs);
         setShowConfirmModal(true);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getRequirements = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(
+        `${process.env.REACT_APP_SERVER_API}/recommendations/requirements`,
+        config
+      )
+      .then((res) => {
+        setRequirements(res.data.requirements);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -389,6 +412,26 @@ export default function UserCourses() {
             <div className="flex justify-between">
               <div>
                 <label className="font-semibold text-lg">
+                  Filter By Requirement:
+                </label>
+
+                <select
+                  className=" text-ellipsis w-40 p-2.5 m-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  name="filterByCompletion"
+                  id="filterByCompletion"
+                  value={filterByRequirement}
+                  onChange={(e) => setFilterByRequirement(e.target.value)}
+                >
+                  <option value={""}>All</option>
+                  {requirements.map((requirement, idx) => (
+                    <option key={idx} value={requirement.courses}>
+                      {requirement.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="font-semibold text-lg">
                   Course Discipline:
                 </label>
 
@@ -463,6 +506,11 @@ export default function UserCourses() {
                     .filter((course) => {
                       if (filterByDiscipline.length > 0) {
                         if (course.discipline !== filterByDiscipline) {
+                          return false;
+                        }
+                      }
+                      if (filterByRequirement.length > 0) {
+                        if (!filterByRequirement.includes(course.name)) {
                           return false;
                         }
                       }
@@ -571,6 +619,7 @@ export default function UserCourses() {
             show={showCourseModal}
             close={() => setShowCourseModal(false)}
             course={currentCourse}
+            user={true}
           />
           <Modal
             show={showConfirmModal}
@@ -643,7 +692,7 @@ export default function UserCourses() {
                 variant="danger"
                 onClick={() => setshowCourseTaken(false)}
               >
-                close
+                Close
               </Button>
             </Modal.Footer>
           </Modal>

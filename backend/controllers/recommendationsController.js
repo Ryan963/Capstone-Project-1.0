@@ -47,12 +47,14 @@ const recommendCourses = asyncHandler(async (req, res) => {
       buildRequirements(requirements, minor.requirements);
     }
   }
+  let filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
 
+  filteredRequirements = filteredRequirements.filter(req => req.credits <= 60);
   var recommendations = []; // Initialize recommendations array
 
   // Loop through all requirements
-  for (var i = 0; i < requirements.length; i++) {
-    var req = requirements[i];
+  for (var i = 0; i < filteredRequirements.length; i++) {
+    var req = filteredRequirements[i];
     var quota = req.credits / 3; // number of courses to complete requirement (credits / 3 is one course)
     var incomplete_courses = [];
 
@@ -89,7 +91,12 @@ const recommendCourses = asyncHandler(async (req, res) => {
   );
 
   // Calculate importance level of courses, by comparing to prerequisites
-  recommendations = prereqImportance(recommendations, incompleteRequirements, courses);
+  recommendations = prereqImportance(
+    recommendations,
+    incompleteRequirements,
+    courses,
+    coursesTaken
+  );
 
   // Sort recommendations
   recommendations.sort((a, b) => b.importance - a.importance);
@@ -137,11 +144,12 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
       }
     }
 
+    const filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
     // Array to seave the requirements that selected course will count towards
     var requirementsSatisfied = [];
 
-    for (var i = 0; i < requirements.length; i++) {
-      var req = requirements[i];
+    for (var i = 0; i < filteredRequirements.length; i++) {
+      var req = filteredRequirements[i];
       // Compare requirement's courses to taken courses and add incomplete to incomplete_courses array
       for (var j = 0; j < req.courses.length; j++) {
         if (req.courses[j] === course.name) {
@@ -153,7 +161,6 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
     }
 
     // check if any of the requirements the selected course counts towards are already completed
-
     const allCourses = coursesTaken.concat(futureCourses);
     for (var i = 0; i < requirementsSatisfied.length; i++) {
       var req = requirementsSatisfied[i];
@@ -179,4 +186,48 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { recommendCourses, requirementsSatisfied };
+// @desc Get all degree/major/minor requirements of user
+// @route GET /api/recommendations/requirements
+// @access private
+// **
+const getAllUserRequirements = asyncHandler(async (req, res) => {
+  try {
+    // Access data
+    const user = await User.findById(req.user.id);
+    const degree = await Degree.findById(user.degree);
+    const course = await Course.findById(req.params.id);
+
+    // Create d/M/m requirements array
+    var requirements = degree.requirements;
+
+    // add all of the users major/minor requirements to 'requirements' array
+    for (var i = 0; i < Math.max(user.majors.length, user.minors.length); i++) {
+      var major,
+        minor = null;
+      if (user.majors.length > i) {
+        // add major
+        major = await Major.findById(user.majors[i]);
+        buildRequirements(requirements, major.requirements);
+      }
+      if (user.minors.length > i) {
+        // add minor
+        minor = await Minor.findById(user.minors[i]);
+        buildRequirements(requirements, minor.requirements);
+      }
+    }
+    const filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+    res.status(200).json({
+      success: true,
+      requirements: filteredRequirements,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+module.exports = {
+  recommendCourses,
+  requirementsSatisfied,
+  getAllUserRequirements,
+};

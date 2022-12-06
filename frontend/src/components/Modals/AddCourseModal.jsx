@@ -11,15 +11,7 @@ import CourseSelections from "../CourseSelections";
 import { Typography, Stepper, Step, StepLabel } from "@material-ui/core";
 import AddPreRequisiteModal from "./AddPreRequisiteModal";
 import PrereqsDisplay from "../PrereqsDisplay";
-function getDisciplines(courses) {
-  const disciplines = [];
-  for (let course of courses) {
-    if (!disciplines.includes(course.discipline)) {
-      disciplines.push(course.discipline);
-    }
-  }
-  return disciplines;
-}
+import NewDisciplineModal from "./NewDisciplineModal";
 
 function AddCourseModal({ show, close, addCourseToCollection }) {
   const token = localStorage.getItem("token");
@@ -34,8 +26,9 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
   });
   const [allCourses, setAllCourses] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
+  const [showDisciplineModal, setShowDisciplineModal] = useState(false);
 
-  const disciplines = getDisciplines(allCourses);
+  const [disciplines, setDisciplines] = useState([]);
 
   const retrieveCourses = () => {
     const config = {
@@ -47,6 +40,7 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
       .get(`${process.env.REACT_APP_SERVER_API}/courses`, config)
       .then((res) => {
         setAllCourses(res.data);
+        getDisciplines(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -57,6 +51,17 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
   useEffect(() => {
     retrieveCourses();
   }, []);
+
+  const getDisciplines = (courses) => {
+    const disciplines = [];
+    for (let course of courses) {
+      if (!disciplines.includes(course.discipline)) {
+        disciplines.push(course.discipline);
+      }
+    }
+    setDisciplines(disciplines);
+    return;
+  };
 
   const handleChange = (e) => {
     setCourse((prevCourse) => {
@@ -113,6 +118,10 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
         corequisites: newCorequsites,
       };
     });
+  };
+
+  const handleNewDiscipline = (discipline) => {
+    setDisciplines([...disciplines, discipline]);
   };
 
   /*
@@ -222,27 +231,37 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
                   label="Enter number of credits"
                   type="number"
                 />
-                <div>
-                  <label className="font-semibold text-lg">
-                    Course Discipline:
-                  </label>
+                <div className="flex justify-between">
+                  <div>
+                    <label className="font-semibold text-lg">
+                      Course Discipline:
+                    </label>
 
-                  <select
-                    className="w-40 m-2 border rounded-md border-primary "
-                    id="grid-first-name"
-                    type="text"
-                    name="discipline"
-                    placeholder="ex. English"
-                    onChange={handleChange}
-                    value={course.discipline}
+                    <select
+                      className="w-40 m-2 border rounded-md border-primary "
+                      id="discipline"
+                      type="text"
+                      name="discipline"
+                      placeholder="ex. English"
+                      onChange={handleChange}
+                      value={course.discipline}
+                    >
+                      <option value={""}></option>
+                      {disciplines.map((discipline, idx) => (
+                        <option key={idx} value={discipline}>
+                          {discipline}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <Button
+                    className="btn"
+                    variant="info"
+                    onClick={() => setShowDisciplineModal(true)}
                   >
-                    <option value={""}></option>
-                    {disciplines.map((discipline, idx) => (
-                      <option key={idx} value={discipline}>
-                        {discipline}
-                      </option>
-                    ))}
-                  </select>
+                    New Discipline
+                  </Button>
                 </div>
                 <div>
                   <label className="font-semibold text-lg">Course Level:</label>
@@ -310,6 +329,14 @@ function AddCourseModal({ show, close, addCourseToCollection }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <NewDisciplineModal
+        show={showDisciplineModal}
+        close={() => {
+          setShowDisciplineModal(false);
+        }}
+        newDiscipline={handleNewDiscipline}
+      />
     </>
   );
 }

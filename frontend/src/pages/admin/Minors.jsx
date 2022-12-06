@@ -78,6 +78,11 @@ const Minors = () => {
     setMinors(minorsCopy);
   };
 
+  const addMinor = (minor) => {
+    const updatedMinors = [...minors, minor];
+    setMinors(updatedMinors);
+  };
+
   const deleteMinor = (minor) => {
     const updatedMinors = minors.filter((m) => m !== minor);
     setMinors(updatedMinors);
@@ -137,6 +142,7 @@ const Minors = () => {
                   minorOrMajor="Minor"
                   show={showAddMajorMinorModal}
                   close={() => setShowAddMajorMinorModal(false)}
+                  addToCollection={addMinor}
                 />
               </div>
             </div>
