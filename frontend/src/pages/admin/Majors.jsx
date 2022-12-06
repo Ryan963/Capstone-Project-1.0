@@ -28,12 +28,12 @@ const Majors = () => {
   const [showAddMajorMinorModal, setShowAddMajorMinorModal] = useState(false);
   const [showDeleteObjectModal, setShowDeleteObjectModal] = useState(false);
 
-  const addRequirementToMajor = (majorName, requirement) => {
+  const addRequirementToMajor = (majorName, streamName, requirement) => {
     const majorsCopy = [...majors];
     // find index of this major
     let idx = 0;
     for (let i = 0; i < majorsCopy.length; i++) {
-      if (majorsCopy[i].name === majorName) {
+      if (majorsCopy[i].name === majorName && majorsCopy[i].stream === streamName) {
         idx = i;
         break;
       }
@@ -48,6 +48,7 @@ const Majors = () => {
   };
   const updateRequirementInMajor = (
     majorName,
+    streamName,
     oldRequirement,
     newRequirement
   ) => {
@@ -55,7 +56,7 @@ const Majors = () => {
     // find index of this major
     let idx = 0;
     for (let i = 0; i < majorsCopy.length; i++) {
-      if (majorsCopy[i].name === majorName) {
+      if (majorsCopy[i].name === majorName && majorsCopy[i].stream === streamName) {
         idx = i;
         break;
       }

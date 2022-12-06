@@ -248,9 +248,16 @@ const UpdateRequirementModal = ({
       )
       .then((res) => {
         if (res.data.success) {
-          updateRequirementInCollection(name, oldRequirement, {
-            ...requirement,
-          });
+          if (collection === "major") {
+            updateRequirementInCollection(name, stream, oldRequirement, {
+              ...requirement,
+            });
+          } else {
+            updateRequirementInCollection(name, oldRequirement, {
+              ...requirement,
+            });
+          }
+          
           toast.success("Requirement updated successfully!");
           close();
         } else {
