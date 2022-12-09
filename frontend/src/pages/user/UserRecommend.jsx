@@ -40,6 +40,7 @@ const Page = {
   Start: "Start",
   Load: "Load",
   Recommend: "Recommend",
+  Complete: "Complete",
 };
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -205,7 +206,12 @@ export default function UserRecommend() {
 
   useEffect(() => {
     if (recommendedCourses.length > 0) {
-      setPage(Page.Recommend);
+      if (recommendedCourses[0].importance > 0) {
+        setPage(Page.Recommend);
+      } else {
+        setPage(Page.Complete);
+      }
+      
     }
   }, [recommendedCourses]);
   //Controls Icons and links on the navigation drawer/hamburger menu
@@ -458,6 +464,14 @@ export default function UserRecommend() {
                 prereqs={fulfillPrereqs}
                 course={fulfillCourse}
               />
+            </div>
+          )}
+          {page === Page.Complete && (
+            <div>
+              <div className="flex justify-center">
+                <span className="h2">Requirements complete! Congratulations!!</span>
+              </div>
+              
             </div>
           )}
         </Main>
