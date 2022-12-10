@@ -106,6 +106,9 @@ const recommendCourses = asyncHandler(async (req, res) => {
     recommendations.splice(10, recommendations.length - 10);
   }
 
+  if (recommendations.length === 0) {
+    recommendations.push(new Object({importance: -1}));
+  }
   res.status(200).json({ success: true, recommendedCourses: recommendations });
 });
 

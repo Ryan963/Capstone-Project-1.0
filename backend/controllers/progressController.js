@@ -98,30 +98,30 @@ function checkMaxByDiscipline(userCourses, limitCredits, disciplinesToCheck) {
   return overMaximum;
 }
 
-/**
- * Checks to see if there are the user has too many credits at the level given
- * @param {Array} userCourses  the array of user courses
- * The Array of courses is returned IF it is over the limit passed
- * * If returned array is empty, then they have no disciplines over 60 credits
- */
-function checkMaxByCourseLevel(userCourses, limitCredits, level) {
-  var limitCourses = limitCredits / 3;
-  //let uniqueCourses = [...new Set(userCourses)]
-  var chars;
-  var numbs;
-  var coursesAtLevel = [];
-  for (var i = 0; i < userCourses.length; i++) {
-    chars = userCourses[i].slice(0, userCourses[i].search(/\d/));
-    numbs = userCourses[i].replace(chars, "");
-    if (numbs < level) {
-      coursesAtLevel.push(userCourses[i]);
-    }
-  }
-  if (coursesAtLevel.length > limitCourses) {
-    return coursesAtLevel;
-  }
-  return [];
-}
+// /**
+//  * Checks to see if there are the user has too many credits at the level given
+//  * @param {Array} userCourses  the array of user courses
+//  * The Array of courses is returned IF it is over the limit passed
+//  * * If returned array is empty, then they have no disciplines over 60 credits
+//  */
+// function checkMaxByCourseLevel(userCourses, limitCredits, level) {
+//   var limitCourses = limitCredits / 3;
+//   //let uniqueCourses = [...new Set(userCourses)]
+//   var chars;
+//   var numbs;
+//   var coursesAtLevel = [];
+//   for (var i = 0; i < userCourses.length; i++) {
+//     chars = userCourses[i].slice(0, userCourses[i].search(/\d/));
+//     numbs = userCourses[i].replace(chars, "");
+//     if (numbs < level) {
+//       coursesAtLevel.push(userCourses[i]);
+//     }
+//   }
+//   if (coursesAtLevel.length > limitCourses) {
+//     return coursesAtLevel;
+//   }
+//   return [];
+// }
 
 /**
  * Checks if user satisfies requirement
@@ -164,7 +164,6 @@ function compare(userCourses, requirements) {
   return true;
 }
 
-//console.log(compare(array1, array2)); // true
 
 // @desc Get major progress check
 // @route GET /api/progress/major
@@ -200,7 +199,7 @@ const minorProgressCheck = async (req, res) => {
   const coursesTaken = user.courses; // Create completed courses array
   var minorRequirements = [];
   var completion = [];
-  // Create d/M/m requirements array
+  // Create minor requirements array
   for (var i = 0; i < user.minors.length; i++) {
     var minor = null;
     if (user.minors.length > i) {
@@ -212,6 +211,20 @@ const minorProgressCheck = async (req, res) => {
     }
     completion = getCreditGroups(coursesTaken, minorRequirements);
   }
+  res.status(200).json(completion);
+};
+
+// @desc Get minor progress check
+// @route GET /api/progress/breadth
+// @access private
+const breadthProgressCheck = async (req, res) => {
+  // Access data
+  const user = await User.findById(req.user.id);
+  const coursesTaken = user.courses; // Create completed courses array
+  var completion = [];
+  const degree = await Degree.findById(user.degree);
+  const degreeRequirements = [...degree.requirements];
+  completion = getCreditGroups(coursesTaken, degreeRequirements);
   res.status(200).json(completion);
 };
 
@@ -231,19 +244,19 @@ function getPercentMajorMinor(requirements) {
   return (largest / totalDegreeCredits) * 100;
 }
 
-/**
- *
- * @param {*} requirements
- * @returns
- */
-function getBreadthPercentage(requirements) {
-  var largest = 0;
-  const totalDegreeCredits = 120;
-  for (var i = 0; i < requirements.length; i++) {
-    largest = Math.max(largest, requirements[i].credits);
-  }
-  return (largest / totalDegreeCredits) * 100;
-}
+// /**
+//  *
+//  * @param {*} requirements
+//  * @returns
+//  */
+// function getBreadthPercentage(requirements) {
+//   var largest = 0;
+//   const totalDegreeCredits = 120;
+//   for (var i = 0; i < requirements.length; i++) {
+//     largest = Math.max(largest, requirements[i].credits);
+//   }
+//   return (largest / totalDegreeCredits) * 100;
+// }
 
 /**
  *
@@ -253,8 +266,12 @@ function getBreadthPercentage(requirements) {
  * @returns The percentage that the requirements are done. E.g. If Major requirements are 50% and it composes 40% of the total
  * degree requirements then it will return 50% * 40 = 20% is returned
  */
-function progressChecker(type, courses, requirements) {
-  const percentDMm = getPercentMajorMinor(requirements);
+function progressChecker(type, courses, requirements, breadthPerc) {
+  var percFinishedDegreeAndSelf = new Object();
+  var percentDMm = getPercentMajorMinor(requirements);
+  if(type === "breadth"){
+    percentDMm = parseFloat(breadthPerc);
+  }
   const majorMinorProgress = getCreditGroups(courses, requirements);
   //Then Calculate how much percentage is actually done by user for major and minor
   var max = 0;
@@ -264,27 +281,23 @@ function progressChecker(type, courses, requirements) {
   requirements = requirements.filter(
     (req) => req.type.toLowerCase() === "credits_of_group"
   );
+  const eachReqWeightPerc =  percentDMm / (requirements.length - 1)
+  
   for (var x = 0; x < requirements.length; x++) {
     if (requirements[x].type === "credits_of_group") {
-      //Get number of credits finished per requirement then divide by how much the major or minor counts towards the degree
-      creditsFinishedPerReq =
-        (requirements[x].credits * (majorMinorProgress[x].percentage / 100)) /
-        (percentDMm / 100) /
-        120;
+      //Calculate the percentage finished of each requirement. Assumes each requirement has equal wieght.
+      creditsFinishedPerReq = (majorMinorProgress[x].percentage / 100) * eachReqWeightPerc;
       percentFinished.push(creditsFinishedPerReq);
-
       //Remove largest credit requirements as it is just overall requirements if its major
-      if (
-        (type != "minor" || "") &&
-        max < Math.max(max, requirements[x].credits)
-      ) {
+      if ((type != "minor" || "") &&
+          max < Math.max(max, requirements[x].credits)) {
         indexMax = x;
         max = Math.max(max, requirements[x].credits);
       }
     }
   }
-  //console.log(percentFinished);
-  //Gets actual percentage of Major or Minor done relative to 120 credit requirements
+  // console.log(percentFinished);
+  //Gets actual percentage of Major or Minor done
   var totalPercentFinished = 0;
   for (var y = 0; y < requirements.length; y++) {
     percentFinished[y];
@@ -296,7 +309,27 @@ function progressChecker(type, courses, requirements) {
     }
   }
 
-  return (totalPercentFinished * percentDMm).toFixed(2);
+  if(totalPercentFinished > percentDMm){
+    totalPercentFinished = percentDMm;
+  };
+
+  // Then multiply the percentage done by how much the Major, minor, or breadth count towards the degree
+  
+  
+  if(type === "major"){
+    percFinishedDegreeAndSelf.selfMajPerc = (totalPercentFinished / percentDMm) * 100;
+    percFinishedDegreeAndSelf.degreeMajPerc = totalPercentFinished;
+  }
+  if(type === "minor"){
+    percFinishedDegreeAndSelf.selfMinPerc = (totalPercentFinished / percentDMm) * 100;
+    percFinishedDegreeAndSelf.degreeMinPerc = totalPercentFinished;
+    
+  }
+  if(type === "breadth"){
+    percFinishedDegreeAndSelf.selfBreadthPerc = (totalPercentFinished / percentDMm) * 100;
+    percFinishedDegreeAndSelf.degreeBreadthPerc = totalPercentFinished;
+  }
+  return percFinishedDegreeAndSelf;
 }
 
 /**
@@ -328,7 +361,7 @@ function getCreditGroups(userCourses, requirements) {
       completion.push(obj);
     }
   }
-  console.log(completion);
+  // console.log(completion);
 
   return completion;
 }
@@ -371,27 +404,34 @@ const progressCheck = async (req, res) => {
     const percentMajor = progressChecker(
       "major",
       coursesTaken,
-      majorRequirements
+      majorRequirements,
+      0
+
     );
     const percentMinor = progressChecker(
       "minor",
       coursesTaken,
-      minorRequirements
+      minorRequirements,
+      0
     );
-    //DEV NOTES: Are duplicates taken care of? E.g. Math 114 is required in CMPT AND in BSc. requirements
+    
+    const breadthMaxPerc = 100 - (parseFloat(percentMajor.degreeMajPerc) + parseFloat(percentMinor.degreeMinPerc));
     const percentBreadth = progressChecker(
       "breadth",
       coursesTaken,
-      degreeRequirements
+      degreeRequirements,
+      breadthMaxPerc
     );
 
-    completion.percentMajor = percentMajor;
-    completion.percentMinor = percentMinor;
-    completion.percentBreadth = percentBreadth;
-    //console.log(completion);
+    completion.percentMajor = Math.ceil(percentMajor.degreeMajPerc);
+    completion.finishedMajor = Math.ceil(percentMajor.selfMajPerc);
+    completion.percentMinor = Math.ceil(percentMinor.degreeMinPerc);
+    completion.finishedMinor = Math.ceil(percentMinor.selfMinPerc);
+    completion.percentBreadth = Math.ceil(percentBreadth.degreeBreadthPerc);
+    completion.finishedBreadth = Math.ceil(percentBreadth.selfBreadthPerc);
+    // console.log(completion);
   }
-  //res.status(200).json({"okay":"okay"});
   res.status(200).json(completion);
 };
 
-module.exports = { progressCheck, majorProgressCheck, minorProgressCheck };
+module.exports = { progressCheck, majorProgressCheck, minorProgressCheck, breadthProgressCheck};
