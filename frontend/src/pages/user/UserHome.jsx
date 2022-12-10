@@ -352,17 +352,17 @@ export default function UserHome() {
         {/** Main Body Start */}
         <Main open={open}>
           <DrawerHeader />
-          <div className="title container">
+          <div className="title ">
             <h1>Hi, {user.firstname}</h1>
+            <hr></hr>
           </div>
-          <hr></hr>
 
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
-          <h7>Degree</h7>
+          <h3>Degree</h3>
           <p>
-            <h7>Percentage finished: {degreePercent} % </h7>
+            <h4>Percentage finished: {degreePercent} % </h4>
           </p>
-          <div className="container">
+          <div className="container info-container">
             <ProgressLine
               // label={
               //   "Breadth: " +
@@ -383,23 +383,24 @@ export default function UserHome() {
                 },
                 {
                   percentage: progress.percentMajor + "%",
-                  color: "green",
+                  color: "#8B2332",
                 },
                 {
                   percentage: progress.percentMinor + "%",
-                  color: "blue",
+                  color: "#1B3768",
                 },
               ]}
             />
+            <hr></hr>
           </div>
           <div>
-            <h7>Breadth</h7>
+            <h3>Breadth</h3>
           </div>
-          <h7>Percentage finished: {progress.finishedBreadth} % </h7>
+          <h5>Percentage finished: {progress.finishedBreadth} % </h5>
           <p>
-            <h7>Percentage towards degree: {progress.percentBreadth} % </h7>
+            <h5>Percentage towards degree: {progress.percentBreadth} % </h5>
           </p>
-          <div className="container">
+          <div className="container info-container">
             {breadths.map((breadth) => (
               <ProgressLine
                 label={breadth.description + " " + breadth.percentage + "%"}
@@ -411,42 +412,44 @@ export default function UserHome() {
                 ]}
               />
             ))}
+            <hr></hr>
           </div>
+
           <div>
-            <h7>Major</h7>
+            <h3>Major</h3>
           </div>
-          <h7>Percentage finished: {progress.finishedMajor} % </h7>
-          <p>
-            <h7>Percentage towards degree: {progress.percentMajor} % </h7>
-          </p>
-          <div className="container">
+          <h5>Percentage finished: {progress.finishedMajor} % </h5>
+          <h5>Percentage towards degree: {progress.percentMajor} % </h5>
+          <div className="container info-container">
             {majors.map((major) => (
               <ProgressLine
                 label={major.description + " " + major.percentage + "%"}
                 visualParts={[
                   {
                     percentage: major.percentage + "%",
-                    color: "green",
+                    color: "#8B2332",
                   },
                 ]}
               />
             ))}
+            <hr></hr>
           </div>
+
           <div>
-            <h7>Minor</h7>
+            <h3>Minor</h3>
           </div>
-          <h7>Percentage finished: {progress.finishedMinor} % </h7>
+          <h5>Percentage finished: {progress.finishedMinor} % </h5>
           <p>
-            <h7>Percentage towards degree: {progress.percentMinor} % </h7>
+            <h5>Percentage towards degree: {progress.percentMinor} % </h5>
           </p>
-          <div className="container">
+          <div className="container info-container">
             {minors.map((minor) => (
               <ProgressLine
                 label={minor.description + " " + minor.percentage + "%"}
                 visualParts={[
                   {
                     percentage: minor.percentage + "%",
-                    color: "blue",
+                    color: "#1B3768",
                   },
                 ]}
               />

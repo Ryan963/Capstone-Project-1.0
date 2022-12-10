@@ -1,21 +1,8 @@
-
-h1 {
-  /* padding-left: 10%; */
+.title{
+  margin-bottom: 30px;
 }
 
-/* .title {
-  padding-left: 40px;
-} */
-.requirement-title{
-  margin-left: 3%;
-}
-
-.requirement-container{
-  padding: 10px;
-  margin-bottom: .25%;
-  /* background-color: aqua; */
-}
-
-.requirement-hairline{
-  margin-top: 2%;
+.info-container {
+  margin-top: 30px;
+  margin-bottom: 40px;
 }

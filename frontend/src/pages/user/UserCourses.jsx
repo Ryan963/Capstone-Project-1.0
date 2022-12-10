@@ -179,7 +179,7 @@ export default function UserCourses() {
   const [showCourseTaken, setshowCourseTaken] = useState(false);
   const [filterByDiscipline, setFilterByDiscipline] = useState("");
   const [filterByLevel, setFilterByLevel] = useState("");
-  const [filterByCompletion, setFilterByCompletion] = useState("");
+  const [filterByCompletion, setFilterByCompletion] = useState("hide");
   const [filterByRequirement, setFilterByRequirement] = useState({});
   const [requirements, setRequirements] = useState([]);
 
@@ -312,7 +312,7 @@ export default function UserCourses() {
           ? "Completed: N/A"
           : completed.length > 5
           ? ""
-          : "Completed: " + completed.join(" ")}{" "}
+          : "Completed/Planned: " + completed.join(" ")}{" "}
       </li>
     );
   };
@@ -417,8 +417,8 @@ export default function UserCourses() {
 
                 <select
                   className=" text-ellipsis w-40 p-2.5 m-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  name="filterByCompletion"
-                  id="filterByCompletion"
+                  name="filterByRequirement"
+                  id="filterByRequirement"
                   value={filterByRequirement}
                   onChange={(e) => setFilterByRequirement(e.target.value)}
                 >

@@ -47,9 +47,13 @@ const recommendCourses = asyncHandler(async (req, res) => {
       buildRequirements(requirements, minor.requirements);
     }
   }
-  let filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+  let filteredRequirements = requirements.filter(
+    (req) => req.type === "credits_of_group"
+  );
 
-  filteredRequirements = filteredRequirements.filter(req => req.credits <= 60);
+  filteredRequirements = filteredRequirements.filter(
+    (req) => req.credits <= 60
+  );
   var recommendations = []; // Initialize recommendations array
 
   // Loop through all requirements
@@ -107,7 +111,7 @@ const recommendCourses = asyncHandler(async (req, res) => {
   }
 
   if (recommendations.length === 0) {
-    recommendations.push(new Object({importance: -1}));
+    recommendations.push(new Object({ importance: -1 }));
   }
   res.status(200).json({ success: true, recommendedCourses: recommendations });
 });
@@ -147,7 +151,9 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
       }
     }
 
-    const filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+    const filteredRequirements = requirements.filter(
+      (req) => req.type === "credits_of_group"
+    );
     // Array to seave the requirements that selected course will count towards
     var requirementsSatisfied = [];
 
@@ -164,7 +170,7 @@ const requirementsSatisfied = asyncHandler(async (req, res) => {
     }
 
     // check if any of the requirements the selected course counts towards are already completed
-    const allCourses = coursesTaken.concat(futureCourses);
+    const allCourses = coursesTaken.concat(futureCourses); // assume future courses as complete
     for (var i = 0; i < requirementsSatisfied.length; i++) {
       var req = requirementsSatisfied[i];
       const completed = allCourses.filter((value) =>
@@ -218,7 +224,9 @@ const getAllUserRequirements = asyncHandler(async (req, res) => {
         buildRequirements(requirements, minor.requirements);
       }
     }
-    const filteredRequirements = requirements.filter(req => req.type === "credits_of_group");
+    const filteredRequirements = requirements.filter(
+      (req) => req.type === "credits_of_group"
+    );
     res.status(200).json({
       success: true,
       requirements: filteredRequirements,

@@ -27,7 +27,6 @@ import SchoolIcon from "@mui/icons-material/School";
 import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
-import "../../styles/userProfile.css";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Button from "react-bootstrap/Button";
 import useUser from "../../hooks/useUser";
