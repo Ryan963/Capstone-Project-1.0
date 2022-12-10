@@ -8,9 +8,9 @@ const ProgressLine = ({
   visualParts = [
     {
       percentage: "0%",
-      color: "white"
-    }
-  ]
+      color: "white",
+    },
+  ],
 }) => {
   // Starting values needed for the animation
   // Mapped by "visualParts" so it can work with multiple values dynamically
@@ -27,7 +27,7 @@ const ProgressLine = ({
     requestAnimationFrame(() => {
       // Set a new array of percentage widths based on the props
       setWidths(
-        visualParts.map(item => {
+        visualParts.map((item) => {
           return item.percentage;
         })
       );
@@ -35,13 +35,14 @@ const ProgressLine = ({
   }, [visualParts]);
 
   return (
-    <>
+    <div className=" progressLine-container">
       <div className="progressLabel">{label}</div>
       <div
         className="progressVisualFull"
         // to change the background color dynamically
         style={{
-          backgroundColor
+          backgroundColor,
+          borderRadius: 15,
         }}
       >
         {visualParts.map((item, index) => {
@@ -56,14 +57,15 @@ const ProgressLine = ({
               style={{
                 width: widths[index],
                 // setting the actual color of bar part
-                backgroundColor: item.color
+                backgroundColor: item.color,
+                borderRadius: 30,
               }}
               className="progressVisualPart"
             />
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -28,11 +28,13 @@ import SchoolIcon from "@mui/icons-material/School";
 import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
+import "../../styles/userHome.css";
 import ProgressLine from "../../components/homePageComponents/ProgressLine";
 import { toast } from "react-toastify";
 import axios from "axios";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useState, useEffect } from "react";
+import useUser from "../../hooks/useUser";
 
 const drawerWidth = 200;
 
@@ -90,6 +92,7 @@ export default function UserHome() {
   const [breadths, setBreadths] = useState([]);
   const [majors, setMajors] = useState([]);
   const [minors, setMinors] = useState([]);
+  const [user, setuser] = useUser({});
   const [progress, setProgress] = useState([]);
   const [degreePercent, setDegreePercent] = useState("");
   // logs out the user not matter what type he is
@@ -177,11 +180,10 @@ export default function UserHome() {
     const percB = parseFloat(progress.percentBreadth);
     const percMj = parseFloat(progress.percentMajor);
     const percMn = parseFloat(progress.percentMinor);
-    const percDeg =  percB + percMj + percMn;
+    const percDeg = percB + percMj + percMn;
     console.log(percDeg);
     setDegreePercent(percDeg.toString());
-  }
-
+  };
 
   useEffect(() => {
     //Moved to separate function so I can call function in modal and update main page
@@ -195,7 +197,7 @@ export default function UserHome() {
     //Moved to separate function so I can call function in modal and update main page
     getDegreePercent();
   }, [progress]);
-  
+
   const theme = createTheme({
     palette: {
       primary: {
@@ -270,7 +272,7 @@ export default function UserHome() {
             <Toolbar variant="dense">
               <Grid container rowSpacing={1} spacing={0}>
                 <Grid item xs={1}>
-                  <div class="grid-item">
+                  <div className="grid-item">
                     <IconButton
                       color="inherit"
                       aria-label="open drawer"
@@ -350,12 +352,15 @@ export default function UserHome() {
         {/** Main Body Start */}
         <Main open={open}>
           <DrawerHeader />
+          <div className="title ">
+            <h1>Hi, {user.firstname}</h1>
+            <hr></hr>
+          </div>
 
-          <Typography paragraph>User Home</Typography>
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
-          <h7>Degree</h7>
-          <p><h7>Percentage finished: {degreePercent} % </h7></p>
-          <div className="container">
+          <h3>Degree</h3>
+          <h4>Percentage finished: {degreePercent} % </h4>
+          <div className="container info-container">
             <ProgressLine
               // label={
               //   "Breadth: " +
@@ -376,19 +381,22 @@ export default function UserHome() {
                 },
                 {
                   percentage: progress.percentMajor + "%",
-                  color: "green",
+                  color: "#8B2332",
                 },
                 {
                   percentage: progress.percentMinor + "%",
-                  color: "blue",
+                  color: "#1B3768",
                 },
               ]}
             />
+            <hr></hr>
           </div>
-          <div><h7>Breadth</h7></div>
-          <h7>Percentage finished: {progress.finishedBreadth} % </h7>
-          <p><h7>Percentage towards degree: {progress.percentBreadth} % </h7></p>
-          <div className="container">
+          <div>
+            <h3>Breadth</h3>
+          </div>
+          <h5>Percentage finished: {progress.finishedBreadth} % </h5>
+          <h5>Percentage towards degree: {progress.percentBreadth} % </h5>
+          <div className="container info-container">
             {breadths.map((breadth) => (
               <ProgressLine
                 label={breadth.description + " " + breadth.percentage + "%"}
@@ -400,34 +408,42 @@ export default function UserHome() {
                 ]}
               />
             ))}
+            <hr></hr>
           </div>
-          <div><h7>Major</h7></div>
-          <h7>Percentage finished: {progress.finishedMajor} % </h7>
-          <p><h7>Percentage towards degree: {progress.percentMajor} % </h7></p>
-          <div className="container">
+
+          <div>
+            <h3>Major</h3>
+          </div>
+          <h5>Percentage finished: {progress.finishedMajor} % </h5>
+          <h5>Percentage towards degree: {progress.percentMajor} % </h5>
+          <div className="container info-container">
             {majors.map((major) => (
               <ProgressLine
                 label={major.description + " " + major.percentage + "%"}
                 visualParts={[
                   {
                     percentage: major.percentage + "%",
-                    color: "green",
+                    color: "#8B2332",
                   },
                 ]}
               />
             ))}
+            <hr></hr>
           </div>
-          <div><h7>Minor</h7></div>
-          <h7>Percentage finished: {progress.finishedMinor} % </h7>
-          <p><h7>Percentage towards degree: {progress.percentMinor} % </h7></p>
-          <div className="container">
+
+          <div>
+            <h3>Minor</h3>
+          </div>
+          <h5>Percentage finished: {progress.finishedMinor} % </h5>
+          <h5>Percentage towards degree: {progress.percentMinor} % </h5>
+          <div className="container info-container">
             {minors.map((minor) => (
               <ProgressLine
                 label={minor.description + " " + minor.percentage + "%"}
                 visualParts={[
                   {
                     percentage: minor.percentage + "%",
-                    color: "blue",
+                    color: "#1B3768",
                   },
                 ]}
               />

@@ -28,13 +28,17 @@ import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import Button from 'react-bootstrap/Button'
+import Button from "react-bootstrap/Button";
 import useUser from "../../hooks/useUser";
+import useMinors from "../../hooks/useMinors";
+import useDegrees from "../../hooks/useDegrees";
+import useMajors from "../../hooks/useMajors";
 import Card from "react-bootstrap/Card";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import Form from 'react-bootstrap/Form'
+import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
 
 const drawerWidth = 200;
 
@@ -168,103 +172,47 @@ export default function UserProfile() {
   ];
 
   const [user, setUser] = useUser();
-  const [majors, setMajors] = useState([]);
+  const [majors, setMajors] = useMajors([]);
   const [currentMajor, setCurrentMajor] = useState({});
-  const [degrees, setDegrees] = useState([]);
+  const [degrees, setDegrees] = useDegrees([]);
   const [currentDegree, setCurrentDegree] = useState({});
-  const [minors, setMinors] = useState([]);
+  const [minors, setMinors] = useMinors([]);
   const [currentMinor, setCurrentMinor] = useState({});
   //const [updateStudentModal, setUpdateStudentModal] = useState(false);
 
-  useEffect(() => {
-    getMajors();
-    getDegrees();
-    getMinors();
-  }, []);
-  
-  const getDegrees = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/degree`, config)
-      .then((res) => {
-        setDegrees(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  };
+  useEffect(() => {}, []);
 
-  const getMajors = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/majors`, config)
-      .then((res) => {
-        setMajors(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  };
-
-  const getMinors = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    axios
-      .get(`${process.env.REACT_APP_SERVER_API}/minors`, config)
-      .then((res) => {
-        setMinors(res.data);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-        console.log(error);
-      });
-  }
-
-  const checkDegrees = (id) =>{
+  const checkDegrees = (id) => {
     for (let i = 0; i < degrees.length; i++) {
       if (degrees[i]._id === id) {
-        return(degrees[i].name);
+        return degrees[i].name;
       }
     }
-  }
-  const checkMinors = (idArray) =>{
-    if(idArray === undefined){
+  };
+  const checkMinors = (idArray) => {
+    if (idArray === undefined) {
       return;
     }
     var id = idArray[0];
     for (let i = 0; i < minors.length; i++) {
       if (minors[i]._id === id) {
-        return(minors[i].name);
+        return minors[i].name;
       }
     }
-  }
-  const checkMajors = (idArray) =>{
-    if(idArray === undefined){
+  };
+  const checkMajors = (idArray) => {
+    if (idArray === undefined) {
       return;
     }
     var id = idArray[0];
 
     for (let i = 0; i < majors.length; i++) {
       if (majors[i]._id === id) {
-
-        return(majors[i].name);
+        return majors[i].name;
       }
     }
-  }
-/*
+  };
+  /*
   const updateStudent= (updatedStudent) => {
     
     //Object.repalce(user, updatedStudent);
@@ -281,7 +229,7 @@ export default function UserProfile() {
               <Grid container rowSpacing={1} spacing={0}>
                 {/* columnSpacing={{xs: 80, sm:150, md:150}} */}
                 <Grid item xs={1}>
-                  <div class="grid-item">
+                  <div className="grid-item">
                     <IconButton
                       color="inherit"
                       aria-label="open drawer"
@@ -360,40 +308,80 @@ export default function UserProfile() {
         </Drawer>
         <Main open={open}>
           <DrawerHeader />
-          <Form>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Name: {user.firstname + " " + user.lastname}</Form.Label>
-
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email: {user.email}</Form.Label>
-              
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Degree: {checkDegrees(user.degree)}</Form.Label>
-             
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              
-              <Form.Label>Major:{ checkMajors(user.majors)}</Form.Label>
-            
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Minor: {checkMinors(user.minors)}</Form.Label>
-              
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Current Year: {user.currentyear}</Form.Label>
-              
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
+          <h1>User Profile</h1>
+          {/* <ListGroup className="flex flex-nowrap">
+            <ListGroup.Item className="list-item">
+              Name: {user.firstname + " " + user.lastname}
+            </ListGroup.Item>
+            <ListGroup.Item>Email: {user.email}</ListGroup.Item>
+            <ListGroup.Item>Degree: {checkDegrees(user.degree)}</ListGroup.Item>
+            <ListGroup.Item>Major: {checkMajors(user.majors)}</ListGroup.Item>
+            <ListGroup.Item>Minor: {checkMinors(user.minors)}</ListGroup.Item>
+            <ListGroup.Item>Current Year: {user.currentyear}</ListGroup.Item>
+            {/* <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>GPA: {user.gpa}</Form.Label>
-              
-            </Form.Group>
-
-          </Form>
+            </Form.Group> 
+          </ListGroup> */}
           <br />
 
+          <div className="col-lg-8 ">
+            <div className="card mb-4">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-sm-3">
+                    <p className="mb-0">Full Name:</p>
+                  </div>
+                  <div className="col-sm-9">
+                    <p className="text-muted mb-0">
+                      {user.firstname + " " + user.lastname}
+                    </p>
+                  </div>
+                </div>
+                <hr></hr>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <p className="mb-0">Email:</p>
+                  </div>
+                  <div className="col-sm-9">
+                    <p className="text-muted mb-0">{user.email}</p>
+                  </div>
+                </div>
+                <hr></hr>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <p className="mb-0">Degree:</p>
+                  </div>
+                  <div className="col-sm-9">
+                    <p className="text-muted mb-0">
+                      {checkDegrees(user.degree)}
+                    </p>
+                  </div>
+                </div>
+                <hr></hr>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <p className="mb-0">Major:</p>
+                  </div>
+                  <div className="col-sm-9">
+                    <p className="text-muted mb-0">
+                      {checkMajors(user.majors)}
+                    </p>
+                  </div>
+                </div>
+                <hr></hr>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <p className="mb-0">Minor:</p>
+                  </div>
+                  <div className="col-sm-9">
+                    <p className="text-muted mb-0">
+                      {checkMinors(user.minors)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </Main>
       </Box>
     </ThemeProvider>
