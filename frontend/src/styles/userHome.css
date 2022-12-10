@@ -1,0 +1,21 @@
+
+h1 {
+  /* padding-left: 10%; */
+}
+
+/* .title {
+  padding-left: 40px;
+} */
+.requirement-title{
+  margin-left: 3%;
+}
+
+.requirement-container{
+  padding: 10px;
+  margin-bottom: .25%;
+  /* background-color: aqua; */
+}
+
+.requirement-hairline{
+  margin-top: 2%;
+}

@@ -28,11 +28,13 @@ import SchoolIcon from "@mui/icons-material/School";
 import ProfileBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 import styles from "../../styles/Layout.module.css";
+import "../../styles/userHome.css";
 import ProgressLine from "../../components/homePageComponents/ProgressLine";
 import { toast } from "react-toastify";
 import axios from "axios";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useState, useEffect } from "react";
+import useUser from "../../hooks/useUser";
 
 const drawerWidth = 200;
 
@@ -89,6 +91,7 @@ export default function UserHome() {
   const navigate = useNavigate();
   const [majors, setMajors] = useState([]);
   const [minors, setMinors] = useState([]);
+  const [user, setuser] = useUser({});
   const [progress, setProgress] = useState([]);
   // logs out the user not matter what type he is
   const logout = () => {
@@ -237,7 +240,7 @@ export default function UserHome() {
             <Toolbar variant="dense">
               <Grid container rowSpacing={1} spacing={0}>
                 <Grid item xs={1}>
-                  <div class="grid-item">
+                  <div className="grid-item">
                     <IconButton
                       color="inherit"
                       aria-label="open drawer"
@@ -317,67 +320,84 @@ export default function UserHome() {
         {/** Main Body Start */}
         <Main open={open}>
           <DrawerHeader />
+          <div className="title container">
+            <h1>Hi, {user.firstname}</h1>
+          </div>
+          <hr></hr>
 
-          <Typography paragraph>User Home</Typography>
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
-          <h7>Degree</h7>
-          <div className="container">
-            <ProgressLine
-              label={
-                "Breadth: " +
-                progress.percentBreadth +
-                "%\n" +
-                "Major: " +
-                progress.percentMajor +
-                "%\n" +
-                "Minor: " +
-                progress.percentMinor +
-                "%"
-              }
-              visualParts={[
-                {
-                  // percentage: progress.percentBreadth,
-                  percentage: progress.percentBreadth + "%",
-                  color: "gold",
-                },
-                {
-                  percentage: progress.percentMajor + "%",
-                  color: "green",
-                },
-                {
-                  percentage: progress.percentMinor + "%",
-                  color: "blue",
-                },
-              ]}
-            />
-          </div>
-          <h7>Majors</h7>
-          <div className="container">
-            {majors.map((major) => (
+          <div className="requirement-container">
+            <h4 className="requirement-title">Degree</h4>
+            <div className="container">
               <ProgressLine
-                label={major.description + " " + major.percentage + "%"}
+                label={
+                  "Breadth: " +
+                  progress.percentBreadth +
+                  "%\n" +
+                  "Major: " +
+                  progress.percentMajor +
+                  "%\n" +
+                  "Minor: " +
+                  progress.percentMinor +
+                  "%"
+                }
                 visualParts={[
                   {
-                    percentage: major.percentage + "%",
-                    color: "green",
+                    // percentage: progress.percentBreadth,
+                    percentage: progress.percentBreadth + "%",
+                    color: "gold",
+                    // color: '#8B2332;
+                  },
+                  {
+                    percentage: progress.percentMajor + "%",
+                    // color: "green",
+                    color: "#8B2332",
+                  },
+                  {
+                    percentage: progress.percentMinor + "%",
+                    // color: "blue",
+                    color: "#1B3768",
                   },
                 ]}
               />
-            ))}
+              <hr className="requirement-hairline"></hr>
+            </div>
           </div>
-          <h7>Minors</h7>
-          <div className="container">
-            {minors.map((minor) => (
-              <ProgressLine
-                label={minor.description + " " + minor.percentage + "%"}
-                visualParts={[
-                  {
-                    percentage: minor.percentage + "%",
-                    color: "blue",
-                  },
-                ]}
-              />
-            ))}
+          <div className="requirement-container">
+            <h4 className="requirement-title">Major</h4>
+            <div className="container">
+              {majors.map((major) => (
+                <ProgressLine
+                  label={major.description + " " + major.percentage + "%"}
+                  visualParts={[
+                    {
+                      percentage: major.percentage + "%",
+                      color: "green",
+                      color: "#1B3768",
+                      color: "#8B2332",
+                    },
+                  ]}
+                />
+              ))}
+              <hr className="requirement-hairline"></hr>
+            </div>
+          </div>
+          <div className="requirement-container">
+            <h4 className="requirement-title">Minor</h4>
+            <div className="container">
+              {minors.map((minor) => (
+                <ProgressLine
+                  label={minor.description + " " + minor.percentage + "%"}
+                  visualParts={[
+                    {
+                      percentage: minor.percentage + "%",
+                      // color: "blue",
+                      color: "#1B3768",
+                    },
+                  ]}
+                />
+              ))}
+            </div>
           </div>
         </Main>
       </Box>
