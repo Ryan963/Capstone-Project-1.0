@@ -359,9 +359,7 @@ export default function UserHome() {
 
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
           <h3>Degree</h3>
-          <p>
-            <h4>Percentage finished: {degreePercent} % </h4>
-          </p>
+          <h4>Percentage finished: {degreePercent} % </h4>
           <div className="container info-container">
             <ProgressLine
               // label={
@@ -397,9 +395,7 @@ export default function UserHome() {
             <h3>Breadth</h3>
           </div>
           <h5>Percentage finished: {progress.finishedBreadth} % </h5>
-          <p>
-            <h5>Percentage towards degree: {progress.percentBreadth} % </h5>
-          </p>
+          <h5>Percentage towards degree: {progress.percentBreadth} % </h5>
           <div className="container info-container">
             {breadths.map((breadth) => (
               <ProgressLine
@@ -439,9 +435,7 @@ export default function UserHome() {
             <h3>Minor</h3>
           </div>
           <h5>Percentage finished: {progress.finishedMinor} % </h5>
-          <p>
-            <h5>Percentage towards degree: {progress.percentMinor} % </h5>
-          </p>
+          <h5>Percentage towards degree: {progress.percentMinor} % </h5>
           <div className="container info-container">
             {minors.map((minor) => (
               <ProgressLine
