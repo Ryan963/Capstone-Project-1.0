@@ -87,9 +87,11 @@ export default function UserHome() {
   //const userEmail = localStorage.getItem("email");
   const userType = localStorage.getItem("type");
   const navigate = useNavigate();
+  const [breadths, setBreadths] = useState([]);
   const [majors, setMajors] = useState([]);
   const [minors, setMinors] = useState([]);
   const [progress, setProgress] = useState([]);
+  const [degreePercent, setDegreePercent] = useState("");
   // logs out the user not matter what type he is
   const logout = () => {
     localStorage.clear();
@@ -118,8 +120,6 @@ export default function UserHome() {
         toast.error(error.message);
         console.log(error);
       });
-
-    console.log(progress.percentBreadth);
   };
 
   const getMajors = () => {
@@ -132,7 +132,6 @@ export default function UserHome() {
       .get(`${process.env.REACT_APP_SERVER_API}/progress/major`, config)
       .then((res) => {
         setMajors(res.data);
-        console.log(majors);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -156,13 +155,47 @@ export default function UserHome() {
         console.log(error);
       });
   };
+
+  const getBreadth = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/progress/breadth`, config)
+      .then((res) => {
+        setBreadths(res.data);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        console.log(error);
+      });
+  };
+
+  const getDegreePercent = () => {
+    const percB = parseFloat(progress.percentBreadth);
+    const percMj = parseFloat(progress.percentMajor);
+    const percMn = parseFloat(progress.percentMinor);
+    const percDeg =  percB + percMj + percMn;
+    console.log(percDeg);
+    setDegreePercent(percDeg.toString());
+  }
+
+
   useEffect(() => {
     //Moved to separate function so I can call function in modal and update main page
     getMajors();
     getMinors();
     getProgress();
+    getBreadth();
   }, []);
 
+  useEffect(() => {
+    //Moved to separate function so I can call function in modal and update main page
+    getDegreePercent();
+  }, [progress]);
+  
   const theme = createTheme({
     palette: {
       primary: {
@@ -321,19 +354,20 @@ export default function UserHome() {
           <Typography paragraph>User Home</Typography>
           {/* TODO: Put Degree, Major, Minor in boxes for better UI */}
           <h7>Degree</h7>
+          <p><h7>Percentage finished: {degreePercent} % </h7></p>
           <div className="container">
             <ProgressLine
-              label={
-                "Breadth: " +
-                progress.percentBreadth +
-                "%\n" +
-                "Major: " +
-                progress.percentMajor +
-                "%\n" +
-                "Minor: " +
-                progress.percentMinor +
-                "%"
-              }
+              // label={
+              //   "Breadth: " +
+              //   progress.percentBreadth +
+              //   "%\n" +
+              //   "Major: " +
+              //   progress.percentMajor +
+              //   "%\n" +
+              //   "Minor: " +
+              //   progress.percentMinor +
+              //   "%"
+              // }
               visualParts={[
                 {
                   // percentage: progress.percentBreadth,
@@ -351,7 +385,25 @@ export default function UserHome() {
               ]}
             />
           </div>
-          <h7>Majors</h7>
+          <div><h7>Breadth</h7></div>
+          <h7>Percentage finished: {progress.finishedBreadth} % </h7>
+          <p><h7>Percentage towards degree: {progress.percentBreadth} % </h7></p>
+          <div className="container">
+            {breadths.map((breadth) => (
+              <ProgressLine
+                label={breadth.description + " " + breadth.percentage + "%"}
+                visualParts={[
+                  {
+                    percentage: breadth.percentage + "%",
+                    color: "gold",
+                  },
+                ]}
+              />
+            ))}
+          </div>
+          <div><h7>Major</h7></div>
+          <h7>Percentage finished: {progress.finishedMajor} % </h7>
+          <p><h7>Percentage towards degree: {progress.percentMajor} % </h7></p>
           <div className="container">
             {majors.map((major) => (
               <ProgressLine
@@ -365,7 +417,9 @@ export default function UserHome() {
               />
             ))}
           </div>
-          <h7>Minors</h7>
+          <div><h7>Minor</h7></div>
+          <h7>Percentage finished: {progress.finishedMinor} % </h7>
+          <p><h7>Percentage towards degree: {progress.percentMinor} % </h7></p>
           <div className="container">
             {minors.map((minor) => (
               <ProgressLine
